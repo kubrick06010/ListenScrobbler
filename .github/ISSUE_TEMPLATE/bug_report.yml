@@ -1,0 +1,64 @@
+name: Bug report
+description: Report something that is broken or behaving unexpectedly.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the smallest set of steps that reproduces the issue.
+      placeholder: |
+        1. Open ...
+        2. Play ...
+        3. Click ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: OpenScrobbler version
+      placeholder: 0.1.1
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: macOS 15.5
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - ListenBrainz account or submission
+        - Now playing or player monitoring
+        - Metadata, artwork, or MusicBrainz enrichment
+        - Charts or listening archive
+        - Social, recommendations, or discovery
+        - Local vaults or import/export
+        - Build, release, or tests
+        - Other
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Remove tokens, private listening history, proxy credentials, and local paths before posting.

@@ -43,6 +43,10 @@ struct ArtistAffinityGraphSnapshot: Equatable {
     let generatedAt: Date
 }
 
+// Contributor map:
+// This value is the bridge between MusicBrainz identity resolution and the
+// ListenBrainz ecosystem. Add new open-data context here when it should appear
+// consistently in dashboard, detail panels, charts, and sharing surfaces.
 struct OpenListeningEnrichment: Equatable {
     let userRecordingListenCount: Int?
     let userArtistListenCount: Int?
@@ -82,8 +86,22 @@ struct OpenListeningEnrichment: Equatable {
     }
 }
 
+private struct OpenArtistFallback {
+    let name: String
+    let imageURL: String?
+    let summary: String?
+    let listeners: Int?
+    let playcount: Int?
+    let userPlaycount: Int?
+    let tags: [String]
+    let similarArtists: [ListenBrainzSimilarArtist]
+}
+
 @MainActor
 final class ScrobbleService: ObservableObject {
+    // ScrobbleService intentionally owns the app's high-level listening state.
+    // UI views should read these published snapshots and call focused methods
+    // below; provider-specific networking belongs in the service clients.
     @Published private(set) var currentTrack: Track?
     @Published private(set) var queuedScrobbles: [Track] = []
     @Published private(set) var queuedSubmissionJobs: [ScrobbleSubmissionJob] = []
@@ -198,6 +216,8 @@ final class ScrobbleService: ObservableObject {
     private var hasSentNowPlayingForCurrentTrack = false
     private var recentScrobbles: [String: Date] = [:]
     private var friendGraphCache: [String: [String]] = [:]
+    // Two graph depths are kept on purpose: quick probes keep list rows cheap,
+    // while the detailed inspector can spend more requests to explain a path.
     private let inferredNowPlayingWindow: TimeInterval = 30 * 60
     private let quickSeparationDepth = 6
     private let detailedSeparationDepth = 24
@@ -1121,6 +1141,10 @@ final class ScrobbleService: ObservableObject {
                     artist: scrobble.artist,
                     release: isAlbumInspection ? (scrobble.album ?? scrobble.track) : scrobble.album
                 )
+                inspectedArtistDetails = openArtistDetails(
+                    fallback: openArtistFallback(from: inspectedOpenEntityDetails, enrichment: inspectedOpenEnrichment),
+                    originalArtist: scrobble.artist
+                )
             }
             loadedAnything = true
         } catch is CancellationError {
@@ -1204,17 +1228,17 @@ final class ScrobbleService: ObservableObject {
         } catch is CancellationError {
             return
         } catch {
-            inspectedArtistDetails = CompatibilityArtistDetails(
-                name: scrobble.artist,
-                imageURL: nil,
-                listeners: nil,
-                playcount: nil,
-                userPlaycount: nil,
-                url: nil,
-                summary: "Artist biography and stats are temporarily unavailable.",
-                tags: [],
-                similarArtists: []
-            )
+            inspectedArtistDetails = inspectedArtistDetails ?? CompatibilityArtistDetails(
+                    name: scrobble.artist,
+                    imageURL: nil,
+                    listeners: nil,
+                    playcount: nil,
+                    userPlaycount: nil,
+                    url: nil,
+                    summary: "Artist biography and stats are temporarily unavailable.",
+                    tags: [],
+                    similarArtists: []
+                )
             loadedAnything = true
             degraded = true
             handle(error: error)
@@ -1711,6 +1735,10 @@ final class ScrobbleService: ObservableObject {
                         artist: track.artist,
                         release: track.album
                     )
+                    currentArtistDetails = openArtistDetails(
+                        fallback: openArtistFallback(from: currentOpenEntityDetails, enrichment: currentOpenEnrichment),
+                        originalArtist: track.artist
+                    )
                 }
                 loadedAnything = true
             } catch is CancellationError {
@@ -1722,7 +1750,6 @@ final class ScrobbleService: ObservableObject {
                 lastAPIError = error.localizedDescription
             }
             currentTrackDetails = nil
-            currentArtistDetails = nil
             exploreStatus = loadedAnything
                 ? (degraded ? "Loaded open metadata (limited)" : "Loaded open metadata")
                 : "Failed to load open metadata"
@@ -1764,6 +1791,12 @@ final class ScrobbleService: ObservableObject {
                     artist: track.artist,
                     release: track.album
                 )
+                if currentArtistDetails == nil {
+                    currentArtistDetails = openArtistDetails(
+                        fallback: openArtistFallback(from: currentOpenEntityDetails, enrichment: currentOpenEnrichment),
+                        originalArtist: track.artist
+                    )
+                }
             }
             loadedAnything = true
         } catch is CancellationError {
@@ -1834,11 +1867,12 @@ final class ScrobbleService: ObservableObject {
                 artistMBID: artistMBID,
                 count: 8
             )) ?? []
-            similarArtists = (try? await listenBrainz.fetchSimilarArtists(
+            let rawSimilarArtists = (try? await listenBrainz.fetchSimilarArtists(
                 seedArtistMBID: artistMBID,
                 maxSimilarArtists: 8,
                 maxRecordingsPerArtist: 1
             )) ?? []
+            similarArtists = await hydrateListenBrainzSimilarArtistImages(rawSimilarArtists)
         } else {
             topRecordings = []
             similarArtists = []
@@ -1858,6 +1892,88 @@ final class ScrobbleService: ObservableObject {
             similarArtists: similarArtists
         )
         return enrichment.hasUsefulData ? enrichment : nil
+    }
+
+    private func openArtistFallback(
+        from details: OpenMusicEntityDetails,
+        enrichment: OpenListeningEnrichment?
+    ) -> OpenArtistFallback {
+        OpenArtistFallback(
+            name: details.artistName,
+            imageURL: details.artistImageURL,
+            summary: details.artistSummary,
+            listeners: enrichment?.globalArtistListenerCount,
+            playcount: enrichment?.globalArtistListenCount,
+            userPlaycount: enrichment?.userArtistListenCount,
+            tags: details.tags,
+            similarArtists: enrichment?.similarArtists ?? []
+        )
+    }
+
+    private func openArtistDetails(
+        fallback: OpenArtistFallback,
+        originalArtist: String
+    ) -> CompatibilityArtistDetails {
+        CompatibilityArtistDetails(
+            name: fallback.name.nilIfBlank ?? originalArtist,
+            imageURL: fallback.imageURL,
+            listeners: fallback.listeners,
+            playcount: fallback.playcount,
+            userPlaycount: fallback.userPlaycount,
+            url: nil,
+            summary: fallback.summary?.nilIfBlank ?? openArtistSummaryFallback(fallback, originalArtist: originalArtist),
+            tags: fallback.tags,
+            similarArtists: fallback.similarArtists.map {
+                CompatibilitySimilarArtist(
+                    id: $0.id,
+                    name: $0.name,
+                    imageURL: $0.imageURL,
+                    url: nil
+                )
+            }
+        )
+    }
+
+    private func openArtistSummaryFallback(_ fallback: OpenArtistFallback, originalArtist: String) -> String {
+        var fragments: [String] = []
+        let name = fallback.name.nilIfBlank ?? originalArtist
+        fragments.append("\(name) is indexed in MusicBrainz")
+        if let listeners = fallback.listeners {
+            fragments.append("ListenBrainz shows \(listeners.formatted()) public listeners")
+        }
+        if let plays = fallback.playcount {
+            fragments.append("\(plays.formatted()) public plays")
+        }
+        if !fallback.tags.isEmpty {
+            fragments.append("Tags: \(fallback.tags.prefix(5).joined(separator: ", "))")
+        }
+        return fragments.joined(separator: ". ") + "."
+    }
+
+    private func hydrateListenBrainzSimilarArtistImages(_ artists: [ListenBrainzSimilarArtist]) async -> [ListenBrainzSimilarArtist] {
+        var hydrated: [ListenBrainzSimilarArtist] = []
+        hydrated.reserveCapacity(artists.count)
+        for (index, artist) in artists.enumerated() {
+            guard artist.imageURL == nil, index < 8 else {
+                hydrated.append(artist)
+                continue
+            }
+            let imageURL = await musicBrainz.fetchArtistArtwork(
+                artistMBID: artist.artistMbid,
+                artistName: artist.name
+            )
+            hydrated.append(
+                ListenBrainzSimilarArtist(
+                    id: artist.id,
+                    artistMbid: artist.artistMbid,
+                    name: artist.name,
+                    totalListenCount: artist.totalListenCount,
+                    isSeedArtist: artist.isSeedArtist,
+                    imageURL: imageURL
+                )
+            )
+        }
+        return hydrated
     }
 
     private func firstPopularity(
@@ -2552,7 +2668,7 @@ private extension CompatibilityRecentScrobble {
             track: listen.trackName,
             artist: listen.artistName,
             album: listen.releaseName,
-            imageURL: nil,
+            imageURL: listen.imageURL,
             url: listen.recordingMBID.map { "https://listenbrainz.org/player/?recording_mbids=\($0)" },
             loved: false,
             playedAt: listen.listenedAt,

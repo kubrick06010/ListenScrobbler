@@ -14,6 +14,9 @@ protocol PlayerMonitor: AnyObject {
     func stop()
 }
 
+// Player monitors produce normalized playback events; they should not decide
+// scrobble timing or submission policy. That keeps new adapters easy to add:
+// emit track/paused/resumed/stopped and let ScrobbleService handle the rest.
 final class MultiPlayerMonitor: PlayerMonitor {
     var onEvent: ((PlayerEvent) -> Void)?
     var statusDescription: String {
@@ -117,6 +120,9 @@ final class AppleScriptMetadataProvider: PlayerMetadataProviding {
             return nil
         }
 
+        // Distributed notifications are fast but sometimes omit album/artwork.
+        // AppleScript is slower, so keep it as a metadata fallback instead of
+        // the primary playback signal.
         guard
             let appleScript = NSAppleScript(source: script),
             let result = appleScript.executeAndReturnError(nil).stringValue

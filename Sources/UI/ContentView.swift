@@ -46,6 +46,10 @@ private struct DeepLinkTarget: Identifiable, Equatable {
     let kind: Kind
 }
 
+// The main UI uses small draft/target values to decouple navigation, sheets,
+// and inspector presentation from provider models. When adding a new surface,
+// prefer threading one of these lightweight intents through ContentView rather
+// than passing service internals deep into child views.
 private struct SocialGraphTarget: Identifiable, Equatable {
     let id: String
     let user: String
@@ -785,13 +789,10 @@ private struct DashboardView: View {
     @ViewBuilder
     private func dashboardArt(_ urlString: String?, size: CGFloat = 120) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    placeholderFill
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                placeholderFill
             }
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -929,13 +930,7 @@ private struct DashboardView: View {
         LazyVGrid(columns: metrics.similarArtistColumns, alignment: .leading, spacing: 14) {
             ForEach(artists) { item in
                 VStack(alignment: .leading, spacing: 4) {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(placeholderFill)
-                        .frame(width: metrics.isNarrow ? 64 : 72, height: metrics.isNarrow ? 64 : 72)
-                        .overlay(
-                            Image(systemName: "waveform")
-                                .foregroundStyle(.secondary)
-                        )
+                    dashboardArt(item.imageURL, size: metrics.isNarrow ? 64 : 72)
                     Text(item.name)
                         .font(.custom("Avenir Next Medium", size: metrics.isNarrow ? 13 : 14))
                         .lineLimit(2)
@@ -992,18 +987,15 @@ private struct DashboardView: View {
                 endPoint: .bottomTrailing
             )
             if let urlString, let url = URL(string: urlString) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case let .success(image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .blur(radius: 30)
-                            .saturation(0.72)
-                            .opacity(colorScheme == .dark ? 0.34 : 0.22)
-                    default:
-                        Color.clear
-                    }
+                CachedAsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .blur(radius: 30)
+                        .saturation(0.72)
+                        .opacity(colorScheme == .dark ? 0.34 : 0.22)
+                } placeholder: {
+                    Color.clear
                 }
             }
             // The mood engine picks a tag-driven palette and then folds dominant
@@ -1506,13 +1498,10 @@ private struct ExploreView: View {
     @ViewBuilder
     private func trackArt(_ urlString: String?, size: CGFloat = 110) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    Color.white.opacity(0.06)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                Color.white.opacity(0.06)
             }
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -1684,13 +1673,10 @@ private struct ProfileView: View {
     @ViewBuilder
     private func artistImage(_ urlString: String?, size: CGFloat) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    Color.white.opacity(0.06)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                Color.white.opacity(0.06)
             }
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
@@ -1861,13 +1847,10 @@ private struct ScrobblesView: View {
     @ViewBuilder
     private func scrobbleArtwork(_ urlString: String?, nowPlaying: Bool) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    fallbackScrobbleArtwork(nowPlaying: nowPlaying)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                fallbackScrobbleArtwork(nowPlaying: nowPlaying)
             }
             .frame(width: 32, height: 32)
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
@@ -2318,13 +2301,7 @@ private struct ScrobbleDetailPanel: View {
         return LazyVGrid(columns: columns, alignment: .leading, spacing: 14) {
             ForEach(artists.prefix(compact ? 6 : 8)) { artist in
                 VStack(alignment: .leading, spacing: 4) {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(Color.white.opacity(0.06))
-                        .frame(width: 74, height: 74)
-                        .overlay(
-                            Image(systemName: "waveform")
-                                .foregroundStyle(.secondary)
-                        )
+                    artworkThumbnail(artist.imageURL, size: 74)
                     Text(artist.name)
                         .font(.custom("Avenir Next Medium", size: 12))
                         .lineLimit(2)
@@ -2395,13 +2372,10 @@ private struct ScrobbleDetailPanel: View {
     private func artwork(size: CGFloat = 180) -> some View {
         if let urlString = detailArtworkURL,
            let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    Color.white.opacity(0.06)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                Color.white.opacity(0.06)
             }
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -2415,13 +2389,10 @@ private struct ScrobbleDetailPanel: View {
     @ViewBuilder
     private func artistArt(_ urlString: String?, size: CGFloat = 180) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    Color.white.opacity(0.06)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                Color.white.opacity(0.06)
             }
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -2509,13 +2480,10 @@ private struct ScrobbleDetailPanel: View {
     @ViewBuilder
     private func artworkThumbnail(_ urlString: String?, size: CGFloat) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    Color.white.opacity(0.06)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                Color.white.opacity(0.06)
             }
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -3349,7 +3317,7 @@ private struct ChartsView: View {
                 if !snapshot.listeningActivity.isEmpty {
                     Text("Listening Activity")
                         .font(.custom("Avenir Next Demi Bold", size: metrics.sectionCountFont - 4))
-                    listeningActivityChart(snapshot.listeningActivity)
+                    listeningActivityChart(snapshot.listeningActivity, range: snapshot.range)
                 }
 
                 if !snapshot.topRecordings.isEmpty {
@@ -3545,42 +3513,63 @@ private struct ChartsView: View {
         .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
-    private func listeningActivityChart(_ activity: [ListenBrainzListeningActivity]) -> some View {
+    private func listeningActivityChart(_ activity: [ListenBrainzListeningActivity], range: ListenBrainzStatsRange) -> some View {
         let visible = Array(activity.suffix(28))
         let maxCount = max(visible.map(\.listenCount).max() ?? 1, 1)
 
-        return HStack(alignment: .bottom, spacing: 5) {
-            ForEach(visible) { entry in
-                VStack(spacing: 4) {
-                    RoundedRectangle(cornerRadius: 3, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.accentColor.opacity(0.9), Color.cyan.opacity(0.72)],
-                                startPoint: .bottom,
-                                endPoint: .top
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .bottom, spacing: 5) {
+                ForEach(visible) { entry in
+                    VStack(spacing: 4) {
+                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.accentColor.opacity(0.9), Color.cyan.opacity(0.72)],
+                                    startPoint: .bottom,
+                                    endPoint: .top
+                                )
                             )
-                        )
-                        .frame(height: max(8, CGFloat(entry.listenCount) / CGFloat(maxCount) * 118))
-                        .help("\(entry.label): \(entry.listenCount.formatted()) listens")
-                    Text(shortActivityLabel(entry))
-                        .font(.custom("Avenir Next Medium", size: 9))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .frame(width: 26)
+                            .frame(height: max(8, CGFloat(entry.listenCount) / CGFloat(maxCount) * 118))
+                            .help("\(entry.label): \(entry.listenCount.formatted()) listens")
+                        Text(shortActivityLabel(entry, range: range))
+                            .font(.custom("Avenir Next Medium", size: 9))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .frame(width: 30)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .bottom)
                 }
-                .frame(maxWidth: .infinity, alignment: .bottom)
             }
+            .frame(height: 152)
+            HStack {
+                Text("X-axis: \(activityAxisLabel(for: range))")
+                Spacer()
+                Text("Y-axis: listens")
+            }
+            .font(.custom("Avenir Next Medium", size: 10))
+            .foregroundStyle(.secondary)
         }
-        .frame(height: 152)
         .padding(10)
         .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
-    private func shortActivityLabel(_ activity: ListenBrainzListeningActivity) -> String {
+    private func shortActivityLabel(_ activity: ListenBrainzListeningActivity, range: ListenBrainzStatsRange) -> String {
         if let from = activity.from {
+            if range == .year || range == .allTime {
+                return from.formatted(.dateTime.month(.abbreviated))
+            }
             return from.formatted(.dateTime.day())
         }
         return String(activity.label.prefix(3))
+    }
+
+    private func activityAxisLabel(for range: ListenBrainzStatsRange) -> String {
+        switch range {
+        case .week, .month:
+            return "days"
+        case .year, .allTime:
+            return "months"
+        }
     }
 
     private func artistOriginRow(_ entry: ListenBrainzArtistMapEntry, max: Int) -> some View {
@@ -3665,13 +3654,10 @@ private struct ChartsView: View {
     @ViewBuilder
     private func cover(_ urlString: String?, size: CGFloat, placeholder: String? = nil) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    coverPlaceholder(size: size, text: placeholder)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                coverPlaceholder(size: size, text: placeholder)
             }
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -4788,10 +4774,20 @@ private func presentVaultError(_ error: Error) {
 }
 
 private struct ListenBrainzSocialView: View {
+    private enum SocialSection: String, CaseIterable, Identifiable {
+        case people = "People"
+        case activity = "Activity"
+        case recommendations = "Recommendations"
+        case playlists = "Playlists"
+
+        var id: String { rawValue }
+    }
+
     @EnvironmentObject private var scrobbleService: ScrobbleService
     @State private var usernameToFollow = ""
     @State private var usernameToCompare = ""
     @State private var playlistTitle = "OpenScrobbler Picks"
+    @State private var selectedSection: SocialSection = .people
     let onOpenRecommendation: (ListenBrainzRecommendedRecording) -> Void
     let onShareRecommendation: (ListenBrainzRecommendedRecording) -> Void
     let onRecommendToFollowers: (ListenBrainzRecommendedRecording) -> Void
@@ -4820,177 +4816,16 @@ private struct ListenBrainzSocialView: View {
                     .buttonStyle(.borderedProminent)
                 }
 
-                statusCard(
-                    title: "Social Graph",
-                    status: scrobbleService.listenBrainzSocialStatus,
-                    counts: [
-                        ("Followers", scrobbleService.listenBrainzFollowers.count),
-                        ("Following", scrobbleService.listenBrainzFollowing.count),
-                        ("Similar", scrobbleService.listenBrainzSimilarUsers.count),
-                        ("Listens", scrobbleService.listenBrainzSocialListens.count)
-                    ]
-                )
+                socialOverview
 
-                statusCard(
-                    title: "Compatibility",
-                    status: scrobbleService.listenBrainzCompatibilityStatus,
-                    counts: [
-                        ("Shared artists", scrobbleService.listenBrainzCompatibility?.sharedArtists.count ?? 0)
-                    ]
-                )
-
-                statusCard(
-                    title: "Recommendations",
-                    status: scrobbleService.listenBrainzRecommendationsStatus,
-                    counts: [
-                        ("Available", scrobbleService.listenBrainzRecommendations.count)
-                    ]
-                )
-
-                statusCard(
-                    title: "Pins",
-                    status: scrobbleService.listenBrainzPinsStatus,
-                    counts: [
-                        ("History", scrobbleService.listenBrainzPinnedHistory.count),
-                        ("Following", scrobbleService.listenBrainzFollowingPins.count)
-                    ]
-                )
-
-                statusCard(
-                    title: "Playlists",
-                    status: scrobbleService.listenBrainzPlaylistsStatus,
-                    counts: [
-                        ("Own", scrobbleService.listenBrainzPlaylists.count),
-                        ("Recommended", scrobbleService.listenBrainzRecommendationPlaylists.count)
-                    ]
-                )
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Follow Someone")
-                        .font(.custom("Avenir Next Demi Bold", size: 16))
-                    HStack(spacing: 10) {
-                        TextField("ListenBrainz username", text: $usernameToFollow)
-                            .textFieldStyle(.roundedBorder)
-                        Button("Follow") {
-                            let target = usernameToFollow
-                            Task { await scrobbleService.followListenBrainz(user: target) }
-                            usernameToFollow = ""
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(usernameToFollow.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    }
-                    Text(scrobbleService.listenBrainzSocialStatus)
-                        .font(.custom("Avenir Next Medium", size: 12))
-                        .foregroundStyle(.secondary)
-                }
-                .appPanelStyle()
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Compare Archives")
-                        .font(.custom("Avenir Next Demi Bold", size: 16))
-                    HStack(spacing: 10) {
-                        TextField("ListenBrainz username", text: $usernameToCompare)
-                            .textFieldStyle(.roundedBorder)
-                        Button("Compare") {
-                            let target = usernameToCompare
-                            Task { await scrobbleService.refreshListenBrainzCompatibility(targetUser: target) }
-                            usernameToCompare = ""
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(usernameToCompare.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    }
-                    compatibilitySummaryCard
-                }
-                .appPanelStyle()
-
-                HStack(alignment: .top, spacing: 14) {
-                    socialColumn(
-                        title: "Followers",
-                        subtitle: "People who can receive your personal recommendations.",
-                        users: scrobbleService.listenBrainzFollowers,
-                        actionTitle: nil,
-                        action: nil
-                    )
-
-                    socialColumn(
-                        title: "Following",
-                        subtitle: "People you follow on ListenBrainz.",
-                        users: scrobbleService.listenBrainzFollowing,
-                        actionTitle: "Unfollow",
-                        action: { user in
-                            Task { await scrobbleService.unfollowListenBrainz(user: user) }
-                        }
-                    )
-                }
-
-                socialColumn(
-                    title: "Similar Users",
-                    subtitle: "Official ListenBrainz compatibility candidates.",
-                    users: scrobbleService.listenBrainzSimilarUsers.map(\.userName),
-                    actionTitle: "Compare",
-                    action: { user in
-                        Task { await scrobbleService.refreshListenBrainzCompatibility(targetUser: user) }
-                    }
-                )
-
-                socialListenActivityCard
-
-                HStack(alignment: .top, spacing: 14) {
-                    currentPinCard
-                    playlistBuilderCard
-                }
-
-                HStack(alignment: .top, spacing: 14) {
-                    pinColumn(
-                        title: "Pin History",
-                        subtitle: "Your recent pinned recordings.",
-                        pins: scrobbleService.listenBrainzPinnedHistory
-                    )
-
-                    pinColumn(
-                        title: "Following Pins",
-                        subtitle: "Active pins from people you follow.",
-                        pins: scrobbleService.listenBrainzFollowingPins
-                    )
-                }
-
-                HStack(alignment: .top, spacing: 14) {
-                    playlistColumn(
-                        title: "Your Playlists",
-                        subtitle: "Metadata pulled from ListenBrainz.",
-                        playlists: scrobbleService.listenBrainzPlaylists
-                    )
-
-                    playlistColumn(
-                        title: "Recommendation Playlists",
-                        subtitle: "Algorithmic or highlighted recommendation lists.",
-                        playlists: scrobbleService.listenBrainzRecommendationPlaylists
-                    )
-                }
-
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Text("Recommended For You")
-                            .font(.custom("Avenir Next Demi Bold", size: 18))
-                        Spacer()
-                        Text("Use Share to Vault for local curation, or Recommend to send directly to followers.")
-                            .font(.custom("Avenir Next Medium", size: 11))
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if scrobbleService.listenBrainzRecommendations.isEmpty {
-                        Text("No recommendations loaded yet.")
-                            .font(.custom("Avenir Next Regular", size: 13))
-                            .foregroundStyle(.secondary)
-                    } else {
-                        LazyVStack(alignment: .leading, spacing: 8) {
-                            ForEach(scrobbleService.listenBrainzRecommendations) { recommendation in
-                                recommendationRow(recommendation)
-                            }
-                        }
+                Picker("Social Section", selection: $selectedSection) {
+                    ForEach(SocialSection.allCases) { section in
+                        Text(section.rawValue).tag(section)
                     }
                 }
-                .appPanelStyle()
+                .pickerStyle(.segmented)
+
+                selectedSocialSection
             }
             .padding(24)
         }
@@ -5012,6 +4847,193 @@ private struct ListenBrainzSocialView: View {
                 await scrobbleService.refreshListenBrainzPlaylists()
             }
         }
+    }
+
+    private var socialOverview: some View {
+        HStack(spacing: 10) {
+            compactMetric("Followers", scrobbleService.listenBrainzFollowers.count)
+            compactMetric("Following", scrobbleService.listenBrainzFollowing.count)
+            compactMetric("Similar", scrobbleService.listenBrainzSimilarUsers.count)
+            compactMetric("Recs", scrobbleService.listenBrainzRecommendations.count)
+            compactMetric("Playlists", scrobbleService.listenBrainzPlaylists.count + scrobbleService.listenBrainzRecommendationPlaylists.count)
+        }
+        .appPanelStyle()
+    }
+
+    @ViewBuilder
+    private var selectedSocialSection: some View {
+        switch selectedSection {
+        case .people:
+            peopleSection
+        case .activity:
+            activitySection
+        case .recommendations:
+            recommendationsSection
+        case .playlists:
+            playlistsSection
+        }
+    }
+
+    private var peopleSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 14) {
+                followCard
+                compareCard
+            }
+
+            HStack(alignment: .top, spacing: 14) {
+                socialColumn(
+                    title: "Followers",
+                    subtitle: "People who can receive your personal recommendations.",
+                    users: scrobbleService.listenBrainzFollowers,
+                    actionTitle: nil,
+                    action: nil
+                )
+
+                socialColumn(
+                    title: "Following",
+                    subtitle: "People you follow on ListenBrainz.",
+                    users: scrobbleService.listenBrainzFollowing,
+                    actionTitle: "Unfollow",
+                    action: { user in
+                        Task { await scrobbleService.unfollowListenBrainz(user: user) }
+                    }
+                )
+            }
+
+            socialColumn(
+                title: "Similar Users",
+                subtitle: "Official ListenBrainz compatibility candidates.",
+                users: scrobbleService.listenBrainzSimilarUsers.map(\.userName),
+                actionTitle: "Compare",
+                action: { user in
+                    Task { await scrobbleService.refreshListenBrainzCompatibility(targetUser: user) }
+                }
+            )
+        }
+    }
+
+    private var activitySection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            socialListenActivityCard
+            HStack(alignment: .top, spacing: 14) {
+                currentPinCard
+                pinColumn(
+                    title: "Following Pins",
+                    subtitle: "Active pins from people you follow.",
+                    pins: scrobbleService.listenBrainzFollowingPins
+                )
+            }
+        }
+    }
+
+    private var recommendationsSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 14) {
+                currentPinCard
+                playlistBuilderCard
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Recommended For You")
+                    .font(.custom("Avenir Next Demi Bold", size: 18))
+
+                if scrobbleService.listenBrainzRecommendations.isEmpty {
+                    Text("No recommendations loaded yet.")
+                        .font(.custom("Avenir Next Regular", size: 13))
+                        .foregroundStyle(.secondary)
+                } else {
+                    LazyVStack(alignment: .leading, spacing: 8) {
+                        ForEach(scrobbleService.listenBrainzRecommendations) { recommendation in
+                            recommendationRow(recommendation)
+                        }
+                    }
+                }
+            }
+            .appPanelStyle()
+        }
+    }
+
+    private var playlistsSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 14) {
+                playlistBuilderCard
+                pinColumn(
+                    title: "Pin History",
+                    subtitle: "Your recent pinned recordings.",
+                    pins: scrobbleService.listenBrainzPinnedHistory
+                )
+            }
+
+            HStack(alignment: .top, spacing: 14) {
+                playlistColumn(
+                    title: "Your Playlists",
+                    subtitle: "Metadata pulled from ListenBrainz.",
+                    playlists: scrobbleService.listenBrainzPlaylists
+                )
+
+                playlistColumn(
+                    title: "Recommendation Playlists",
+                    subtitle: "Algorithmic or highlighted recommendation lists.",
+                    playlists: scrobbleService.listenBrainzRecommendationPlaylists
+                )
+            }
+        }
+    }
+
+    private var followCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Follow Someone")
+                .font(.custom("Avenir Next Demi Bold", size: 16))
+            HStack(spacing: 10) {
+                TextField("ListenBrainz username", text: $usernameToFollow)
+                    .textFieldStyle(.roundedBorder)
+                Button("Follow") {
+                    let target = usernameToFollow
+                    Task { await scrobbleService.followListenBrainz(user: target) }
+                    usernameToFollow = ""
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(usernameToFollow.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+            Text(scrobbleService.listenBrainzSocialStatus)
+                .font(.custom("Avenir Next Medium", size: 12))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .appPanelStyle()
+    }
+
+    private var compareCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Compare Archives")
+                .font(.custom("Avenir Next Demi Bold", size: 16))
+            HStack(spacing: 10) {
+                TextField("ListenBrainz username", text: $usernameToCompare)
+                    .textFieldStyle(.roundedBorder)
+                Button("Compare") {
+                    let target = usernameToCompare
+                    Task { await scrobbleService.refreshListenBrainzCompatibility(targetUser: target) }
+                    usernameToCompare = ""
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(usernameToCompare.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+            compatibilitySummaryCard
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .appPanelStyle()
+    }
+
+    private func compactMetric(_ label: String, _ value: Int) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label)
+                .font(.custom("Avenir Next Medium", size: 11))
+                .foregroundStyle(.secondary)
+            Text(value.formatted())
+                .font(.custom("Avenir Next Demi Bold", size: 18))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var compatibilitySummaryCard: some View {
@@ -5117,9 +5139,7 @@ private struct ListenBrainzSocialView: View {
 
     private func socialListenRow(_ activity: ListenBrainzSocialListen) -> some View {
         HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "waveform.path.ecg")
-                .foregroundStyle(Color.accentColor)
-                .frame(width: 24)
+            socialListenArtwork(activity.listen.imageURL)
             VStack(alignment: .leading, spacing: 3) {
                 Text(activity.listen.trackName)
                     .font(.custom("Avenir Next Demi Bold", size: 13))
@@ -5154,6 +5174,32 @@ private struct ListenBrainzSocialView: View {
                 )
             )
         }
+    }
+
+    @ViewBuilder
+    private func socialListenArtwork(_ urlString: String?) -> some View {
+        if let urlString, let url = URL(string: urlString) {
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                socialListenArtworkPlaceholder
+            }
+            .frame(width: 34, height: 34)
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        } else {
+            socialListenArtworkPlaceholder
+        }
+    }
+
+    private var socialListenArtworkPlaceholder: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(Color.white.opacity(0.06))
+            Image(systemName: "waveform.path.ecg")
+                .foregroundStyle(Color.accentColor)
+                .font(.system(size: 14, weight: .semibold))
+        }
+        .frame(width: 34, height: 34)
     }
 
     private var playlistBuilderCard: some View {
@@ -5576,13 +5622,10 @@ private struct FriendsView: View {
     @ViewBuilder
     private func friendAvatar(_ urlString: String?, isNowPlaying: Bool) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    fallbackFriendAvatar(isNowPlaying: isNowPlaying)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                fallbackFriendAvatar(isNowPlaying: isNowPlaying)
             }
             .frame(width: 28, height: 28)
             .clipShape(Circle())
@@ -5602,13 +5645,10 @@ private struct FriendsView: View {
     @ViewBuilder
     private func friendTrackArtwork(_ urlString: String?, isNowPlaying: Bool) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    fallbackFriendTrackArtwork(isNowPlaying: isNowPlaying)
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                fallbackFriendTrackArtwork(isNowPlaying: isNowPlaying)
             }
             .frame(width: 26, height: 26)
             .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
@@ -5898,13 +5938,10 @@ private struct NeighboursView: View {
     @ViewBuilder
     private func avatar(_ urlString: String?) -> some View {
         if let urlString, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case let .success(image):
-                    image.resizable().scaledToFill()
-                default:
-                    fallbackAvatar()
-                }
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                fallbackAvatar()
             }
             .frame(width: 40, height: 40)
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
@@ -6309,6 +6346,50 @@ private struct AppBackdrop: View {
             .minimumScaleFactor(0.7)
             .blur(radius: colorScheme == .dark ? 24 : 20)
             .drawingGroup()
+    }
+}
+
+private struct CachedAsyncImage<Content: View, Placeholder: View>: View {
+    let url: URL
+    let content: (Image) -> Content
+    let placeholder: () -> Placeholder
+    @State private var image: NSImage?
+    @State private var failed = false
+
+    var body: some View {
+        Group {
+            if let image {
+                content(Image(nsImage: image))
+            } else {
+                placeholder()
+            }
+        }
+        .task(id: url) {
+            await load()
+        }
+    }
+
+    private func load() async {
+        guard image == nil, !failed else { return }
+        let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 18)
+
+        if let cached = URLCache.shared.cachedResponse(for: request),
+           let decoded = NSImage(data: cached.data) {
+            image = decoded
+            return
+        }
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let decoded = NSImage(data: data) else {
+                failed = true
+                return
+            }
+            URLCache.shared.storeCachedResponse(CachedURLResponse(response: response, data: data), for: request)
+            image = decoded
+        } catch {
+            failed = true
+        }
     }
 }
 

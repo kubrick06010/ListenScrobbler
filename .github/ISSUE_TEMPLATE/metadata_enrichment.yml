@@ -1,0 +1,44 @@
+name: Metadata enrichment issue
+description: Report missing or incorrect song, artist, release, artwork, or ListenBrainz context.
+title: "[Metadata]: "
+labels:
+  - metadata
+body:
+  - type: textarea
+    id: item
+    attributes:
+      label: Track, artist, or release
+      description: Include the exact names shown in OpenScrobbler.
+      placeholder: |
+        Track: Screen
+        Artist: Visible Cloaks
+        Release: Reassemblage
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong?
+      description: Artwork missing, wrong MusicBrainz match, missing listen counts, similar artists absent, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected metadata
+      description: Add expected MusicBrainz MBIDs, ListenBrainz links, release artwork, or other reliable references if you have them.
+  - type: dropdown
+    id: source
+    attributes:
+      label: Affected source
+      options:
+        - ListenBrainz
+        - MusicBrainz
+        - Cover Art Archive
+        - Apple Music or Spotify player payload
+        - Unknown
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy check
+      description: Confirm that any screenshots or logs have tokens and private listening history removed.

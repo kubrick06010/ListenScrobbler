@@ -14,6 +14,8 @@ struct OpenMusicEntityDetails: Equatable {
     let artistMBID: String?
     let releaseMBID: String?
     let imageURL: String?
+    let artistImageURL: String?
+    let artistSummary: String?
     let disambiguation: String?
     let country: String?
     let type: String?
@@ -26,6 +28,10 @@ struct OpenMusicEntityDetails: Equatable {
 }
 
 final class MusicBrainzService {
+    // OpenScrobbler treats MusicBrainz as the identity layer and supplements it
+    // with Cover Art Archive, Wikidata, and Wikipedia. If a future contributor
+    // adds Discogs/AcousticBrainz/etc., prefer enriching this open entity value
+    // rather than leaking more provider-specific models into SwiftUI.
     private let baseURL: URL
     private let coverArtBaseURL: URL
     private let urlSession: URLSession
@@ -41,6 +47,8 @@ final class MusicBrainzService {
     }
 
     func lookup(track: String?, artist: String, release: String?) async throws -> OpenMusicEntityDetails {
+        // Run broad searches in parallel; MusicBrainz data can be sparse, so the
+        // result is assembled from the best recording, artist, and release match.
         async let recording = track.flatMap { title in
             Task { try await searchRecording(title: title, artist: artist, release: release) }
         }?.value
@@ -63,6 +71,7 @@ final class MusicBrainzService {
         } else {
             imageURL = nil
         }
+        let artistSupplement = await fetchArtistSupplement(from: resolvedArtist)
         var resolvedTags: [MusicBrainzTag] = []
         if let recordingTags = resolvedRecording?.tags {
             resolvedTags.append(contentsOf: recordingTags)
@@ -86,6 +95,8 @@ final class MusicBrainzService {
             artistMBID: artistMBID,
             releaseMBID: releaseMBID,
             imageURL: imageURL,
+            artistImageURL: artistSupplement.imageURL,
+            artistSummary: artistSupplement.summary,
             disambiguation: resolvedRecording?.disambiguation?.nilIfBlank ?? resolvedArtist?.disambiguation?.nilIfBlank,
             country: resolvedArtist?.country?.nilIfBlank,
             type: resolvedArtist?.type?.nilIfBlank ?? resolvedRelease?.status?.nilIfBlank,
@@ -94,7 +105,7 @@ final class MusicBrainzService {
         )
     }
 
-    private func fetchCoverArt(releaseMBID: String) async throws -> String? {
+    func fetchCoverArt(releaseMBID: String) async throws -> String? {
         let url = coverArtBaseURL.appendingPathComponent(releaseMBID)
         var request = URLRequest(url: url)
         request.setValue("OpenScrobbler/0.1.0 ( https://github.com/openscrobbler )", forHTTPHeaderField: "User-Agent")
@@ -149,9 +160,34 @@ final class MusicBrainzService {
         let response: ArtistSearchResponse = try await search(
             entity: "artist",
             query: "artist:\(quoted(name))",
-            includes: "tags"
+            includes: "tags+url-rels"
         )
         return response.artists.first
+    }
+
+    func fetchArtistArtwork(artistMBID: String?, artistName: String?) async -> String? {
+        let artist: MusicBrainzArtist?
+        if let artistMBID = artistMBID?.nilIfBlank {
+            artist = try? await lookupArtist(id: artistMBID)
+        } else if let artistName = artistName?.nilIfBlank {
+            artist = try? await searchArtist(name: artistName)
+        } else {
+            artist = nil
+        }
+        return await fetchArtistSupplement(from: artist).imageURL
+    }
+
+    private func lookupArtist(id: String) async throws -> MusicBrainzArtist {
+        var components = URLComponents(
+            url: baseURL.appendingPathComponent("artist").appendingPathComponent(id),
+            resolvingAgainstBaseURL: false
+        )
+        components?.queryItems = [
+            URLQueryItem(name: "fmt", value: "json"),
+            URLQueryItem(name: "inc", value: "tags+url-rels")
+        ]
+        guard let url = components?.url else { throw MusicBrainzError.invalidResponse }
+        return try await fetchJSON(url: url)
     }
 
     private func searchRelease(title: String, artist: String) async throws -> MusicBrainzRelease? {
@@ -188,6 +224,73 @@ final class MusicBrainzService {
             throw MusicBrainzError.api(message: "MusicBrainz returned HTTP \(http.statusCode).")
         }
         return try JSONDecoder().decode(T.self, from: data)
+    }
+
+    private func fetchJSON<T: Decodable>(url: URL) async throws -> T {
+        var request = URLRequest(url: url)
+        request.setValue("OpenScrobbler/0.1.0 ( https://github.com/openscrobbler )", forHTTPHeaderField: "User-Agent")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let (data, response) = try await urlSession.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw MusicBrainzError.invalidResponse
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            throw MusicBrainzError.api(message: "Open metadata endpoint returned HTTP \(http.statusCode).")
+        }
+        return try JSONDecoder().decode(T.self, from: data)
+    }
+
+    private func fetchArtistSupplement(from artist: MusicBrainzArtist?) async -> MusicBrainzArtistSupplement {
+        // MusicBrainz does not host artist photos or prose. Wikidata relations
+        // let us discover a Commons image and Wikipedia summary while staying in
+        // the open-data ecosystem.
+        guard let wikidataID = artist?.wikidataID else {
+            return .empty
+        }
+        guard let entity = try? await fetchWikidataEntity(id: wikidataID) else {
+            return .empty
+        }
+
+        async let summary = fetchWikipediaSummary(title: entity.englishWikipediaTitle)
+        let imageURL = entity.imageFileName.flatMap(commonsImageURL(fileName:))
+        return MusicBrainzArtistSupplement(
+            imageURL: imageURL,
+            summary: await summary?.nilIfBlank
+        )
+    }
+
+    private func fetchWikidataEntity(id: String) async throws -> WikidataEntitySummary {
+        let url = URL(string: "https://www.wikidata.org/wiki/Special:EntityData/\(id).json")!
+        let response: WikidataEntityDataResponse = try await fetchJSON(url: url)
+        guard let entity = response.entities[id] else {
+            throw MusicBrainzError.invalidResponse
+        }
+        return WikidataEntitySummary(
+            englishWikipediaTitle: entity.sitelinks?["enwiki"]?.title,
+            imageFileName: entity.claims?["P18"]?.first?.mainsnak.datavalue?.value
+        )
+    }
+
+    private func fetchWikipediaSummary(title: String?) async -> String? {
+        guard let title = title?.nilIfBlank else { return nil }
+        var allowed = CharacterSet.urlPathAllowed
+        allowed.remove(charactersIn: "#?")
+        guard let encoded = title.addingPercentEncoding(withAllowedCharacters: allowed),
+              let url = URL(string: "https://en.wikipedia.org/api/rest_v1/page/summary/\(encoded)") else {
+            return nil
+        }
+        let response: WikipediaSummaryResponse? = try? await fetchJSON(url: url)
+        return response?.extract
+    }
+
+    private func commonsImageURL(fileName: String) -> String? {
+        var allowed = CharacterSet.urlPathAllowed
+        allowed.remove(charactersIn: "#?")
+        guard let encoded = fileName.addingPercentEncoding(withAllowedCharacters: allowed) else {
+            return nil
+        }
+        return "https://commons.wikimedia.org/wiki/Special:FilePath/\(encoded)?width=640"
     }
 
     private func quoted(_ value: String) -> String {
@@ -281,6 +384,15 @@ private struct MusicBrainzArtist: Decodable {
     let country: String?
     let type: String?
     let tags: [MusicBrainzTag]?
+    let relations: [MusicBrainzRelation]?
+
+    var wikidataID: String? {
+        relations?
+            .lazy
+            .filter { $0.type == "wikidata" }
+            .compactMap { $0.url?.resource.wikidataEntityID }
+            .first
+    }
 }
 
 private struct MusicBrainzRelease: Decodable {
@@ -303,6 +415,74 @@ private struct CoverArtArchiveImage: Decodable {
     let image: String?
     let front: Bool?
     let thumbnails: [String: String]?
+}
+
+private struct MusicBrainzRelation: Decodable {
+    let type: String?
+    let url: MusicBrainzRelationURL?
+}
+
+private struct MusicBrainzRelationURL: Decodable {
+    let resource: String
+}
+
+private struct MusicBrainzArtistSupplement {
+    let imageURL: String?
+    let summary: String?
+
+    static let empty = MusicBrainzArtistSupplement(imageURL: nil, summary: nil)
+}
+
+private struct WikidataEntitySummary {
+    let englishWikipediaTitle: String?
+    let imageFileName: String?
+}
+
+private struct WikidataEntityDataResponse: Decodable {
+    let entities: [String: WikidataEntity]
+}
+
+private struct WikidataEntity: Decodable {
+    let sitelinks: [String: WikidataSitelink]?
+    let claims: [String: [WikidataClaim]]?
+}
+
+private struct WikidataSitelink: Decodable {
+    let title: String
+}
+
+private struct WikidataClaim: Decodable {
+    let mainsnak: WikidataMainSnak
+}
+
+private struct WikidataMainSnak: Decodable {
+    let datavalue: WikidataDataValue?
+}
+
+private struct WikidataDataValue: Decodable {
+    let value: String?
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        value = try? container.decode(String.self, forKey: .value)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case value
+    }
+}
+
+private struct WikipediaSummaryResponse: Decodable {
+    let extract: String?
+}
+
+private extension String {
+    var wikidataEntityID: String? {
+        guard let range = range(of: #"Q\d+"#, options: .regularExpression) else {
+            return nil
+        }
+        return String(self[range])
+    }
 }
 
 private extension Array where Element == String {

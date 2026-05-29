@@ -58,6 +58,9 @@ struct ListenBrainzStatsSnapshot: Equatable {
     let fetchedAt: Date
 }
 
+// ListenBrainz models are intentionally small and app-shaped. Keep raw API
+// payload structs private near the decoder layer, then expose stable values
+// that SwiftUI and tests can reason about without knowing endpoint quirks.
 struct ListenBrainzListeningActivity: Identifiable, Equatable {
     let id: String
     let label: String
@@ -99,6 +102,7 @@ struct ListenBrainzListen: Identifiable, Equatable {
     let recordingMBID: String?
     let artistMBID: String?
     let releaseMBID: String?
+    let imageURL: String?
 }
 
 struct ListenBrainzSocialListen: Identifiable, Equatable {
@@ -127,6 +131,7 @@ struct ListenBrainzSimilarArtist: Identifiable, Equatable {
     let name: String
     let totalListenCount: Int
     let isSeedArtist: Bool
+    let imageURL: String?
 }
 
 struct ListenBrainzRecommendedRecording: Identifiable, Equatable {
@@ -276,6 +281,9 @@ final class ListenBrainzTokenStore: ListenBrainzTokenStoring {
     init(fileManager: FileManager = .default, appSupportRoot: URL? = nil) {
         self.fileManager = fileManager
         let appSupport = appSupportRoot ?? fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        // Keep tokens out of UserDefaults. The boolean flag below is only for
+        // UI state; the token itself lives in an app-support file with narrow
+        // POSIX permissions so contributors can swap in Keychain later.
         let dir = appSupport.appendingPathComponent("OpenScrobbler", isDirectory: true)
             .appendingPathComponent("Secrets", isDirectory: true)
         try? fileManager.createDirectory(
@@ -323,6 +331,8 @@ final class ListenBrainzTokenStore: ListenBrainzTokenStoring {
 }
 
 final class ListenBrainzService {
+    // This client speaks ListenBrainz directly. It should stay free of UI state:
+    // ScrobbleService composes these calls into app workflows and fallbacks.
     private let settingsStore: ListenBrainzSettingsStore
     private let urlSession: URLSession
     private let sleep: @Sendable (UInt64) async -> Void
@@ -482,7 +492,8 @@ final class ListenBrainzService {
                 listenedAt: listen.listenedAt.map { Date(timeIntervalSince1970: TimeInterval($0)) },
                 recordingMBID: additional?.recordingMBID?.nilIfBlank,
                 artistMBID: additional?.artistMBIDs?.first?.nilIfBlank,
-                releaseMBID: additional?.releaseMBID?.nilIfBlank
+                releaseMBID: additional?.releaseMBID?.nilIfBlank,
+                imageURL: coverArtURL(releaseMBID: additional?.releaseMBID)
             )
         }
     }
@@ -643,7 +654,8 @@ final class ListenBrainzService {
                     artistMbid: artistMbid,
                     name: name,
                     totalListenCount: score,
-                    isSeedArtist: artistMbid == seedArtistMBID
+                    isSeedArtist: artistMbid == seedArtistMBID,
+                    imageURL: nil
                 )
             )
         }

@@ -73,6 +73,9 @@ final class VaultFileStore {
 
 @MainActor
 final class SharedMusicVaultStore: ObservableObject {
+    // Vaults are local-first by design. They preserve enough MusicBrainz/JSPF
+    // metadata that archived shares can later become portable playlists or
+    // imported records without depending on a single social provider.
     @Published private(set) var entries: [SharedMusicEntry] = []
     @Published private(set) var status = "Shared vault ready."
 
@@ -139,6 +142,9 @@ final class SharedMusicVaultStore: ObservableObject {
     func importJSPF(from url: URL) throws {
         let bundle = try files.readBundle(OpenPlaylistBundle.self, from: url)
         let imported = bundle.playlist.track.compactMap { track -> SharedMusicEntry? in
+            // JSPF extension payloads carry MusicBrainz IDs without making the
+            // playlist unreadable to other tools. Keep this path permissive so
+            // community-exported playlists can round-trip through the vault.
             let mbids = track.extension?["https://musicbrainz.org/doc/jspf#track"]
             let artistName = track.creator?.nilIfBlank ?? "Unknown artist"
             let trackTitle = track.title?.nilIfBlank ?? "Unknown track"

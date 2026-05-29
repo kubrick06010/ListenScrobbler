@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: ListenBrainz documentation
+    url: https://listenbrainz.readthedocs.io/
+    about: Reference for ListenBrainz account, listen submission, stats, and social endpoints.
+  - name: MusicBrainz documentation
+    url: https://musicbrainz.org/doc/MusicBrainz_API
+    about: Reference for MusicBrainz metadata, recordings, artists, releases, and identifiers.
