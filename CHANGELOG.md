@@ -14,6 +14,7 @@
 - Pinned tracks without MusicBrainz recording MBIDs by falling back to recent ListenBrainz recording MSIDs.
 - Deleted ListenBrainz pin history entries by row ID.
 - Resolved MusicBrainz recordings when album-specific searches miss, and found compilation artwork when releases are not credited to the track artist.
+- Preferred the recording artist identity over ambiguous textual artist search results, preventing ListenBrainz enrichment from showing the wrong artist context.
 - Loaded enrichment requests in parallel so dashboard metadata and artwork appear sooner.
 
 ## 0.1.1 - 2026-05-29
