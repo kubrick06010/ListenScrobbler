@@ -65,17 +65,19 @@ final class MusicBrainzService {
         )
 
         let recordingMBID = resolvedRecording?.id
-        let artistMBID = resolvedRecording?.artistCredit?.first?.artist.id ?? resolvedArtist?.id
+        let recordingArtist = resolvedRecording?.artistCredit?.first?.artist
+        let artistIdentity = await artistIdentity(recordingArtist: recordingArtist, searchedArtist: resolvedArtist)
+        let artistMBID = artistIdentity?.id ?? recordingArtist?.id ?? resolvedArtist?.id
         let releaseMBID = selectedRelease?.id
         let releaseGroupMBID = selectedRelease?.releaseGroup?.id
         let resolvedReleaseName = release?.nilIfBlank ?? selectedRelease?.title
         let imageURL = await fetchBestCoverArt(releaseMBID: releaseMBID, releaseGroupMBID: releaseGroupMBID)
-        let artistSupplement = await fetchArtistSupplement(from: resolvedArtist)
+        let artistSupplement = await fetchArtistSupplement(from: artistIdentity)
         var resolvedTags: [MusicBrainzTag] = []
         if let recordingTags = resolvedRecording?.tags {
             resolvedTags.append(contentsOf: recordingTags)
         }
-        if let artistTags = resolvedArtist?.tags {
+        if let artistTags = artistIdentity?.tags {
             resolvedTags.append(contentsOf: artistTags)
         }
         if let releaseTags = resolvedRelease?.tags {
@@ -88,7 +90,7 @@ final class MusicBrainzService {
 
         return OpenMusicEntityDetails(
             trackName: track?.nilIfBlank ?? resolvedRecording?.title,
-            artistName: resolvedArtist?.name ?? resolvedRecording?.artistCredit?.first?.artist.name ?? artist,
+            artistName: artistIdentity?.name ?? recordingArtist?.name ?? artist,
             releaseName: resolvedReleaseName,
             recordingMBID: recordingMBID,
             artistMBID: artistMBID,
@@ -96,9 +98,9 @@ final class MusicBrainzService {
             imageURL: imageURL,
             artistImageURL: artistSupplement.imageURL,
             artistSummary: artistSupplement.summary,
-            disambiguation: resolvedRecording?.disambiguation?.nilIfBlank ?? resolvedArtist?.disambiguation?.nilIfBlank,
-            country: resolvedArtist?.country?.nilIfBlank,
-            type: resolvedArtist?.type?.nilIfBlank ?? resolvedRelease?.status?.nilIfBlank,
+            disambiguation: resolvedRecording?.disambiguation?.nilIfBlank ?? artistIdentity?.disambiguation?.nilIfBlank,
+            country: artistIdentity?.country?.nilIfBlank,
+            type: artistIdentity?.type?.nilIfBlank ?? resolvedRelease?.status?.nilIfBlank,
             tags: Array(tags.prefix(12)),
             links: links(recordingMBID: recordingMBID, artistMBID: artistMBID, releaseMBID: releaseMBID)
         )
@@ -212,6 +214,17 @@ final class MusicBrainzService {
         ]
         guard let url = components?.url else { throw MusicBrainzError.invalidResponse }
         return try await fetchJSON(url: url)
+    }
+
+    private func artistIdentity(
+        recordingArtist: MusicBrainzArtist?,
+        searchedArtist: MusicBrainzArtist?
+    ) async -> MusicBrainzArtist? {
+        guard let recordingArtist else { return searchedArtist }
+        guard recordingArtist.id != searchedArtist?.id else {
+            return searchedArtist ?? recordingArtist
+        }
+        return (try? await lookupArtist(id: recordingArtist.id)) ?? recordingArtist
     }
 
     private func searchRelease(title: String, artist: String) async throws -> MusicBrainzRelease? {

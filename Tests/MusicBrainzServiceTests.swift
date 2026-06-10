@@ -129,6 +129,47 @@ final class MusicBrainzServiceTests: XCTestCase {
         XCTAssertEqual(details.artistName, "Bochum Welt", "The broader retry must still keep the requested artist.")
     }
 
+    func testLookupPrefersRecordingArtistIdentityOverAmbiguousArtistSearch() async throws {
+        let service = makeService { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch request.url!.path {
+            case "/ws/2/recording":
+                return (response, Data(Self.panRecordingPayload.utf8))
+            case "/ws/2/artist":
+                return (response, Data(Self.tygersArtistSearchPayload.utf8))
+            case "/ws/2/artist/pan-artist-id":
+                return (response, Data(Self.panArtistLookupPayload.utf8))
+            case "/ws/2/release":
+                return (response, Data(Self.emptyReleasePayload.utf8))
+            case "/release/pan-release-id":
+                return (response, Data(Self.emptyCoverArtPayload.utf8))
+            default:
+                XCTFail("Unexpected path \(request.url!.path)")
+                return (response, Data())
+            }
+        }
+
+        let details = try await service.lookup(
+            track: "Leonardo Montes",
+            artist: "PAN",
+            release: "En Vivo en El Teatro Nacional"
+        )
+
+        XCTAssertEqual(details.trackName, "Leonardo Montes")
+        XCTAssertEqual(details.artistName, "PAN")
+        XCTAssertEqual(details.artistMBID, "pan-artist-id")
+        XCTAssertEqual(details.country, "VE")
+        XCTAssertEqual(details.type, "Group")
+        XCTAssertTrue(details.tags.contains("rap metal"))
+        XCTAssertFalse(details.tags.contains("nwobhm"))
+    }
+
     func testLookupFindsCompilationArtworkWhenReleaseIsNotCreditedToTrackArtist() async throws {
         // Given a compilation album where the release is not credited to the track artist.
         let service = makeService { request in
@@ -253,6 +294,12 @@ final class MusicBrainzServiceTests: XCTestCase {
     }
     """
 
+    private static let emptyCoverArtPayload = """
+    {
+      "images": []
+    }
+    """
+
     private static let ambiguousRecordingPayload = """
     {
       "recordings": [
@@ -322,6 +369,51 @@ final class MusicBrainzServiceTests: XCTestCase {
           "name": "Bochum Welt",
           "type": "Person"
         }
+      ]
+    }
+    """
+
+    private static let panRecordingPayload = """
+    {
+      "recordings": [
+        {
+          "id": "pan-recording-id",
+          "title": "Leonardo Montes",
+          "artist-credit": [
+            { "artist": { "id": "pan-artist-id", "name": "PAN" } }
+          ],
+          "releases": [
+            { "id": "pan-release-id", "title": "En Vivo en El Teatro Nacional", "status": "Official" }
+          ]
+        }
+      ]
+    }
+    """
+
+    private static let tygersArtistSearchPayload = """
+    {
+      "artists": [
+        {
+          "id": "tygers-artist-id",
+          "name": "Tygers of Pan Tang",
+          "country": "GB",
+          "type": "Group",
+          "tags": [
+            { "count": 2, "name": "nwobhm" }
+          ]
+        }
+      ]
+    }
+    """
+
+    private static let panArtistLookupPayload = """
+    {
+      "id": "pan-artist-id",
+      "name": "PAN",
+      "country": "VE",
+      "type": "Group",
+      "tags": [
+        { "count": 4, "name": "rap metal" }
       ]
     }
     """
