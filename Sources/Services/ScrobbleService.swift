@@ -1957,7 +1957,7 @@ final class ScrobbleService: ObservableObject {
         refreshListenBrainzState()
         guard listenBrainzEnabled else { return nil }
 
-        let username = listenBrainzUsername?.nilIfBlank
+        let activeListenBrainzUsername = listenBrainzUsername?.nilIfBlank
         async let recordingPopularity = firstPopularity(details.recordingMBID) { mbids in
             try await listenBrainz.fetchRecordingPopularity(recordingMBIDs: mbids)
         }
@@ -1967,35 +1967,23 @@ final class ScrobbleService: ObservableObject {
         async let releasePopularity = firstPopularity(details.releaseMBID) { mbids in
             try await listenBrainz.fetchReleasePopularity(releaseMBIDs: mbids)
         }
-        async let userRecordingCount: Int? = if let username {
-            await userRecordingListenCount(
-                username: username,
-                recordingMBID: details.recordingMBID,
-                track: details.trackName ?? track,
-                artist: details.artistName
-            )
-        } else {
-            nil
-        }
-        async let userArtistCount: Int? = if let username {
-            await userArtistListenCount(
-                username: username,
-                artistMBID: details.artistMBID,
-                artist: details.artistName.nilIfBlank ?? artist
-            )
-        } else {
-            nil
-        }
-        async let userReleaseCount: Int? = if let username {
-            await userReleaseListenCount(
-                username: username,
-                releaseMBID: details.releaseMBID,
-                release: details.releaseName ?? release,
-                artist: details.artistName.nilIfBlank ?? artist
-            )
-        } else {
-            nil
-        }
+        async let userRecordingCount = optionalUserRecordingListenCount(
+            username: activeListenBrainzUsername,
+            recordingMBID: details.recordingMBID,
+            track: details.trackName ?? track,
+            artist: details.artistName
+        )
+        async let userArtistCount = optionalUserArtistListenCount(
+            username: activeListenBrainzUsername,
+            artistMBID: details.artistMBID,
+            artist: details.artistName.nilIfBlank ?? artist
+        )
+        async let userReleaseCount = optionalUserReleaseListenCount(
+            username: activeListenBrainzUsername,
+            releaseMBID: details.releaseMBID,
+            release: details.releaseName ?? release,
+            artist: details.artistName.nilIfBlank ?? artist
+        )
         async let artistProfile = fetchArtistProfile(artistMBID: details.artistMBID)
         async let topRecordings = fetchPopularRecordings(artistMBID: details.artistMBID)
         async let similarArtists = fetchSimilarArtists(artistMBID: details.artistMBID)
@@ -2015,6 +2003,49 @@ final class ScrobbleService: ObservableObject {
             similarArtists: await similarArtists
         )
         return enrichment.hasUsefulData ? enrichment : nil
+    }
+
+    private func optionalUserRecordingListenCount(
+        username: String?,
+        recordingMBID: String?,
+        track: String?,
+        artist: String
+    ) async -> Int? {
+        guard let username else { return nil }
+        return await userRecordingListenCount(
+            username: username,
+            recordingMBID: recordingMBID,
+            track: track,
+            artist: artist
+        )
+    }
+
+    private func optionalUserArtistListenCount(
+        username: String?,
+        artistMBID: String?,
+        artist: String
+    ) async -> Int? {
+        guard let username else { return nil }
+        return await userArtistListenCount(
+            username: username,
+            artistMBID: artistMBID,
+            artist: artist
+        )
+    }
+
+    private func optionalUserReleaseListenCount(
+        username: String?,
+        releaseMBID: String?,
+        release: String?,
+        artist: String
+    ) async -> Int? {
+        guard let username else { return nil }
+        return await userReleaseListenCount(
+            username: username,
+            releaseMBID: releaseMBID,
+            release: release,
+            artist: artist
+        )
     }
 
     private func fetchArtistProfile(artistMBID: String?) async -> ListenBrainzArtistProfile? {
