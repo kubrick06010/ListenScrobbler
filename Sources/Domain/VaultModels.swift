@@ -100,12 +100,14 @@ struct ObsessionEntry: Codable, Identifiable, Equatable {
         case userCaptured
         case webImport
         case manualImport
+        case listenBrainzPin
 
         var displayName: String {
             switch self {
             case .userCaptured: return "Local"
             case .webImport: return "Web import"
             case .manualImport: return "File import"
+            case .listenBrainzPin: return "ListenBrainz pin"
             }
         }
     }

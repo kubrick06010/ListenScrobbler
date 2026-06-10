@@ -718,8 +718,8 @@ private struct DashboardView: View {
                                     }
                                 }
 
-                                if let profile = scrobbleService.currentOpenEnrichment?.artistProfile {
-                                    listenBrainzArtistProfile(profile, metrics: metrics)
+                                if let enrichment = scrobbleService.currentOpenEnrichment {
+                                    listenBrainzArtistContext(enrichment, metrics: metrics)
                                 }
 
                                 statGrid(metrics: metrics)
@@ -1155,23 +1155,35 @@ private struct DashboardView: View {
         return "Open artist metadata is still loading."
     }
 
-    private func listenBrainzArtistProfile(_ profile: ListenBrainzArtistProfile, metrics: DashboardMetrics) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private func listenBrainzArtistContext(_ enrichment: OpenListeningEnrichment, metrics: DashboardMetrics) -> some View {
+        let profile = enrichment.artistProfile
+        let details = scrobbleService.currentOpenEntityDetails
+        let tags = profile?.tags ?? details?.tags.map {
+            ListenBrainzArtistTag(id: $0.lowercased(), name: $0, count: 0)
+        } ?? []
+
+        return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Image(systemName: "waveform.path.ecg")
                     .foregroundStyle(.secondary)
-                Text("ListenBrainz Artist Profile")
+                Text("ListenBrainz Artist Context")
                     .font(.custom("Avenir Next Demi Bold", size: metrics.sectionTitleFont - 2))
                 Spacer()
             }
 
             LazyVGrid(columns: metrics.statColumns, alignment: .leading, spacing: 10) {
-                profileFact("Formed", profile.beginYear.map(String.init) ?? "—")
-                profileFact("Area", profile.area ?? "—")
-                profileFact("Type", profile.type ?? "—")
+                profileFact("Plays", count(enrichment.globalArtistListenCount))
+                profileFact("Listeners", count(enrichment.globalArtistListenerCount))
+                profileFact("Formed", profile?.beginYear.map(String.init) ?? "—")
+                profileFact("Area", profile?.area ?? details?.country ?? "—")
+                profileFact("Type", profile?.type ?? details?.type ?? "—")
             }
 
-            let links = preferredArtistLinks(profile.links)
+            if !tags.isEmpty {
+                weightedTagLinks(title: "Top tags", tags: Array(tags.prefix(metrics.isNarrow ? 5 : 8)))
+            }
+
+            let links = preferredArtistLinks(profile?.links ?? [])
             if !links.isEmpty {
                 HStack(spacing: 8) {
                     ForEach(links.prefix(4)) { link in
@@ -1227,9 +1239,9 @@ private struct DashboardView: View {
             album: scrobbleService.currentTrackDetails?.album ?? track.album,
             sourceURL: scrobbleService.currentTrackDetails?.url,
             imageURL: dashboardTrackImageURL,
-            artistMBID: nil,
-            recordingMBID: nil,
-            releaseMBID: nil
+            artistMBID: scrobbleService.currentOpenEntityDetails?.artistMBID,
+            recordingMBID: scrobbleService.currentOpenEntityDetails?.recordingMBID,
+            releaseMBID: scrobbleService.currentOpenEntityDetails?.releaseMBID
         )
     }
 
@@ -1240,9 +1252,9 @@ private struct DashboardView: View {
             album: scrobbleService.currentTrackDetails?.album ?? track.album,
             sourceURL: scrobbleService.currentTrackDetails?.url,
             imageURL: dashboardTrackImageURL,
-            artistMBID: nil,
-            recordingMBID: nil,
-            releaseMBID: nil
+            artistMBID: scrobbleService.currentOpenEntityDetails?.artistMBID,
+            recordingMBID: scrobbleService.currentOpenEntityDetails?.recordingMBID,
+            releaseMBID: scrobbleService.currentOpenEntityDetails?.releaseMBID
         )
     }
 
@@ -1332,9 +1344,11 @@ private struct DashboardView: View {
                     HStack(spacing: 7) {
                         Text(tag.name)
                             .font(.custom("Avenir Next Medium", size: 13))
-                        Text("\(tag.count)")
-                            .font(.custom("Avenir Next Medium", size: 12))
-                            .foregroundStyle(.secondary)
+                        if tag.count > 0 {
+                            Text("\(tag.count)")
+                                .font(.custom("Avenir Next Medium", size: 12))
+                                .foregroundStyle(.secondary)
+                        }
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -2654,9 +2668,11 @@ private struct ScrobbleDetailPanel: View {
                     HStack(spacing: 7) {
                         Text(tag.name)
                             .font(.custom("Avenir Next Medium", size: 13))
-                        Text("\(tag.count)")
-                            .font(.custom("Avenir Next Medium", size: 12))
-                            .foregroundStyle(.secondary)
+                        if tag.count > 0 {
+                            Text("\(tag.count)")
+                                .font(.custom("Avenir Next Medium", size: 12))
+                                .foregroundStyle(.secondary)
+                        }
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -4360,15 +4376,54 @@ private struct ObsessionsVaultView: View {
     @State private var selectedEntry: ObsessionEntry?
     @State private var isObsessionComposerPresented = false
 
+    private var mergedEntries: [ObsessionEntry] {
+        let localRecordingMBIDs = Set(store.entries.compactMap { $0.musicBrainzRecordingID?.nilIfBlank?.lowercased() })
+        let remoteEntries = listenBrainzPinEntries.filter { entry in
+            guard let recordingMBID = entry.musicBrainzRecordingID?.nilIfBlank?.lowercased() else { return true }
+            return !localRecordingMBIDs.contains(recordingMBID)
+        }
+        return (store.entries + remoteEntries).sorted {
+            ($0.setAt ?? $0.firstSeenAt) > ($1.setAt ?? $1.firstSeenAt)
+        }
+    }
+
     private var filteredEntries: [ObsessionEntry] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return store.entries }
-        return store.entries.filter { entry in
+        guard !trimmed.isEmpty else { return mergedEntries }
+        return mergedEntries.filter { entry in
             entry.track.localizedCaseInsensitiveContains(trimmed) ||
             entry.artist.localizedCaseInsensitiveContains(trimmed) ||
             (entry.note?.localizedCaseInsensitiveContains(trimmed) ?? false) ||
             entry.source.displayName.localizedCaseInsensitiveContains(trimmed)
         }
+    }
+
+    private var listenBrainzPinEntries: [ObsessionEntry] {
+        var seenRowIDs = Set<Int>()
+        return ([scrobbleService.listenBrainzCurrentPin].compactMap { $0 } + scrobbleService.listenBrainzPinnedHistory)
+            .filter { seenRowIDs.insert($0.id).inserted }
+            .map { pin in
+                let createdAt = pin.createdAt ?? Date()
+                let recordingMBID = pin.recordingMbid?.nilIfBlank
+                return ObsessionEntry(
+                    id: listenBrainzPinObsessionID(rowID: pin.id),
+                    ownerUsername: pin.userName?.nilIfBlank ?? scrobbleService.listenBrainzUsername ?? "listenbrainz",
+                    artist: pin.artistName,
+                    track: pin.trackName,
+                    album: nil,
+                    note: pin.blurb?.nilIfBlank,
+                    imageURL: nil,
+                    compatibilityURL: recordingMBID.map { "https://listenbrainz.org/player/?recording_mbids=\($0)" },
+                    musicBrainzArtistID: nil,
+                    musicBrainzRecordingID: recordingMBID,
+                    musicBrainzReleaseID: nil,
+                    firstSeenAt: createdAt,
+                    setAt: createdAt,
+                    endedAt: pin.pinnedUntil,
+                    rankMarker: nil,
+                    source: .listenBrainzPin
+                )
+            }
     }
 
     var body: some View {
@@ -4383,11 +4438,17 @@ private struct ObsessionsVaultView: View {
         }
         .onAppear {
             store.configure(username: scrobbleService.sessionUsername)
-            selectedEntry = selectedEntry ?? store.entries.first
+            selectedEntry = selectedEntry ?? mergedEntries.first
+        }
+        .task(id: scrobbleService.listenBrainzUsername ?? "obsessions-listenbrainz-pins") {
+            guard scrobbleService.listenBrainzEnabled else { return }
+            if scrobbleService.listenBrainzCurrentPin == nil && scrobbleService.listenBrainzPinnedHistory.isEmpty {
+                await scrobbleService.refreshListenBrainzPins()
+            }
         }
         .onChange(of: scrobbleService.sessionUsername ?? "local") { username in
             store.configure(username: username)
-            selectedEntry = store.entries.first
+            selectedEntry = mergedEntries.first
         }
         .sheet(isPresented: $isObsessionComposerPresented) {
             ObsessionComposerView(store: store, currentTrack: scrobbleService.currentTrack, draft: nil) { entry in
@@ -4437,6 +4498,12 @@ private struct ObsessionsVaultView: View {
             Text(store.status)
                 .font(.custom("Avenir Next Medium", size: 12))
                 .foregroundStyle(.secondary)
+            if scrobbleService.listenBrainzPinsStatus != "Not loaded" {
+                Label(scrobbleService.listenBrainzPinsStatus, systemImage: "pin")
+                    .font(.custom("Avenir Next Medium", size: 12))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
             TextField("Search obsessions", text: $query)
                 .textFieldStyle(.roundedBorder)
                 .frame(maxWidth: 320)
@@ -4452,7 +4519,7 @@ private struct ObsessionsVaultView: View {
         ], spacing: 10) {
             VaultMetricCard(title: "Captured obsessions", value: "\(store.entries.count)", detail: "\(notesCount) with text memories")
             VaultMetricCard(title: "Imports", value: "\(importedCount)", detail: "Recovered from portable bundle files")
-            VaultMetricCard(title: "Current source", value: "Local", detail: "Website recovery remains opt-in future work")
+            VaultMetricCard(title: "ListenBrainz pins", value: "\(listenBrainzPinEntries.count)", detail: "Remote pins mixed into the timeline")
         }
     }
 
@@ -4484,7 +4551,7 @@ private struct ObsessionsVaultView: View {
 
             ObsessionDetailView(entry: selectedEntry ?? filteredEntries.first) { entry in
                 store.delete(entry)
-                selectedEntry = store.entries.first
+                selectedEntry = mergedEntries.first
             }
             .frame(minWidth: 300, maxWidth: 420)
             .appPanelStyle()
@@ -4610,6 +4677,7 @@ private struct SharedTimelineRow: View {
 }
 
 private struct ObsessionTimelineRow: View {
+    @EnvironmentObject private var scrobbleService: ScrobbleService
     let entry: ObsessionEntry
     let isSelected: Bool
 
@@ -4635,6 +4703,15 @@ private struct ObsessionTimelineRow: View {
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    if isPinnedOnListenBrainz(entry, scrobbleService: scrobbleService) {
+                        Label("Pinned", systemImage: "pin.fill")
+                            .font(.custom("Avenir Next Demi Bold", size: 9))
+                            .foregroundStyle(.white)
+                            .labelStyle(.titleAndIcon)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.green.opacity(0.82), in: RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    }
                 }
                 Text(entry.artist)
                     .font(.custom("Avenir Next Regular", size: 13))
@@ -4713,6 +4790,7 @@ private struct SharedDetailView: View {
 }
 
 private struct ObsessionDetailView: View {
+    @EnvironmentObject private var scrobbleService: ScrobbleService
     let entry: ObsessionEntry?
     let onDelete: (ObsessionEntry) -> Void
 
@@ -4727,6 +4805,11 @@ private struct ObsessionDetailView: View {
                     .font(.custom("Avenir Next Medium", size: 13))
                 Label(entry.source.displayName, systemImage: "archivebox")
                     .font(.custom("Avenir Next Medium", size: 13))
+                if isPinnedOnListenBrainz(entry, scrobbleService: scrobbleService) {
+                    Label("Pinned on ListenBrainz", systemImage: "pin.fill")
+                        .font(.custom("Avenir Next Demi Bold", size: 13))
+                        .foregroundStyle(.green)
+                }
                 Divider()
                 Text(entry.note ?? "No note captured.")
                     .font(.custom("Avenir Next Regular", size: 13))
@@ -4739,18 +4822,47 @@ private struct ObsessionDetailView: View {
                         }
                         .buttonStyle(.bordered)
                     }
-                    Button(role: .destructive) {
-                        onDelete(entry)
+                    Button {
+                        toggleListenBrainzPin(entry)
                     } label: {
-                        Label("Delete", systemImage: "trash")
+                        Label(
+                            listenBrainzPinRowID(for: entry, scrobbleService: scrobbleService) == nil ? "Pin on ListenBrainz" : "Delete ListenBrainz Pin",
+                            systemImage: listenBrainzPinRowID(for: entry, scrobbleService: scrobbleService) == nil ? "pin" : "pin.slash"
+                        )
                     }
                     .buttonStyle(.bordered)
+                    .disabled(!canToggleListenBrainzPin(entry, scrobbleService: scrobbleService))
+                    if entry.source != .listenBrainzPin {
+                        Button(role: .destructive) {
+                            onDelete(entry)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .buttonStyle(.bordered)
+                    }
                 }
             } else {
                 Text("Select an obsession.")
                     .font(.custom("Avenir Next Regular", size: 13))
                     .foregroundStyle(.secondary)
             }
+        }
+    }
+
+    private func toggleListenBrainzPin(_ entry: ObsessionEntry) {
+        if let rowID = listenBrainzPinRowID(for: entry, scrobbleService: scrobbleService) {
+            Task { _ = await scrobbleService.deleteListenBrainzPin(rowID: rowID, title: entry.track) }
+            return
+        }
+
+        Task {
+            _ = await scrobbleService.pinListenBrainzTrack(
+                title: entry.track,
+                artist: entry.artist,
+                album: entry.album,
+                recordingMbid: pinRecordingMBID(for: entry, scrobbleService: scrobbleService),
+                blurb: entry.note
+            )
         }
     }
 }
@@ -4907,6 +5019,7 @@ private struct ShareComposerView: View {
 private struct ObsessionComposerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var scrobbleService: ScrobbleService
     @ObservedObject var store: ObsessionVaultStore
     var currentTrack: Track? = nil
     let draft: ObsessionDraft?
@@ -4937,11 +5050,11 @@ private struct ObsessionComposerView: View {
                         track: track,
                         album: album,
                         note: note,
-                        sourceURL: draft?.sourceURL,
-                        imageURL: draft?.imageURL,
-                        artistMBID: draft?.artistMBID,
-                        recordingMBID: draft?.recordingMBID,
-                        releaseMBID: draft?.releaseMBID
+                        sourceURL: resolvedSourceURL,
+                        imageURL: resolvedImageURL,
+                        artistMBID: resolvedArtistMBID,
+                        recordingMBID: resolvedRecordingMBID,
+                        releaseMBID: resolvedReleaseMBID
                     ).sourceURL.flatMap(URL.init(string:)) {
                         openURL(url)
                     }
@@ -4958,14 +5071,15 @@ private struct ObsessionComposerView: View {
                         track: track,
                         album: album,
                         note: note,
-                        sourceURL: draft?.sourceURL,
-                        imageURL: draft?.imageURL,
-                        artistMBID: draft?.artistMBID,
-                        recordingMBID: draft?.recordingMBID,
-                        releaseMBID: draft?.releaseMBID
+                        sourceURL: resolvedSourceURL,
+                        imageURL: resolvedImageURL,
+                        artistMBID: resolvedArtistMBID,
+                        recordingMBID: resolvedRecordingMBID,
+                        releaseMBID: resolvedReleaseMBID
                     )
                     store.add(entry)
                     onSave(entry)
+                    pinObsessionIfPossible(entry)
                     dismiss()
                 }
                     .buttonStyle(.borderedProminent)
@@ -4985,6 +5099,100 @@ private struct ObsessionComposerView: View {
             album = currentTrack.album ?? ""
         }
     }
+
+    private var resolvedSourceURL: String? {
+        draft?.sourceURL ?? scrobbleService.currentTrackDetails?.url
+    }
+
+    private var resolvedImageURL: String? {
+        draft?.imageURL ?? scrobbleService.currentOpenEntityDetails?.imageURL ?? scrobbleService.currentTrackDetails?.imageURL
+    }
+
+    private var resolvedArtistMBID: String? {
+        draft?.artistMBID ?? scrobbleService.currentOpenEntityDetails?.artistMBID
+    }
+
+    private var resolvedRecordingMBID: String? {
+        draft?.recordingMBID ?? scrobbleService.currentOpenEntityDetails?.recordingMBID
+    }
+
+    private var resolvedReleaseMBID: String? {
+        draft?.releaseMBID ?? scrobbleService.currentOpenEntityDetails?.releaseMBID
+    }
+
+    private func pinObsessionIfPossible(_ entry: ObsessionEntry) {
+        Task {
+            _ = await scrobbleService.pinListenBrainzTrack(
+                title: entry.track,
+                artist: entry.artist,
+                album: entry.album,
+                recordingMbid: entry.musicBrainzRecordingID?.nilIfBlank,
+                blurb: entry.note
+            )
+        }
+    }
+}
+
+@MainActor
+private func isPinnedOnListenBrainz(_ entry: ObsessionEntry, scrobbleService: ScrobbleService) -> Bool {
+    guard let entryRecordingMBID = pinRecordingMBID(for: entry, scrobbleService: scrobbleService),
+          let currentPinMBID = scrobbleService.listenBrainzCurrentPin?.recordingMbid?.nilIfBlank else {
+        return false
+    }
+    return entryRecordingMBID.caseInsensitiveCompare(currentPinMBID) == .orderedSame
+}
+
+@MainActor
+private func listenBrainzPinRowID(for entry: ObsessionEntry, scrobbleService: ScrobbleService) -> Int? {
+    if isPinnedOnListenBrainz(entry, scrobbleService: scrobbleService) {
+        return scrobbleService.listenBrainzCurrentPin?.id
+    }
+    guard entry.source == .listenBrainzPin else { return nil }
+    return listenBrainzPinRowID(from: entry.id)
+}
+
+@MainActor
+private func canToggleListenBrainzPin(_ entry: ObsessionEntry, scrobbleService: ScrobbleService) -> Bool {
+    if listenBrainzPinRowID(for: entry, scrobbleService: scrobbleService) != nil {
+        return true
+    }
+    guard scrobbleService.listenBrainzEnabled else { return false }
+    guard !entry.track.isBlank, !entry.artist.isBlank else { return false }
+    return entry.source != .listenBrainzPin || pinRecordingMBID(for: entry, scrobbleService: scrobbleService) != nil
+}
+
+@MainActor
+private func pinRecordingMBID(for entry: ObsessionEntry, scrobbleService: ScrobbleService) -> String? {
+    if let recordingMBID = entry.musicBrainzRecordingID?.nilIfBlank {
+        return recordingMBID
+    }
+    guard currentTrackMatches(entry, scrobbleService: scrobbleService) else { return nil }
+    return scrobbleService.currentOpenEntityDetails?.recordingMBID?.nilIfBlank
+}
+
+@MainActor
+private func currentTrackMatches(_ entry: ObsessionEntry, scrobbleService: ScrobbleService) -> Bool {
+    let currentTrack = scrobbleService.currentTrackDetails?.name ?? scrobbleService.currentTrack?.title
+    let currentArtist = scrobbleService.currentTrackDetails?.artist ?? scrobbleService.currentTrack?.artist
+    return currentTrack?.caseInsensitiveCompare(entry.track) == .orderedSame &&
+        currentArtist?.caseInsensitiveCompare(entry.artist) == .orderedSame
+}
+
+private func listenBrainzPinObsessionID(rowID: Int) -> UUID {
+    let suffixValue = UInt64(max(rowID, 0)) % 0x1_0000_0000_0000
+    let suffix = String(format: "%012llx", suffixValue)
+    return UUID(uuidString: "00000000-0000-0000-0000-\(suffix)") ?? UUID()
+}
+
+private func listenBrainzPinRowID(from id: UUID) -> Int? {
+    let uuid = id.uuidString.lowercased()
+    guard uuid.hasPrefix("00000000-0000-0000-0000-") else { return nil }
+    guard let suffix = uuid.split(separator: "-").last,
+          let value = UInt64(suffix, radix: 16),
+          value <= UInt64(Int.max) else {
+        return nil
+    }
+    return Int(value)
 }
 
 private func vaultDate(_ date: Date) -> String {

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.2 - 2026-06-10
+
+### Added
+
+- ListenBrainz pin controls for local obsessions, including visual pinned state and mixed local/remote pin history.
+- Artist context in the now-playing dashboard, with ListenBrainz popularity, MusicBrainz metadata, tags, links, and artwork fallbacks.
+- Test readability guidelines for future behavioral coverage.
+
+### Fixed
+
+- Replaced the current ListenBrainz pin before posting a new one, matching ListenBrainz's single-active-pin model.
+- Pinned tracks without MusicBrainz recording MBIDs by falling back to recent ListenBrainz recording MSIDs.
+- Deleted ListenBrainz pin history entries by row ID.
+- Resolved MusicBrainz recordings when album-specific searches miss, and found compilation artwork when releases are not credited to the track artist.
+- Loaded enrichment requests in parallel so dashboard metadata and artwork appear sooner.
+
 ## 0.1.1 - 2026-05-29
 
 ### Added

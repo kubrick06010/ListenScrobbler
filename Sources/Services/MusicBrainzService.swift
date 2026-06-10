@@ -160,19 +160,24 @@ final class MusicBrainzService {
     }
 
     private func searchRecording(title: String, artist: String, release: String?) async throws -> MusicBrainzRecording? {
-        var terms = [
-            "recording:\(quoted(title))",
-            "artist:\(quoted(artist))"
-        ]
-        if let release = release?.nilIfBlank {
-            terms.append("release:\(quoted(release))")
+        var firstCandidate: MusicBrainzRecording?
+        for candidateTitle in recordingTitleCandidates(title) {
+            let queries = recordingQueries(title: candidateTitle, artist: artist, release: release)
+            for query in queries {
+                let response: RecordingSearchResponse = try await search(
+                    entity: "recording",
+                    query: query,
+                    includes: "artist-credits+releases+tags"
+                )
+                if firstCandidate == nil {
+                    firstCandidate = response.recordings.first
+                }
+                if let recording = bestRecording(from: response.recordings, title: candidateTitle, artist: artist) {
+                    return recording
+                }
+            }
         }
-        let response: RecordingSearchResponse = try await search(
-            entity: "recording",
-            query: terms.joined(separator: " AND "),
-            includes: "artist-credits+releases+tags"
-        )
-        return response.recordings.first
+        return firstCandidate
     }
 
     private func searchArtist(name: String) async throws -> MusicBrainzArtist? {
@@ -215,7 +220,16 @@ final class MusicBrainzService {
             query: "release:\(quoted(title)) AND artist:\(quoted(artist))",
             includes: "artist-credits+tags"
         )
-        return response.releases.first
+        if let release = response.releases.first {
+            return release
+        }
+        let fallbackResponse: ReleaseSearchResponse = try await search(
+            entity: "release",
+            query: "release:\(quoted(title))",
+            includes: "artist-credits+tags"
+        )
+        return fallbackResponse.releases.first { normalized($0.title) == normalized(title) }
+            ?? fallbackResponse.releases.first
     }
 
     private func search<T: Decodable>(entity: String, query: String, includes: String) async throws -> T {
@@ -379,6 +393,59 @@ final class MusicBrainzService {
             return exact
         }
         return candidates.first(where: { $0.coverArtArchive?.front == true }) ?? candidates.first
+    }
+
+    private func bestRecording(
+        from recordings: [MusicBrainzRecording],
+        title: String,
+        artist: String
+    ) -> MusicBrainzRecording? {
+        let requestedTitle = normalized(title)
+        let requestedArtist = normalized(artist)
+        return recordings.first { recording in
+            normalized(recording.title) == requestedTitle &&
+                recording.artistCredit?.contains { normalized($0.artist.name) == requestedArtist } == true
+        } ?? recordings.first { recording in
+            recording.artistCredit?.contains { normalized($0.artist.name) == requestedArtist } == true
+        }
+    }
+
+    private func recordingQueries(title: String, artist: String, release: String?) -> [String] {
+        var queries: [String] = []
+        if let release = release?.nilIfBlank {
+            queries.append([
+                "recording:\(quoted(title))",
+                "artist:\(quoted(artist))",
+                "release:\(quoted(release))"
+            ].joined(separator: " AND "))
+        }
+        queries.append([
+            "recording:\(quoted(title))",
+            "artist:\(quoted(artist))"
+        ].joined(separator: " AND "))
+        return queries.uniqued()
+    }
+
+    private func recordingTitleCandidates(_ title: String) -> [String] {
+        var candidates: [String] = []
+        func append(_ candidate: String) {
+            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { return }
+            candidates.append(trimmed)
+        }
+
+        append(title)
+        append(title.replacingOccurrences(
+            of: #"\s*[\(\[\{][^\)\]\}]*[\)\]\}]"#,
+            with: "",
+            options: .regularExpression
+        ))
+        append(title.replacingOccurrences(
+            of: #"\s[-–—]\s.*$"#,
+            with: "",
+            options: .regularExpression
+        ))
+        return candidates.uniqued()
     }
 
     private func normalized(_ value: String?) -> String {

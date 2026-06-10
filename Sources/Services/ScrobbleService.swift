@@ -811,6 +811,122 @@ final class ScrobbleService: ObservableObject {
         }
     }
 
+    func pinListenBrainzRecording(recordingMbid: String, title: String, blurb: String? = nil) async -> Bool {
+        refreshListenBrainzState()
+        guard listenBrainzEnabled else {
+            listenBrainzPinsStatus = "Connect ListenBrainz to pin recordings"
+            return false
+        }
+
+        let trimmedMbid = recordingMbid.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedMbid.isEmpty else {
+            listenBrainzPinsStatus = "Missing recording MBID for pin"
+            return false
+        }
+
+        let displayTitle = title.nilIfBlank ?? "recording"
+        listenBrainzPinsStatus = "Pinning \(displayTitle)..."
+        do {
+            if let currentPinMBID = listenBrainzCurrentPin?.recordingMbid?.nilIfBlank,
+               currentPinMBID.caseInsensitiveCompare(trimmedMbid) != .orderedSame {
+                listenBrainzPinsStatus = "Replacing current ListenBrainz pin..."
+                try await listenBrainz.unpinCurrentRecording()
+                listenBrainzCurrentPin = nil
+            }
+            try await listenBrainz.pinRecording(recordingMbid: trimmedMbid, blurb: blurb)
+            await refreshListenBrainzPins()
+            listenBrainzPinsStatus = "Pinned \(displayTitle)"
+            return true
+        } catch {
+            handleListenBrainz(error: error)
+            listenBrainzPinsStatus = "Could not pin \(displayTitle)"
+            return false
+        }
+    }
+
+    func pinListenBrainzRecording(recordingMsid: String, title: String, blurb: String? = nil) async -> Bool {
+        refreshListenBrainzState()
+        guard listenBrainzEnabled else {
+            listenBrainzPinsStatus = "Connect ListenBrainz to pin recordings"
+            return false
+        }
+
+        let trimmedMsid = recordingMsid.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedMsid.isEmpty else {
+            listenBrainzPinsStatus = "Missing recording MSID for pin"
+            return false
+        }
+
+        let displayTitle = title.nilIfBlank ?? "recording"
+        listenBrainzPinsStatus = "Pinning \(displayTitle)..."
+        do {
+            if let currentPinMSID = listenBrainzCurrentPin?.recordingMsid?.nilIfBlank,
+               currentPinMSID.caseInsensitiveCompare(trimmedMsid) != .orderedSame {
+                listenBrainzPinsStatus = "Replacing current ListenBrainz pin..."
+                try await listenBrainz.unpinCurrentRecording()
+                listenBrainzCurrentPin = nil
+            } else if listenBrainzCurrentPin?.recordingMbid?.nilIfBlank != nil {
+                listenBrainzPinsStatus = "Replacing current ListenBrainz pin..."
+                try await listenBrainz.unpinCurrentRecording()
+                listenBrainzCurrentPin = nil
+            }
+            try await listenBrainz.pinRecording(recordingMsid: trimmedMsid, blurb: blurb)
+            await refreshListenBrainzPins()
+            listenBrainzPinsStatus = "Pinned \(displayTitle)"
+            return true
+        } catch {
+            handleListenBrainz(error: error)
+            listenBrainzPinsStatus = "Could not pin \(displayTitle)"
+            return false
+        }
+    }
+
+    func pinListenBrainzTrack(
+        title: String,
+        artist: String,
+        album: String?,
+        recordingMbid: String?,
+        blurb: String? = nil
+    ) async -> Bool {
+        if let recordingMbid = recordingMbid?.nilIfBlank {
+            return await pinListenBrainzRecording(recordingMbid: recordingMbid, title: title, blurb: blurb)
+        }
+
+        refreshListenBrainzState()
+        guard listenBrainzEnabled else {
+            listenBrainzPinsStatus = "Connect ListenBrainz to pin recordings"
+            return false
+        }
+
+        if let recordingMSID = await listenBrainzRecentRecordingMSID(title: title, artist: artist) {
+            return await pinListenBrainzRecording(recordingMsid: recordingMSID, title: title, blurb: blurb)
+        }
+
+        listenBrainzPinsStatus = "Resolving \(title) in MusicBrainz..."
+        do {
+            let details = try await musicBrainz.lookup(track: title, artist: artist, release: album)
+            guard let resolvedRecordingMBID = details.recordingMBID?.nilIfBlank else {
+                if let recordingMSID = await listenBrainzRecentRecordingMSID(title: title, artist: artist, forceRefresh: true) {
+                    return await pinListenBrainzRecording(recordingMsid: recordingMSID, title: title, blurb: blurb)
+                }
+                listenBrainzPinsStatus = "No ListenBrainz recording identity found for \(title)"
+                return false
+            }
+            return await pinListenBrainzRecording(
+                recordingMbid: resolvedRecordingMBID,
+                title: details.trackName ?? title,
+                blurb: blurb
+            )
+        } catch {
+            handleListenBrainz(error: error)
+            if let recordingMSID = await listenBrainzRecentRecordingMSID(title: title, artist: artist, forceRefresh: true) {
+                return await pinListenBrainzRecording(recordingMsid: recordingMSID, title: title, blurb: blurb)
+            }
+            listenBrainzPinsStatus = "No ListenBrainz recording identity found for \(title)"
+            return false
+        }
+    }
+
     func unpinListenBrainzCurrent() async -> Bool {
         listenBrainzPinsStatus = "Removing current pin..."
         do {
@@ -821,6 +937,21 @@ final class ScrobbleService: ObservableObject {
         } catch {
             handleListenBrainz(error: error)
             listenBrainzPinsStatus = "Could not remove current pin"
+            return false
+        }
+    }
+
+    func deleteListenBrainzPin(rowID: Int, title: String) async -> Bool {
+        let displayTitle = title.nilIfBlank ?? "pin"
+        listenBrainzPinsStatus = "Deleting \(displayTitle)..."
+        do {
+            try await listenBrainz.deletePin(rowID: rowID)
+            await refreshListenBrainzPins()
+            listenBrainzPinsStatus = "Deleted \(displayTitle)"
+            return true
+        } catch {
+            handleListenBrainz(error: error)
+            listenBrainzPinsStatus = "Could not delete \(displayTitle)"
             return false
         }
     }
@@ -1827,88 +1958,97 @@ final class ScrobbleService: ObservableObject {
         guard listenBrainzEnabled else { return nil }
 
         let username = listenBrainzUsername?.nilIfBlank
-        let recordingPopularity = await firstPopularity(details.recordingMBID) { mbids in
+        async let recordingPopularity = firstPopularity(details.recordingMBID) { mbids in
             try await listenBrainz.fetchRecordingPopularity(recordingMBIDs: mbids)
         }
-        let artistPopularity = await firstPopularity(details.artistMBID) { mbids in
+        async let artistPopularity = firstPopularity(details.artistMBID) { mbids in
             try await listenBrainz.fetchArtistPopularity(artistMBIDs: mbids)
         }
-        let releasePopularity = await firstPopularity(details.releaseMBID) { mbids in
+        async let releasePopularity = firstPopularity(details.releaseMBID) { mbids in
             try await listenBrainz.fetchReleasePopularity(releaseMBIDs: mbids)
         }
-
-        let userRecordingCount: Int?
-        let userArtistCount: Int?
-        let userReleaseCount: Int?
-        if let username {
-            userRecordingCount = await userRecordingListenCount(
+        async let userRecordingCount: Int? = if let username {
+            await userRecordingListenCount(
                 username: username,
                 recordingMBID: details.recordingMBID,
                 track: details.trackName ?? track,
                 artist: details.artistName
             )
-            userArtistCount = await userArtistListenCount(
+        } else {
+            nil
+        }
+        async let userArtistCount: Int? = if let username {
+            await userArtistListenCount(
                 username: username,
                 artistMBID: details.artistMBID,
                 artist: details.artistName.nilIfBlank ?? artist
             )
-            userReleaseCount = await userReleaseListenCount(
+        } else {
+            nil
+        }
+        async let userReleaseCount: Int? = if let username {
+            await userReleaseListenCount(
                 username: username,
                 releaseMBID: details.releaseMBID,
                 release: details.releaseName ?? release,
                 artist: details.artistName.nilIfBlank ?? artist
             )
         } else {
-            userRecordingCount = nil
-            userArtistCount = nil
-            userReleaseCount = nil
+            nil
         }
-
-        let topRecordings: [ListenBrainzPopularRecording]
-        let similarArtists: [ListenBrainzSimilarArtist]
-        let artistProfile: ListenBrainzArtistProfile?
-        if let artistMBID = details.artistMBID?.nilIfBlank {
-            artistProfile = try? await listenBrainz.fetchArtistProfile(artistMBID: artistMBID)
-            topRecordings = (try? await listenBrainz.fetchPopularRecordingsForArtist(
-                artistMBID: artistMBID,
-                count: 8
-            )) ?? []
-            let rawSimilarArtists = (try? await listenBrainz.fetchSimilarArtists(
-                seedArtistMBID: artistMBID,
-                maxSimilarArtists: 8,
-                maxRecordingsPerArtist: 1
-            )) ?? []
-            similarArtists = await hydrateListenBrainzSimilarArtistImages(rawSimilarArtists)
-        } else {
-            artistProfile = nil
-            topRecordings = []
-            similarArtists = []
-        }
+        async let artistProfile = fetchArtistProfile(artistMBID: details.artistMBID)
+        async let topRecordings = fetchPopularRecordings(artistMBID: details.artistMBID)
+        async let similarArtists = fetchSimilarArtists(artistMBID: details.artistMBID)
 
         let enrichment = OpenListeningEnrichment(
-            userRecordingListenCount: userRecordingCount,
-            userArtistListenCount: userArtistCount,
-            userReleaseListenCount: userReleaseCount,
-            globalRecordingListenCount: recordingPopularity?.totalListenCount,
-            globalRecordingListenerCount: recordingPopularity?.totalUserCount,
-            globalArtistListenCount: artistPopularity?.totalListenCount,
-            globalArtistListenerCount: artistPopularity?.totalUserCount,
-            globalReleaseListenCount: releasePopularity?.totalListenCount,
-            globalReleaseListenerCount: releasePopularity?.totalUserCount,
-            artistProfile: artistProfile,
-            topArtistRecordings: topRecordings,
-            similarArtists: similarArtists
+            userRecordingListenCount: await userRecordingCount,
+            userArtistListenCount: await userArtistCount,
+            userReleaseListenCount: await userReleaseCount,
+            globalRecordingListenCount: await recordingPopularity?.totalListenCount,
+            globalRecordingListenerCount: await recordingPopularity?.totalUserCount,
+            globalArtistListenCount: await artistPopularity?.totalListenCount,
+            globalArtistListenerCount: await artistPopularity?.totalUserCount,
+            globalReleaseListenCount: await releasePopularity?.totalListenCount,
+            globalReleaseListenerCount: await releasePopularity?.totalUserCount,
+            artistProfile: await artistProfile,
+            topArtistRecordings: await topRecordings,
+            similarArtists: await similarArtists
         )
         return enrichment.hasUsefulData ? enrichment : nil
+    }
+
+    private func fetchArtistProfile(artistMBID: String?) async -> ListenBrainzArtistProfile? {
+        guard let artistMBID = artistMBID?.nilIfBlank else { return nil }
+        return try? await listenBrainz.fetchArtistProfile(artistMBID: artistMBID)
+    }
+
+    private func fetchPopularRecordings(artistMBID: String?) async -> [ListenBrainzPopularRecording] {
+        guard let artistMBID = artistMBID?.nilIfBlank else { return [] }
+        return (try? await listenBrainz.fetchPopularRecordingsForArtist(
+            artistMBID: artistMBID,
+            count: 8
+        )) ?? []
+    }
+
+    private func fetchSimilarArtists(artistMBID: String?) async -> [ListenBrainzSimilarArtist] {
+        guard let artistMBID = artistMBID?.nilIfBlank else { return [] }
+        return (try? await listenBrainz.fetchSimilarArtists(
+            seedArtistMBID: artistMBID,
+            maxSimilarArtists: 8,
+            maxRecordingsPerArtist: 1
+        )) ?? []
     }
 
     private func openArtistFallback(
         from details: OpenMusicEntityDetails,
         enrichment: OpenListeningEnrichment?
     ) -> OpenArtistFallback {
-        OpenArtistFallback(
+        let fallbackImageURL = details.artistImageURL
+            ?? enrichment?.topArtistRecordings.first { $0.imageURL?.nilIfBlank != nil }?.imageURL
+            ?? details.imageURL
+        return OpenArtistFallback(
             name: details.artistName,
-            imageURL: details.artistImageURL,
+            imageURL: fallbackImageURL,
             summary: details.artistSummary,
             listeners: enrichment?.globalArtistListenerCount,
             playcount: enrichment?.globalArtistListenCount,
@@ -2063,6 +2203,58 @@ final class ScrobbleService: ObservableObject {
             normalizedName($0.name) == normalizedRelease &&
                 normalizedName($0.artistName) == normalizedArtist
         }?.listenCount
+    }
+
+    private func listenBrainzRecentRecordingMSID(
+        title: String,
+        artist: String,
+        forceRefresh: Bool = false
+    ) async -> String? {
+        guard forceRefresh,
+              listenBrainzEnabled,
+              let username = listenBrainzUsername?.nilIfBlank,
+              let listens = try? await listenBrainz.fetchRecentListens(username: username, count: 100) else {
+            return nil
+        }
+        return listens.first { listenIdentityMatches(track: $0.trackName, artist: $0.artistName, title: title, requestedArtist: artist) }?
+            .recordingMSID?
+            .nilIfBlank
+    }
+
+    private func listenIdentityMatches(
+        track: String,
+        artist listenArtist: String,
+        title requestedTitle: String,
+        requestedArtist: String
+    ) -> Bool {
+        guard normalizedName(listenArtist) == normalizedName(requestedArtist) else { return false }
+        let listenTitles = normalizedTitleCandidates(track)
+        let requestedTitles = normalizedTitleCandidates(requestedTitle)
+        return !listenTitles.isDisjoint(with: requestedTitles)
+    }
+
+    private func normalizedTitleCandidates(_ value: String) -> Set<String> {
+        var candidates = Set<String>()
+        func insert(_ candidate: String) {
+            let normalized = normalizedName(candidate)
+            guard !normalized.isEmpty else { return }
+            candidates.insert(normalized)
+        }
+
+        insert(value)
+        let strippedParentheticals = value.replacingOccurrences(
+            of: #"\s*[\(\[\{][^\)\]\}]*[\)\]\}]"#,
+            with: "",
+            options: .regularExpression
+        )
+        insert(strippedParentheticals)
+        let strippedDashSuffix = value.replacingOccurrences(
+            of: #"\s[-–—]\s.*$"#,
+            with: "",
+            options: .regularExpression
+        )
+        insert(strippedDashSuffix)
+        return candidates
     }
 
     private func normalizedName(_ value: String) -> String {

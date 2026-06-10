@@ -81,6 +81,98 @@ final class MusicBrainzServiceTests: XCTestCase {
         XCTAssertNil(details.releaseMBID)
     }
 
+    func testLookupFindsRecordingWhenAlbumSpecificMusicBrainzSearchMisses() async throws {
+        // Given a track whose album-specific MusicBrainz recording search returns no results.
+        let service = makeService { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch request.url!.path {
+            case "/ws/2/recording":
+                let query = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?
+                    .queryItems?
+                    .first(where: { $0.name == "query" })?
+                    .value ?? ""
+                if query.contains("release:") {
+                    return (response, Data(Self.emptyRecordingPayload.utf8))
+                }
+                return (response, Data(Self.arnosParkRecordingPayload.utf8))
+            case "/ws/2/artist":
+                return (response, Data(Self.bochumWeltArtistPayload.utf8))
+            case "/ws/2/release":
+                return (response, Data(Self.emptyReleasePayload.utf8))
+            case "/release/arnos-release-id":
+                return (response, Data(Self.coverArtPayload.utf8))
+            default:
+                XCTFail("Unexpected path \(request.url!.path)")
+                return (response, Data())
+            }
+        }
+
+        // When OpenScrobbler looks up the track with album metadata from the player.
+        let details = try await service.lookup(
+            track: "Arnos Park",
+            artist: "Bochum Welt",
+            release: "Module 2 / Desktop Robotics"
+        )
+
+        // Then it retries a broader recording search and still gets a pinnable MBID.
+        XCTAssertEqual(
+            details.recordingMBID,
+            "648202d7-a5c7-4f2d-ae63-c72d6ed062cb",
+            "A bad album match should not stop the track from being resolved for ListenBrainz pinning."
+        )
+        XCTAssertEqual(details.artistName, "Bochum Welt", "The broader retry must still keep the requested artist.")
+    }
+
+    func testLookupFindsCompilationArtworkWhenReleaseIsNotCreditedToTrackArtist() async throws {
+        // Given a compilation album where the release is not credited to the track artist.
+        let service = makeService { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch request.url!.path {
+            case "/ws/2/recording":
+                return (response, Data(Self.emptyRecordingPayload.utf8))
+            case "/ws/2/artist":
+                return (response, Data(Self.artistPayload.utf8))
+            case "/ws/2/release":
+                let query = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?
+                    .queryItems?
+                    .first(where: { $0.name == "query" })?
+                    .value ?? ""
+                if query.contains("artist:") {
+                    return (response, Data(Self.emptyReleasePayload.utf8))
+                }
+                return (response, Data(Self.compilationReleasePayload.utf8))
+            case "/release/compilation-release-id":
+                return (response, Data(Self.coverArtPayload.utf8))
+            default:
+                XCTFail("Unexpected path \(request.url!.path)")
+                return (response, Data())
+            }
+        }
+
+        // When OpenScrobbler searches for the track and release from the now-playing metadata.
+        let details = try await service.lookup(
+            track: "My Silks And Fine Arrays",
+            artist: "Julie Covington",
+            release: "The Trip Created By Saint Etienne"
+        )
+
+        // Then it falls back to a release-title search and can still show album artwork.
+        XCTAssertEqual(details.releaseMBID, "compilation-release-id", "Compilation releases should be found even without a track-artist credit match.")
+        XCTAssertEqual(details.imageURL, "https://cover.example/large.jpg", "The resolved compilation release should provide cover art for the UI.")
+    }
+
     private func makeService(
         handler: @escaping (URLRequest) throws -> (HTTPURLResponse, Data)
     ) -> MusicBrainzService {
@@ -181,6 +273,56 @@ final class MusicBrainzServiceTests: XCTestCase {
     private static let emptyReleasePayload = """
     {
       "releases": []
+    }
+    """
+
+    private static let compilationReleasePayload = """
+    {
+      "releases": [
+        {
+          "id": "compilation-release-id",
+          "title": "The Trip Created By Saint Etienne",
+          "status": "Official",
+          "cover-art-archive": {
+            "front": true
+          }
+        }
+      ]
+    }
+    """
+
+    private static let emptyRecordingPayload = """
+    {
+      "recordings": []
+    }
+    """
+
+    private static let arnosParkRecordingPayload = """
+    {
+      "recordings": [
+        {
+          "id": "648202d7-a5c7-4f2d-ae63-c72d6ed062cb",
+          "title": "Arnos Park",
+          "artist-credit": [
+            { "artist": { "id": "bochum-welt-id", "name": "Bochum Welt" } }
+          ],
+          "releases": [
+            { "id": "arnos-release-id", "title": "Desktop Robotics", "status": "Official" }
+          ]
+        }
+      ]
+    }
+    """
+
+    private static let bochumWeltArtistPayload = """
+    {
+      "artists": [
+        {
+          "id": "bochum-welt-id",
+          "name": "Bochum Welt",
+          "type": "Person"
+        }
+      ]
     }
     """
 }

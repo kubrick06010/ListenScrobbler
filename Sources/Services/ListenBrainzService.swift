@@ -100,6 +100,7 @@ struct ListenBrainzListen: Identifiable, Equatable {
     let releaseName: String?
     let listenedAt: Date?
     let recordingMBID: String?
+    let recordingMSID: String?
     let artistMBID: String?
     let releaseMBID: String?
     let imageURL: String?
@@ -513,6 +514,7 @@ final class ListenBrainzService {
                 releaseName: metadata.releaseName,
                 listenedAt: listen.listenedAt.map { Date(timeIntervalSince1970: TimeInterval($0)) },
                 recordingMBID: additional?.recordingMBID?.nilIfBlank,
+                recordingMSID: additional?.recordingMSID?.nilIfBlank,
                 artistMBID: additional?.artistMBIDs?.first?.nilIfBlank,
                 releaseMBID: additional?.releaseMBID?.nilIfBlank,
                 imageURL: coverArtURL(releaseMBID: additional?.releaseMBID)
@@ -985,9 +987,28 @@ final class ListenBrainzService {
         )
     }
 
+    func pinRecording(recordingMsid: String, blurb: String? = nil, pinnedUntil: Date? = nil) async throws {
+        try await postAuthorized(
+            pathComponents: ["1", "pin"],
+            body: ListenBrainzPinRequest(
+                recordingMsid: recordingMsid,
+                recordingMbid: nil,
+                blurbContent: blurb?.nilIfBlank,
+                pinnedUntil: pinnedUntil.map { Int($0.timeIntervalSince1970) }
+            )
+        )
+    }
+
     func unpinCurrentRecording() async throws {
         try await postAuthorized(
             pathComponents: ["1", "pin", "unpin"],
+            body: EmptyRequestBody()
+        )
+    }
+
+    func deletePin(rowID: Int) async throws {
+        try await postAuthorized(
+            pathComponents: ["1", "pin", "delete", "\(rowID)"],
             body: EmptyRequestBody()
         )
     }
@@ -1799,11 +1820,13 @@ private struct ListenBrainzTrackMetadataResponse: Decodable {
 
 private struct ListenBrainzAdditionalInfoResponse: Decodable {
     let recordingMBID: String?
+    let recordingMSID: String?
     let releaseMBID: String?
     let artistMBIDs: [String]?
 
     enum CodingKeys: String, CodingKey {
         case recordingMBID = "recording_mbid"
+        case recordingMSID = "recording_msid"
         case releaseMBID = "release_mbid"
         case artistMBIDs = "artist_mbids"
     }

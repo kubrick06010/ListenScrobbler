@@ -402,19 +402,67 @@ final class ListenBrainzServiceTests: XCTestCase {
         XCTAssertEqual(pin?.blurb, "Still perfect")
     }
 
-    func testPinRecordingPostsBody() async throws {
+    func testPinningByMusicBrainzIDPostsRecordingMBIDToListenBrainz() async throws {
+        // Given a track resolved to a stable MusicBrainz recording ID.
         let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
             XCTAssertEqual(request.httpMethod, "POST")
             XCTAssertEqual(request.url?.absoluteString, "https://api.listenbrainz.org/1/pin")
             let body = try XCTUnwrap(request.httpBodyData)
             let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
-            XCTAssertEqual(json["recording_mbid"] as? String, "mbid-9")
-            XCTAssertEqual(json["blurb_content"] as? String, "Pinned from OpenScrobbler")
+            XCTAssertEqual(json["recording_mbid"] as? String, "mbid-9", "ListenBrainz expects recording_mbid when MusicBrainz resolution succeeded.")
+            XCTAssertEqual(json["blurb_content"] as? String, "Pinned from OpenScrobbler", "The app should include the user's pin note/blurb.")
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
             return (response, Data())
         }
 
+        // When OpenScrobbler pins it.
         try await service.pinRecording(recordingMbid: "mbid-9", blurb: "Pinned from OpenScrobbler")
+    }
+
+    func testPinningByListenBrainzMSIDPostsRecordingMSIDWithoutMBID() async throws {
+        // Given MusicBrainz could not resolve the track, but ListenBrainz has a recording MSID from recent listens.
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.absoluteString, "https://api.listenbrainz.org/1/pin")
+            let body = try XCTUnwrap(request.httpBodyData)
+            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            XCTAssertEqual(json["recording_msid"] as? String, "msid-9", "ListenBrainz accepts recording_msid as the fallback pin identity.")
+            XCTAssertNil(json["recording_mbid"], "The fallback request must not invent a MusicBrainz ID.")
+            XCTAssertEqual(json["blurb_content"] as? String, "Pinned from OpenScrobbler", "The app should include the user's pin note/blurb.")
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data())
+        }
+
+        // When OpenScrobbler pins it.
+        try await service.pinRecording(recordingMsid: "msid-9", blurb: "Pinned from OpenScrobbler")
+    }
+
+    func testReplacingCurrentPinPostsToListenBrainzUnpinEndpoint() async throws {
+        // Given the app needs to clear the one active ListenBrainz pin before posting a replacement.
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.absoluteString, "https://api.listenbrainz.org/1/pin/unpin")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Token token")
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data())
+        }
+
+        // When OpenScrobbler asks ListenBrainz to unpin the current recording.
+        try await service.unpinCurrentRecording()
+    }
+
+    func testDeletingAPinHistoryEntryPostsItsRowIDToListenBrainz() async throws {
+        // Given the user deletes a specific historical pin row from the app.
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.absoluteString, "https://api.listenbrainz.org/1/pin/delete/42", "ListenBrainz deletes historical pins by row ID, not by recording title.")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Token token")
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data())
+        }
+
+        // When OpenScrobbler deletes that row.
+        try await service.deletePin(rowID: 42)
     }
 
     func testFetchPlaylistsParsesSummariesAndRecommendationLists() async throws {

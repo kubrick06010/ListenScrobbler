@@ -243,6 +243,126 @@ final class ScrobbleServiceTests: XCTestCase {
     }
 
     @MainActor
+    func testPinningANewListenBrainzTrackUnpinsThePreviousCurrentPinFirst() async {
+        // Given ListenBrainz already has Julia Holter as the current pin.
+        let api = MockAPI()
+        let monitor = TestMonitor()
+        var currentPinFetchCount = 0
+        let listenBrainz = configuredListenBrainzService(urlSession: makeMockedSession { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch (request.httpMethod, request.url?.path) {
+            case ("GET", "/1/tester/pins/current"):
+                currentPinFetchCount += 1
+                if currentPinFetchCount == 1 {
+                    return (response, Data(#"{"pinned_recording":{"row_id":10,"recording_mbid":"julia-mbid","track_metadata":{"artist_name":"Julia Holter","track_name":"Underneath the Moon"}}}"#.utf8))
+                }
+                return (response, Data(#"{"pinned_recording":{"row_id":11,"recording_mbid":"bochum-mbid","track_metadata":{"artist_name":"Bochum Welt","track_name":"New Pin"}}}"#.utf8))
+            case ("GET", "/1/user/tester/listens"):
+                return (response, Data(#"{"payload":{"listens":[]}}"#.utf8))
+            case ("GET", "/1/tester/pins"), ("GET", "/1/tester/pins/following"):
+                return (response, Data(#"{"pinned_recordings":[]}"#.utf8))
+            case ("POST", "/1/pin/unpin"):
+                return (response, Data(#"{"status":"ok"}"#.utf8))
+            case ("POST", "/1/pin"):
+                return (response, Data(#"{"status":"ok"}"#.utf8))
+            default:
+                XCTFail("Unexpected ListenBrainz request \(request.httpMethod ?? "") \(request.url?.path ?? "")")
+                return (response, Data(#"{}"#.utf8))
+            }
+        })
+        let service = ScrobbleService(
+            api: api,
+            listenBrainz: listenBrainz,
+            monitor: monitor,
+            sessionStore: InMemorySessionStore(),
+            queueStore: InMemoryQueueStore()
+        )
+
+        // When the user pins a different recording from OpenScrobbler.
+        await service.refreshListenBrainzPins()
+        let didPin = await service.pinListenBrainzRecording(recordingMbid: "bochum-mbid", title: "New Pin")
+
+        // Then OpenScrobbler must remove the old remote pin before creating the new one.
+        XCTAssertTrue(didPin, "The pin action should report success after replacing the old ListenBrainz pin.")
+        let paths = MockURLProtocol.requests.map { "\($0.httpMethod ?? "") \($0.url?.path ?? "")" }
+        XCTAssertLessThan(
+            paths.firstIndex(of: "POST /1/pin/unpin") ?? Int.max,
+            paths.firstIndex(of: "POST /1/pin") ?? Int.max,
+            "ListenBrainz only allows one active pin, so unpin must happen before the new pin is posted."
+        )
+        XCTAssertEqual(service.listenBrainzCurrentPin?.recordingMbid, "bochum-mbid", "The UI should now reflect the new remote pin.")
+    }
+
+    @MainActor
+    func testPinningATrackWithoutMusicBrainzIDUsesRecentListenBrainzMSID() async {
+        // Given MusicBrainz cannot resolve the track, but ListenBrainz recently heard it and has an MSID.
+        let api = MockAPI()
+        let monitor = TestMonitor()
+        var pinPostCount = 0
+        let urlSession = makeMockedSession { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch (request.httpMethod, request.url?.path) {
+            case ("GET", "/ws/2/recording"):
+                return (response, Data(#"{"recordings":[]}"#.utf8))
+            case ("GET", "/ws/2/artist"):
+                return (response, Data(#"{"artists":[]}"#.utf8))
+            case ("GET", "/ws/2/release"):
+                return (response, Data(#"{"releases":[]}"#.utf8))
+            case ("GET", "/1/user/tester/listens"):
+                return (response, Data(#"{"payload":{"listens":[{"listened_at":1781040000,"track_metadata":{"artist_name":"The Durutti Column","track_name":"If You Were Me (XFM Session 2006)","additional_info":{"recording_msid":"durutti-msid"}}}]}}"#.utf8))
+            case ("GET", "/1/tester/pins/current"):
+                if pinPostCount > 0 {
+                    return (response, Data(#"{"pinned_recording":{"row_id":12,"recording_msid":"durutti-msid","track_metadata":{"artist_name":"The Durutti Column","track_name":"If You Were Me (XFM Session 2006)"}}}"#.utf8))
+                }
+                return (response, Data(#"{"pinned_recording":null}"#.utf8))
+            case ("GET", "/1/tester/pins"), ("GET", "/1/tester/pins/following"):
+                return (response, Data(#"{"pinned_recordings":[]}"#.utf8))
+            case ("POST", "/1/pin"):
+                pinPostCount += 1
+                return (response, Data(#"{"status":"ok"}"#.utf8))
+            default:
+                XCTFail("Unexpected request \(request.httpMethod ?? "") \(request.url?.path ?? "")")
+                return (response, Data(#"{}"#.utf8))
+            }
+        }
+        let listenBrainz = configuredListenBrainzService(urlSession: urlSession)
+        let musicBrainz = MusicBrainzService(urlSession: urlSession)
+        let service = ScrobbleService(
+            api: api,
+            listenBrainz: listenBrainz,
+            musicBrainz: musicBrainz,
+            monitor: monitor,
+            sessionStore: InMemorySessionStore(),
+            queueStore: InMemoryQueueStore()
+        )
+
+        // When the user presses Pin on that track.
+        let didPin = await service.pinListenBrainzTrack(
+            title: "If You Were Me (XFM Session 2006)",
+            artist: "The Durutti Column",
+            album: nil,
+            recordingMbid: nil
+        )
+
+        // Then the pin still succeeds by posting the ListenBrainz recording MSID.
+        XCTAssertTrue(didPin, "Tracks missing a MusicBrainz recording ID should still be pinnable when ListenBrainz provides an MSID.")
+        XCTAssertEqual(service.listenBrainzCurrentPin?.recordingMsid, "durutti-msid", "The refreshed current pin should be matched by MSID.")
+        XCTAssertEqual(pinPostCount, 1, "Only one remote pin request should be sent.")
+    }
+
+    @MainActor
     func testAccountFooterPrefersListenBrainzIdentity() async {
         let api = MockAPI()
         api.isAuthenticated = false
