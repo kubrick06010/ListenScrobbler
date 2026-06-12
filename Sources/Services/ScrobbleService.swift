@@ -1505,6 +1505,19 @@ final class ScrobbleService: ObservableObject {
     }
 
     func toggleLove(scrobble: CompatibilityRecentScrobble) async {
+        if listenBrainzEnabled {
+            await toggleListenBrainzLove(
+                title: scrobble.track,
+                artist: scrobble.artist,
+                album: scrobble.album,
+                recordingMbid: nil,
+                recordingMsid: nil,
+                currentlyLoved: scrobble.loved,
+                sourceScrobbleID: scrobble.id
+            )
+            return
+        }
+
         do {
             if scrobble.loved {
                 try await api.unlove(track: scrobble.track, artist: scrobble.artist)
@@ -1516,6 +1529,87 @@ final class ScrobbleService: ObservableObject {
         } catch {
             handle(error: error)
         }
+    }
+
+    func toggleListenBrainzLove(
+        title: String,
+        artist: String,
+        album: String?,
+        recordingMbid: String?,
+        recordingMsid: String?,
+        currentlyLoved: Bool,
+        sourceScrobbleID: String? = nil
+    ) async {
+        guard !isUpdatingListenBrainzFeedback else { return }
+
+        refreshListenBrainzState()
+        guard listenBrainzEnabled else {
+            listenBrainzFeedbackStatus = "Connect ListenBrainz to love tracks"
+            return
+        }
+
+        isUpdatingListenBrainzFeedback = true
+        let shouldLove = !currentlyLoved
+        let displayTitle = title.nilIfBlank ?? "track"
+        listenBrainzFeedbackStatus = shouldLove ? "Loving \(displayTitle)..." : "Removing love for \(displayTitle)..."
+        defer { isUpdatingListenBrainzFeedback = false }
+
+        do {
+            let identity = try await listenBrainzFeedbackIdentity(
+                title: title,
+                artist: artist,
+                album: album,
+                recordingMbid: recordingMbid,
+                recordingMsid: recordingMsid
+            )
+            switch identity {
+            case let .recordingMBID(mbid):
+                if shouldLove {
+                    try await listenBrainz.loveRecording(recordingMbid: mbid)
+                } else {
+                    try await listenBrainz.unloveRecording(recordingMbid: mbid)
+                }
+            case let .recordingMSID(msid):
+                if shouldLove {
+                    try await listenBrainz.loveRecording(recordingMsid: msid)
+                } else {
+                    try await listenBrainz.unloveRecording(recordingMsid: msid)
+                }
+            }
+
+            if let sourceScrobbleID {
+                updateLovedState(for: sourceScrobbleID, loved: shouldLove)
+            }
+            listenBrainzFeedbackStatus = shouldLove ? "Loved \(displayTitle)" : "Removed love for \(displayTitle)"
+        } catch {
+            handleListenBrainz(error: error)
+            listenBrainzFeedbackStatus = shouldLove ? "Could not love \(displayTitle)" : "Could not remove love for \(displayTitle)"
+        }
+    }
+
+    func isCurrentListenBrainzPin(
+        title: String,
+        artist: String,
+        recordingMbid: String? = nil,
+        recordingMsid: String? = nil
+    ) -> Bool {
+        guard let currentPin = listenBrainzCurrentPin else { return false }
+        if let recordingMbid = recordingMbid?.nilIfBlank,
+           let currentMbid = currentPin.recordingMbid?.nilIfBlank,
+           recordingMbid.caseInsensitiveCompare(currentMbid) == .orderedSame {
+            return true
+        }
+        if let recordingMsid = recordingMsid?.nilIfBlank,
+           let currentMsid = currentPin.recordingMsid?.nilIfBlank,
+           recordingMsid.caseInsensitiveCompare(currentMsid) == .orderedSame {
+            return true
+        }
+        return listenIdentityMatches(
+            track: currentPin.trackName,
+            artist: currentPin.artistName,
+            title: title,
+            requestedArtist: artist
+        )
     }
 
     private func updateLovedState(for id: String, loved: Bool) {
@@ -2306,26 +2400,44 @@ final class ScrobbleService: ObservableObject {
     }
 
     private func listenBrainzFeedbackIdentity(for track: Track) async throws -> ListenBrainzFeedbackIdentity {
-        if let recordingMBID = currentOpenEntityDetails?.recordingMBID?.nilIfBlank {
-            return .recordingMBID(recordingMBID)
-        }
-
-        if let recordingMSID = currentListenBrainzRecordingMSID?.nilIfBlank {
-            return .recordingMSID(recordingMSID)
-        }
-
-        if let recordingMSID = await listenBrainzRecentRecordingMSID(title: track.title, artist: track.artist, forceRefresh: true) {
+        let identity = try await listenBrainzFeedbackIdentity(
+            title: track.title,
+            artist: track.artist,
+            album: track.album,
+            recordingMbid: currentOpenEntityDetails?.recordingMBID,
+            recordingMsid: currentListenBrainzRecordingMSID
+        )
+        if case let .recordingMSID(recordingMSID) = identity {
             currentListenBrainzRecordingMSID = recordingMSID
-            return .recordingMSID(recordingMSID)
         }
+        return identity
+    }
 
-        let details = try await musicBrainz.lookup(track: track.title, artist: track.artist, release: track.album)
-        if let recordingMBID = details.recordingMBID?.nilIfBlank {
-            currentOpenEntityDetails = details
+    private func listenBrainzFeedbackIdentity(
+        title: String,
+        artist: String,
+        album: String?,
+        recordingMbid: String?,
+        recordingMsid: String?
+    ) async throws -> ListenBrainzFeedbackIdentity {
+        if let recordingMBID = recordingMbid?.nilIfBlank {
             return .recordingMBID(recordingMBID)
         }
 
-        throw ListenBrainzError.api(message: "No ListenBrainz recording identity found for \(track.title).")
+        if let recordingMSID = recordingMsid?.nilIfBlank {
+            return .recordingMSID(recordingMSID)
+        }
+
+        if let recordingMSID = await listenBrainzRecentRecordingMSID(title: title, artist: artist, forceRefresh: true) {
+            return .recordingMSID(recordingMSID)
+        }
+
+        let details = try await musicBrainz.lookup(track: title, artist: artist, release: album)
+        if let recordingMBID = details.recordingMBID?.nilIfBlank {
+            return .recordingMBID(recordingMBID)
+        }
+
+        throw ListenBrainzError.api(message: "No ListenBrainz recording identity found for \(title).")
     }
 
     private func listenBrainzRecentRecordingMSID(

@@ -1,386 +1,132 @@
 # OpenScrobbler Roadmap
 
-This roadmap replaces the earlier "clean home" placeholder state with an execution plan based on the code currently present in this repository.
+OpenScrobbler 1.0.0 is the official baseline for the app: a native macOS client for open listening history with ListenBrainz submission, MusicBrainz-aware enrichment, local-first memory features, and a reorganized SwiftUI codebase.
 
-The short version:
+The roadmap below is intentionally post-1.0. It treats the current release as the product foundation and focuses future work on improving depth, maintainability, and polish in small reviewed increments.
 
-- The app already has a functional macOS shell, queueing, menu bar workflow, local-first vault features, and a first ListenBrainz integration.
-- The product is now recognizably aligned with the ListenBrainz-first repository vision.
-- The main remaining work is to finish the architecture migration into an OpenScrobbler domain built around ListenBrainz, MusicBrainz, and portable user-owned listening data.
+## 1.0.0 Baseline
 
-## Product Goal
+The release includes:
 
-OpenScrobbler should become the native desktop home for open listening history:
+- Native macOS SwiftUI app shell with sidebar navigation, settings, menu bar controls, launch-at-login, proxy support, diagnostics, and player monitoring.
+- ListenBrainz token validation, now-playing submission, completed listen submission, recent listens, stats, feedback, and pin workflows.
+- Love/unlove, pin/unpin, and share actions on listen rows where those actions are meaningful.
+- Offline queueing with retry state and local persistence.
+- Charts, reports, listening clock, archive views, social discovery surfaces, and graph experiments built around open listening data.
+- Shared and Obsessions vaults with local persistence, import/export, and ListenBrainz pin integration.
+- A feature-folder SwiftUI structure backed by `docs/ENGINEERING_PRACTICES.md`.
+- A passing build and unit test suite for the release branch.
 
-- ListenBrainz-first for account, submission, charts, recent listens, profile context, playlists, pins, recommendations, and open social discovery.
-- MusicBrainz-aware for portable identifiers and cleaner metadata.
-- Local-first for resilience, memory features, exports, and user ownership.
-- Temporary migration shims only where they are still needed, with the end state clearly centered on ListenBrainz, MusicBrainz, and portable local data.
+## Product Direction
 
-## Current State
+OpenScrobbler should remain:
 
-### Already working
+- ListenBrainz-first for identity, submission, listens, charts, pins, recommendations, and social discovery.
+- MusicBrainz-aware for portable identifiers, cleaner metadata, and open ecosystem compatibility.
+- Local-first for queue resilience, user-owned memories, exports, and future archive portability.
+- Native to macOS in interaction quality, keyboard/mouse ergonomics, and menu bar workflows.
 
-- Native macOS app shell with window, settings, menu bar extra, launch-at-login, and proxy support.
-- Track monitoring, scrobble thresholds, queue persistence, retry behavior, and diagnostics.
-- ListenBrainz token validation and native JSON submission for now playing and completed listens.
-- ListenBrainz archive charts for recent listens, top artists, top recordings, top releases, and total listen count.
-- Shared and Obsessions vaults with local persistence and portable import/export.
-- Build succeeds and the current test suite passes.
+## Engineering Rules
 
-### Not yet aligned with the intended product
+Every roadmap item should follow `docs/ENGINEERING_PRACTICES.md`.
 
-- Core orchestration still exposes some migration-era models and naming.
-- Social/profile/detail flows need continued ListenBrainz and MusicBrainz hardening.
-- Queue and storage migration is incomplete; some paths still use legacy `LegacyOpenScrobbler` naming.
-- ListenBrainz support is useful but still incomplete relative to the product vision.
-- Test coverage is decent for the baseline but not yet strong enough for a broad migration.
-- The current app icon works as a placeholder, but it does not yet feel distinctive or premium.
+- Keep `ContentView` as shell and wiring only.
+- Place feature UI in feature folders.
+- Move reusable controls into `Sources/UI/Components`.
+- Keep service, persistence, and parsing logic outside SwiftUI presentation code.
+- Run `xcodegen generate` after source layout or project changes.
+- Run build and tests for service, model, persistence, or release-critical UI work.
 
-## Guiding Principles
+## Post-1.0 Priorities
 
-1. Finish the architecture migration before stacking too many surface-level features.
-2. Make ListenBrainz the primary backend and retire legacy service-shaped assumptions from the app surface.
-3. Keep local-first resilience as a core product value, not an optional extra.
-4. Prefer portable identifiers and stable domain models over service-specific terminology.
-5. Expand only behind tests, fixtures, and deterministic infrastructure.
-6. Use design polish to clarify the product direction, not merely decorate it.
+### 1. Domain Cleanup
 
-## Phase 1: Identity And Domain Migration
+Reduce migration-era naming and compatibility-provider assumptions in app-facing code.
 
-### Goals
+Targets:
 
-- Remove the remaining technical identity drift from compatibility-provider structures.
-- Introduce a provider-neutral domain model that the rest of the app can build on.
+- Continue shrinking `ScrobbleService` into provider-neutral orchestration.
+- Move remaining compatibility-provider concepts behind adapters.
+- Keep new models centered on listens, recordings, releases, artists, users, pins, playlists, and local archives.
+- Add migration tests before changing persisted data paths.
 
-### Deliverables
+### 2. ListenBrainz Depth
 
-- Replace remaining legacy storage paths and migration leftovers with `OpenScrobbler` identities.
-- Add migration code so existing users keep queue, vault, and account data.
-- Introduce domain-first models such as:
-  - `Listen`
-  - `Recording`
-  - `Release`
-  - `Artist`
-  - `User`
-  - `Connection`
-  - `Playlist`
-- Reduce direct `Compatibility*` model exposure from the main app layer.
-- Split backend adapters from app-facing view models and orchestration.
-- Make queue logic backend-neutral by default, while still supporting per-backend state.
+Make the ListenBrainz integration feel complete across the app.
 
-### Acceptance criteria
+Targets:
 
-- No new persistence written into legacy compatibility paths.
-- The app can read legacy state and rewrite it into the new structure.
-- New features can be added without introducing compatibility-provider-specific types into the app shell.
+- Expand playlist support.
+- Improve follow and public-user discovery flows.
+- Cache recent listens, stats, pins, and recommendations with clear refresh behavior.
+- Improve diagnostics for token, network, endpoint, and partial-data failures.
+- Continue using MBIDs where available and MSID fallback where needed.
 
-## Phase 2: ListenBrainz As Primary Backend
+### 3. MusicBrainz And Metadata Quality
 
-### Goals
+Strengthen enrichment without making partial metadata feel broken.
 
-- Move from "ListenBrainz integration" to "ListenBrainz-led product behavior".
+Targets:
 
-### Deliverables
+- Store artist, recording, and release MBIDs when available.
+- Improve album-specific resolution and compilation handling.
+- Track metadata provenance where it helps diagnostics.
+- Add deduplication rules that prefer stable identifiers over display strings.
 
-- Expand `ListenBrainzService` to support:
-  - profile/user context
-  - richer recent listens
-  - playlists
-  - pins
-  - follow relationships
-  - recommendation surfaces
-  - metadata lookup hooks and MBID hydration
-- Add robust caching and refresh policies for archive data.
-- Expand queue and diagnostics to clearly show per-backend success and failure states.
-- Add self-hosted / compatible endpoint validation hardening.
-- Improve error handling and user guidance around invalid token, disabled scopes, network failures, and partial data.
+### 4. Social Discovery
 
-### Acceptance criteria
+Grow discovery around open listening behavior rather than closed social assumptions.
 
-- A connected ListenBrainz account can drive the main archive experience.
-- Now playing, completed listen submission, charts, and recent listens feel like one coherent backend, not an add-on.
-- Queue behavior is stable under partial backend outages.
+Targets:
 
-## Phase 3: Open Social Discovery
+- Public listening overlap.
+- Similar users and related artists.
+- Recommendation-driven exploration.
+- Graph views that explain why a connection exists.
+- Local-first social analysis that still works when remote data is incomplete.
 
-### Goals
+### 5. Vault Evolution
 
-- Rebuild social discovery around ListenBrainz-compatible and open-data concepts.
+Keep Shared and Obsessions as user-owned memory systems.
 
-### Deliverables
+Targets:
 
-- Replace compatibility-provider "profile/friends/neighbours/subscriber" framing in the main UI with:
-  - public listening overlap
-  - follows / follow graph
-  - related users or discovery candidates
-  - recommendation-driven exploration
-  - graph-based local analysis
-- Add a dedicated social discovery surface driven by:
-  - ListenBrainz relationships when available
-  - public listen overlap heuristics
-  - local graph analysis and memory context
-- Introduce recommendation cards and person-to-person archive context.
-- Do not reintroduce legacy service vocabulary into primary navigation, naming, or feature framing.
+- Better filtering and tagging.
+- Versioned import/export formats.
+- Playlist-compatible exports.
+- Optional flows from pins to obsessions and from vault items to playlists.
 
-### Acceptance criteria
+### 6. UI And Accessibility Polish
 
-- Social discovery is understandable without legacy provider vocabulary.
-- The app has at least one clear ListenBrainz-first discovery flow and one open-data graph exploration flow.
+Make the app feel calmer, faster, and more discoverable.
 
-## Phase 4: MusicBrainz And Metadata Enrichment
+Targets:
 
-### Goals
+- Refine empty, loading, error, and partial-data states.
+- Audit keyboard navigation and VoiceOver labels for primary controls.
+- Keep action icons consistent across dashboard, listens, charts, and vault contexts.
+- Continue splitting large cohesive views when new behavior would push them beyond their responsibility.
 
-- Make the archive more portable and semantically clean.
+### 7. Test And Release Automation
 
-### Deliverables
+Reduce release risk as the app grows.
 
-- Store MBIDs whenever possible for artist, recording, and release entities.
-- Add best-effort enrichment for listens that arrive with incomplete metadata.
-- Improve deduplication and cross-source merging using identifiers when present.
-- Surface metadata quality and provenance in diagnostics where useful.
+Targets:
 
-### Acceptance criteria
+- Add focused tests for ListenBrainz feedback, pins, playlists, and sparse payload decoding.
+- Add persistence and migration tests before changing storage paths.
+- Keep release validation documented in `docs/RELEASE_PROCESS.md`.
+- Add notarization once Apple Developer credentials are available in GitHub Actions.
 
-- Archive items can carry stable identifiers beyond display strings.
-- UI remains forgiving when metadata is partial or unavailable.
+## Release Policy
 
-## Phase 5: Shared And Obsessions Evolution
+Patch releases should fix defects or low-risk polish. Minor releases should introduce focused user-facing capabilities. Major releases should be reserved for durable product or storage-contract changes.
 
-### Goals
+Release branches should update:
 
-- Keep local-first memory features, but align them with the open archive direction.
+- `project.yml`
+- `CHANGELOG.md`
+- public docs affected by the change
+- generated Xcode project files
 
-### Deliverables
-
-- Strengthen the current vault model with better filtering, tagging groundwork, and provenance detail.
-- Add export pathways that can evolve toward open playlist/list formats.
-- Explore ListenBrainz-connected enhancements:
-  - export shared bundles as playlist-compatible artifacts
-  - optional pin-driven obsession import
-  - optional "archive to playlist" pathways
-- Keep imports and exports versioned and migration-safe.
-
-### Acceptance criteria
-
-- Vault features remain user-owned and portable.
-- Their structure is compatible with future open archive and playlist integration.
-
-## Phase 6: UI And Product Polish
-
-### Goals
-
-- Make the app feel intentionally designed around "open listening history" rather than around a migrated prototype.
-
-### Deliverables
-
-- Refine dashboard and settings language to consistently reflect the ListenBrainz-first product.
-- Improve hierarchy and affordances around:
-  - queue state
-  - backend state
-  - archive status
-  - discovery
-  - local memory features
-- Tighten responsive behavior and visual QA across light mode, dark mode, narrow layouts, and large desktop widths.
-- Review menu bar workflow for speed and clarity.
-
-### Acceptance criteria
-
-- The app reads as one product, not as a stitched migration.
-- Primary tasks are discoverable without knowing the project history.
-
-## Phase 7: Test Overhaul
-
-### Goals
-
-- Make the migration safe and keep the backend expansion maintainable.
-
-### Deliverables
-
-- Add `ListenBrainzService` test coverage for:
-  - token validation
-  - missing token
-  - invalid token
-  - HTTP failure mapping
-  - `playing_now` payload shape
-  - completed listen payload shape
-  - stats decoding
-  - partial / sparse payloads
-  - custom base URL behavior
-- Add storage and migration tests for:
-  - queue migration from legacy layout
-  - vault schema compatibility
-  - account storage migration
-- Expand `ScrobbleServiceTests` for:
-  - dual-backend success/failure combinations
-  - partial submission success
-  - per-backend retry behavior
-  - queue deduplication across backends
-  - pause/resume and race conditions
-  - offline recovery
-  - validation state transitions
-- Introduce deterministic test infrastructure:
-  - URL loading mocks via `URLProtocol`
-  - injectable token store
-  - injectable clock/scheduler where timing matters
-  - temp-directory-backed persistence
-- Add UI tests for:
-  - ListenBrainz account setup
-  - queue and diagnostics views
-  - archive charts loading states
-  - vault import/export entry points
-- Add snapshot or visual regression coverage for core surfaces if the project adopts a snapshot tool.
-
-### Acceptance criteria
-
-- Critical queue, storage, and backend transitions are covered by deterministic tests.
-- Regression risk is materially lower during refactors.
-
-## Phase 8: Icon And Brand Refresh
-
-### Goals
-
-- Replace the current functional placeholder icon with a more elegant, memorable identity.
-
-### Current icon assessment
-
-- The present icon communicates "music + orbit + dashboard", but it is visually busy.
-- The multiple outline frames dilute the silhouette.
-- The symbol loses distinctiveness at small sizes.
-- The palette is serviceable but does not yet feel premium.
-
-### New icon direction
-
-- Favor one dominant silhouette over decorative framing.
-- Keep the concept of "open archive + rhythm" rather than literal app chrome.
-- Ensure recognizability at menu bar, small app icon, and large Finder sizes.
-
-### Recommended direction
-
-`Open disc + minimal waveform`
-
-- A circular open arc suggests archive, orbit, and openness.
-- A compact vertical waveform or pulse shape suggests live listening/scrobbling.
-- A restrained accent node can hint at graph/discovery if it remains subtle.
-- Background should be richer and calmer than the current neon-leaning treatment.
-
-### Deliverables
-
-- 2-3 icon explorations before choosing a final direction.
-- Updated app icon set across all asset sizes.
-- Refined monochrome menu bar glyph tuned separately from the app icon.
-- Visual QA on light and dark menu bars and Finder/Desktop contexts.
-
-### Acceptance criteria
-
-- The icon remains legible at 16px and 32px.
-- The final mark feels more premium and less prototype-like.
-- The menu bar icon has crisp state contrast for enabled/disabled scrobbling.
-
-## Phase 9: Release Hardening
-
-### Goals
-
-- Prepare the app for reliable iteration and eventual distribution.
-
-### Deliverables
-
-- Better diagnostics and support export for backend and queue issues.
-- Stronger recovery messaging for auth, network, and partial backend failure.
-- Signing and notarization readiness.
-- Clear release notes structure based on roadmap phases.
-- Optional GitHub Actions coverage for build/test validation.
-
-### Acceptance criteria
-
-- The app is easier to support, ship, and iterate without hidden migration risk.
-
-## Suggested Execution Order
-
-1. Phase 1: Identity and domain migration
-2. Phase 7: Test overhaul foundations in parallel with Phase 1
-3. Phase 2: ListenBrainz primary backend completion
-4. Phase 3: Open social discovery
-5. Phase 4: MusicBrainz enrichment
-6. Phase 5: Shared and Obsessions evolution
-7. Phase 6: UI and product polish
-8. Phase 8: Icon and brand refresh
-9. Phase 9: Release hardening
-
-## Immediate Next Sprint
-
-The next sprint should focus on the highest-leverage structural work:
-
-- Replace remaining `LegacyOpenScrobbler` persistence paths with migration support.
-- Define provider-neutral domain models and a migration boundary around `ScrobbleService`.
-- Create `ListenBrainzServiceTests`.
-- Expand queue and backend-state tests for dual-backend behavior.
-- Draft 2-3 icon directions and choose one.
-
-## Expanded ListenBrainz And MusicBrainz Product Plan
-
-This section captures the product expansion requested after the first baseline review.
-
-### Neighbor Listening
-
-Status: first native pass implemented.
-
-- Show recent public listens from users you follow and users who follow you.
-- Keep this explicitly ListenBrainz-based, using public listen history rather than legacy provider friend activity.
-- Next: add filters for followers, following, similar users, and "currently active" inferred from recent timestamps.
-
-### ListenBrainz-Style Stats And Graphs
-
-Status: first native activity chart implemented.
-
-- Port ListenBrainz statistics gradually instead of embedding website pages.
-- Current app coverage now includes top artists, recordings, releases, artist origins, affinity graph experiments, and listening activity.
-- Next: add listening activity comparison against previous period, daily/weekly heatmaps, release-group stats, year-in-music summaries, and better empty/loading states.
-
-### Track, Artist, Album, And Related Entity Detail
-
-Status: first open metadata inspector implemented.
-
-- The inspector now performs a MusicBrainz lookup for opened tracks, artists, and releases.
-- It surfaces recording, artist, and release MBIDs, tags, country/type/disambiguation, and direct MusicBrainz/ListenBrainz links.
-- Share and obsession drafts now preserve resolved MBIDs when available.
-- Next: prefer ListenBrainz-supplied MBIDs before fuzzy MusicBrainz search, add release-group/work links, cover art, and richer relationship graphs.
-
-### Profile Direction
-
-ListenBrainz has account and social data but not a full personal profile surface in the same product sense. MusicBrainz has authenticated user profile and collection/rating/tag capabilities through OAuth, including public profile scope and optional collection/tag/rating scopes.
-
-Planned direction:
-
-- Treat the in-app "profile" as an OpenScrobbler profile assembled from ListenBrainz account/listening data plus optional MusicBrainz identity.
-- Add a MusicBrainz connection later via OAuth, not token scraping.
-- Once connected, show public MusicBrainz profile metadata and optional collections/ratings/tags only when the user grants scopes.
-
-### Sharing Completion Criteria
-
-Status: partially implemented, not 100%.
-
-- Implemented: portable local vault sharing/import/export, JSPF-compatible export paths, ListenBrainz recommendation sending to selected followers, pins, and playlist creation from recommendations.
-- Not yet complete: robust delivery receipts, received recommendation inbox/timeline reads, retry/diagnostic surface for failed recommendation sends, richer recipient discovery, and round-trip tests against more OpenAPI fixtures.
-
-### Icon Direction
-
-Status: first asset pass implemented.
-
-Chosen concept: `open archive ring + listening pulse`.
-
-- One open circular archive mark replaces the busier framed/orbit icon.
-- A central pulse makes the scrobbling/listening action legible at small sizes.
-- A small node suggests open graph/discovery without cluttering the silhouette.
-- The menu bar glyph is a separate monochrome simplification for contrast.
-
-## Definition Of Success
-
-OpenScrobbler will be "aligned with the repo vision" when:
-
-- ListenBrainz is the primary account and archive experience.
-- The app's domain language is no longer legacy provider-shaped.
-- Queueing, migration, and backend expansion are protected by strong tests.
-- Shared and Obsessions remain local-first, portable, and future-compatible.
-- The UI and icon feel like a confident product rather than a transplanted prototype.
+Do not tag a release until the release branch is merged and validated on `main`.

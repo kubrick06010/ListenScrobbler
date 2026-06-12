@@ -111,7 +111,7 @@ Payload shape:
         "additional_info": {
           "media_player": "OpenScrobbler",
           "submission_client": "OpenScrobbler",
-          "submission_client_version": "0.1.0"
+          "submission_client_version": "1.0.0"
         }
       }
     }
