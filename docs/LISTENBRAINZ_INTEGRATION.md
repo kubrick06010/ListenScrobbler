@@ -32,6 +32,7 @@ ListenBrainz in `OpenScrobbler` should cover:
 - similar users and compatibility
 - recommendations
 - pins
+- love/unlove recording feedback
 - playlists
 - artist geography
 - radio and affinity-based discovery
@@ -47,6 +48,7 @@ Already present in the app:
 - recent listens, top artists, top releases, top recordings, and total listen counts
 - followers, following, and recommendation flows
 - playlist and pin support
+- love/unlove support for the current track through recording feedback
 - artist origins and artist affinity graph experiments
 - deterministic tests for the core ListenBrainz flows already implemented
 
@@ -125,6 +127,31 @@ Mapping from app `Track`:
 - scrobble completion time -> `listened_at`
 - `track.sourceApp` -> `additional_info.media_player` when useful
 
+When sending `playing_now`, OpenScrobbler requests `return_msid=true`. ListenBrainz can return a `recording_msid` for the now-playing listen, which the app keeps with the current track and reuses for feedback when no MusicBrainz recording MBID is available.
+
+## Feedback Model
+
+OpenScrobbler uses the native ListenBrainz recording feedback endpoint:
+
+```json
+{
+  "recording_msid": "d23f4719-9212-49f0-ad08-ddbfbfc50d6f",
+  "score": 1
+}
+```
+
+Feedback scores:
+
+- `1` marks the recording as loved.
+- `0` removes the user's feedback, which is the app's unlove action.
+
+Identity resolution order for current-track love/unlove:
+
+1. Prefer the MusicBrainz recording MBID from current open metadata.
+2. Use the `recording_msid` returned by the current `playing_now` submission.
+3. Refresh recent ListenBrainz listens and match title/artist to recover an MSID.
+4. Resolve the recording through MusicBrainz as a final MBID fallback.
+
 ## Service Architecture
 
 `ListenBrainzService` should continue evolving toward a small reusable request core:
@@ -191,6 +218,8 @@ The ListenBrainz test suite should cover:
 - missing token behavior
 - invalid token behavior
 - request decoding for charts, social, playlists, pins, artist map, and radio
+- feedback submission with MBID and MSID identities
+- `playing_now` `return_msid` decoding
 - compatibility and similar users payloads
 - partial and sparse payloads
 - custom base URL behavior

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.3 - 2026-06-12
+
+### Added
+
+- ListenBrainz love/unlove controls for the current track, using the official recording feedback endpoint.
+- `playing_now` submissions now request a `recording_msid` so feedback can work even when MusicBrainz has not resolved a recording MBID yet.
+
+### Fixed
+
+- Reused the existing ListenBrainz recent-listen MSID fallback for feedback, matching the pin flow for tracks without MBIDs.
+
 ## 0.1.2 - 2026-06-10
 
 ### Added

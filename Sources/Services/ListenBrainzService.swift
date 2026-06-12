@@ -431,14 +431,20 @@ final class ListenBrainzService {
         )
     }
 
-    func nowPlaying(_ track: Track) async throws {
-        guard isReadyForNowPlaying else { return }
-        try await submit(listenType: "playing_now", track: track, includeTimestamp: false)
+    func nowPlaying(_ track: Track) async throws -> String? {
+        guard isReadyForNowPlaying else { return nil }
+        let response = try await submit(
+            listenType: "playing_now",
+            track: track,
+            includeTimestamp: false,
+            queryItems: [URLQueryItem(name: "return_msid", value: "true")]
+        )
+        return response.recordingMSID?.nilIfBlank
     }
 
     func submitListen(_ track: Track) async throws {
         guard isReadyForListenSubmission else { return }
-        try await submit(listenType: "single", track: track, includeTimestamp: true)
+        _ = try await submit(listenType: "single", track: track, includeTimestamp: true)
     }
 
     func fetchStatsSnapshot(username: String, range: ListenBrainzStatsRange, count: Int = 25) async throws -> ListenBrainzStatsSnapshot {
@@ -987,6 +993,22 @@ final class ListenBrainzService {
         )
     }
 
+    func loveRecording(recordingMbid: String) async throws {
+        try await submitRecordingFeedback(recordingMbid: recordingMbid, recordingMsid: nil, score: 1)
+    }
+
+    func loveRecording(recordingMsid: String) async throws {
+        try await submitRecordingFeedback(recordingMbid: nil, recordingMsid: recordingMsid, score: 1)
+    }
+
+    func unloveRecording(recordingMbid: String) async throws {
+        try await submitRecordingFeedback(recordingMbid: recordingMbid, recordingMsid: nil, score: 0)
+    }
+
+    func unloveRecording(recordingMsid: String) async throws {
+        try await submitRecordingFeedback(recordingMbid: nil, recordingMsid: recordingMsid, score: 0)
+    }
+
     func pinRecording(recordingMsid: String, blurb: String? = nil, pinnedUntil: Date? = nil) async throws {
         try await postAuthorized(
             pathComponents: ["1", "pin"],
@@ -1040,7 +1062,12 @@ final class ListenBrainzService {
         )
     }
 
-    private func submit(listenType: String, track: Track, includeTimestamp: Bool) async throws {
+    private func submit(
+        listenType: String,
+        track: Track,
+        includeTimestamp: Bool,
+        queryItems: [URLQueryItem] = []
+    ) async throws -> ListenBrainzSubmitResponse {
         let payload = ListenBrainzSubmitRequest(
             listenType: listenType,
             payload: [
@@ -1059,17 +1086,39 @@ final class ListenBrainzService {
                 )
             ]
         )
-        try await postAuthorized(pathComponents: ["1", "submit-listens"], body: payload)
+        let data = try await postAuthorized(pathComponents: ["1", "submit-listens"], queryItems: queryItems, body: payload)
+        guard !data.isEmpty else { return ListenBrainzSubmitResponse(status: nil, recordingMSID: nil) }
+        return try JSONDecoder().decode(ListenBrainzSubmitResponse.self, from: data)
     }
 
-    private func postAuthorized<T: Encodable>(pathComponents: [String], body: T) async throws {
+    private func submitRecordingFeedback(recordingMbid: String?, recordingMsid: String?, score: Int) async throws {
+        let request = ListenBrainzRecordingFeedbackRequest(
+            recordingMbid: recordingMbid?.nilIfBlank,
+            recordingMsid: recordingMsid?.nilIfBlank,
+            score: score
+        )
+        guard request.recordingMbid != nil || request.recordingMsid != nil else {
+            throw ListenBrainzError.api(message: "Missing recording identity for ListenBrainz feedback.")
+        }
+        _ = try await postAuthorized(pathComponents: ["1", "feedback", "recording-feedback"], body: request)
+    }
+
+    @discardableResult
+    private func postAuthorized<T: Encodable>(
+        pathComponents: [String],
+        queryItems: [URLQueryItem] = [],
+        body: T
+    ) async throws -> Data {
         guard let token else { throw ListenBrainzError.missingToken }
-        var request = URLRequest(url: pathURL(pathComponents))
+        var components = URLComponents(url: pathURL(pathComponents), resolvingAgainstBaseURL: false)
+        components?.queryItems = queryItems.isEmpty ? nil : queryItems
+        guard let url = components?.url else { throw ListenBrainzError.invalidResponse }
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Token \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(body)
-        _ = try await send(request, allowNoContent: false)
+        return try await send(request, allowNoContent: false)
     }
 
     private func postPublicJSON<Body: Encodable, Response: Decodable>(
@@ -1842,6 +1891,16 @@ private struct ListenBrainzSubmitRequest: Encodable {
     }
 }
 
+private struct ListenBrainzSubmitResponse: Decodable {
+    let status: String?
+    let recordingMSID: String?
+
+    enum CodingKeys: String, CodingKey {
+        case status
+        case recordingMSID = "recording_msid"
+    }
+}
+
 private struct ListenBrainzListenPayload: Encodable {
     let listenedAt: Int?
     let trackMetadata: ListenBrainzTrackMetadata
@@ -1917,6 +1976,18 @@ private struct ListenBrainzPinRequest: Encodable {
         case recordingMbid = "recording_mbid"
         case blurbContent = "blurb_content"
         case pinnedUntil = "pinned_until"
+    }
+}
+
+private struct ListenBrainzRecordingFeedbackRequest: Encodable {
+    let recordingMbid: String?
+    let recordingMsid: String?
+    let score: Int
+
+    enum CodingKeys: String, CodingKey {
+        case recordingMbid = "recording_mbid"
+        case recordingMsid = "recording_msid"
+        case score
     }
 }
 

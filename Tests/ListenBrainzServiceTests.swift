@@ -95,6 +95,51 @@ final class ListenBrainzServiceTests: XCTestCase {
         XCTAssertEqual(ListenBrainzURLProtocol.requests.count, 1)
     }
 
+    func testNowPlayingRequestsRecordingMSIDForFeedback() async throws {
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.path, "/1/submit-listens")
+            XCTAssertTrue(request.url?.query?.contains("return_msid=true") == true)
+            let body = try XCTUnwrap(request.httpBodyData)
+            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            XCTAssertEqual(json["listen_type"] as? String, "playing_now")
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data(#"{"status":"ok","recording_msid":"msid-1"}"#.utf8))
+        }
+
+        let recordingMSID = try await service.nowPlaying(
+            Track(
+                title: "Track",
+                artist: "Artist",
+                album: "Album",
+                duration: 180,
+                startedAt: Date(timeIntervalSince1970: 1_700_000_000)
+            )
+        )
+
+        XCTAssertEqual(recordingMSID, "msid-1")
+    }
+
+    func testLoveAndUnloveRecordingSubmitFeedbackScores() async throws {
+        var scores: [Int] = []
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.path, "/1/feedback/recording-feedback")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Token token")
+            let body = try XCTUnwrap(request.httpBodyData)
+            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            XCTAssertEqual(json["recording_msid"] as? String, "msid-1")
+            scores.append(try XCTUnwrap(json["score"] as? Int))
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data(#"{"status":"ok"}"#.utf8))
+        }
+
+        try await service.loveRecording(recordingMsid: "msid-1")
+        try await service.unloveRecording(recordingMsid: "msid-1")
+
+        XCTAssertEqual(scores, [1, 0])
+    }
+
     func testFetchStatsSnapshotDecodesSparseMetadata() async throws {
         let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
             let path = request.url!.path
@@ -636,7 +681,7 @@ final class ListenBrainzServiceTests: XCTestCase {
     }
 }
 
-private extension URLRequest {
+extension URLRequest {
     var httpBodyData: Data? {
         if let httpBody {
             return httpBody

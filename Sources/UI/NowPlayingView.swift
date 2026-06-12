@@ -17,8 +17,21 @@ struct NowPlayingView: View {
             }
 
             if let track = scrobbleService.currentTrack {
-                Text(track.title)
-                    .font(.custom("Avenir Next Medium", size: compact ? 15 : 20))
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(track.title)
+                        .font(.custom("Avenir Next Medium", size: compact ? 15 : 20))
+                        .lineLimit(compact ? 2 : 3)
+                    Spacer(minLength: 8)
+                    Button {
+                        Task { await scrobbleService.toggleCurrentTrackLove() }
+                    } label: {
+                        Image(systemName: scrobbleService.listenBrainzCurrentTrackLoved ? "heart.fill" : "heart")
+                            .foregroundStyle(scrobbleService.listenBrainzCurrentTrackLoved ? .pink : .secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(scrobbleService.isUpdatingListenBrainzFeedback)
+                    .help(scrobbleService.listenBrainzCurrentTrackLoved ? "Unlove on ListenBrainz" : "Love on ListenBrainz")
+                }
                 Text(track.artist)
                     .font(.custom("Avenir Next Medium", size: compact ? 12 : 14))
                     .foregroundStyle(.secondary)
@@ -44,6 +57,10 @@ struct NowPlayingView: View {
                     .foregroundStyle(.secondary)
                 }
                 .padding(.top, 2)
+                Text(scrobbleService.listenBrainzFeedbackStatus)
+                    .font(.custom("Avenir Next Medium", size: 11))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
             } else {
                 Text("No track detected")
                     .font(.custom("Avenir Next Medium", size: compact ? 12 : 14))

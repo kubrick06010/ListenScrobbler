@@ -6,6 +6,7 @@ The current app includes:
 
 - ListenBrainz token-based account setup with local app-owned token storage.
 - Now playing and completed listen submission.
+- Love/unlove for the current track through ListenBrainz recording feedback.
 - Offline queueing with per-backend retry state.
 - Charts, listening archive views, and social graph experiments shaped around open data.
 - Local-first shared music and obsession vault experiments.

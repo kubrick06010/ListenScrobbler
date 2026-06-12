@@ -363,6 +363,66 @@ final class ScrobbleServiceTests: XCTestCase {
     }
 
     @MainActor
+    func testLoveToggleUsesRecentListenBrainzMSID() async {
+        let api = MockAPI()
+        let monitor = TestMonitor()
+        var feedbackScores: [Int] = []
+        let urlSession = makeMockedSession { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch (request.httpMethod, request.url?.path) {
+            case ("GET", "/ws/2/recording"):
+                return (response, Data(#"{"recordings":[]}"#.utf8))
+            case ("GET", "/ws/2/artist"):
+                return (response, Data(#"{"artists":[]}"#.utf8))
+            case ("GET", "/ws/2/release"):
+                return (response, Data(#"{"releases":[]}"#.utf8))
+            case ("GET", "/1/user/tester/listens"):
+                return (response, Data(#"{"payload":{"listens":[{"listened_at":1781040000,"track_metadata":{"artist_name":"The Durutti Column","track_name":"Sketch for Summer","additional_info":{"recording_msid":"summer-msid"}}}]}}"#.utf8))
+            case ("GET", "/1/stats/user/tester/artists"):
+                return (response, Data(#"{"payload":{"artists":[]}}"#.utf8))
+            case ("GET", "/1/stats/user/tester/recordings"):
+                return (response, Data(#"{"payload":{"recordings":[]}}"#.utf8))
+            case ("GET", "/1/stats/user/tester/releases"):
+                return (response, Data(#"{"payload":{"releases":[]}}"#.utf8))
+            case ("POST", "/1/feedback/recording-feedback"):
+                let body = try XCTUnwrap(request.httpBodyData)
+                let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+                XCTAssertEqual(json["recording_msid"] as? String, "summer-msid")
+                feedbackScores.append(try XCTUnwrap(json["score"] as? Int))
+                return (response, Data(#"{"status":"ok"}"#.utf8))
+            default:
+                XCTFail("Unexpected request \(request.httpMethod ?? "") \(request.url?.path ?? "")")
+                return (response, Data(#"{}"#.utf8))
+            }
+        }
+        let listenBrainz = configuredListenBrainzService(urlSession: urlSession)
+        let musicBrainz = MusicBrainzService(urlSession: urlSession)
+        let service = ScrobbleService(
+            api: api,
+            listenBrainz: listenBrainz,
+            musicBrainz: musicBrainz,
+            monitor: monitor,
+            sessionStore: InMemorySessionStore(),
+            queueStore: InMemoryQueueStore()
+        )
+
+        monitor.emit(.trackStarted(makeTrack(title: "Sketch for Summer", artist: "The Durutti Column", duration: 180)))
+        await Task.yield()
+        await service.toggleCurrentTrackLove()
+        await service.toggleCurrentTrackLove()
+
+        XCTAssertEqual(feedbackScores, [1, 0])
+        XCTAssertFalse(service.listenBrainzCurrentTrackLoved)
+        XCTAssertEqual(service.listenBrainzFeedbackStatus, "Removed love for Sketch for Summer")
+    }
+
+    @MainActor
     func testAccountFooterPrefersListenBrainzIdentity() async {
         let api = MockAPI()
         api.isAuthenticated = false
@@ -411,10 +471,10 @@ final class ScrobbleServiceTests: XCTestCase {
         withExtendedLifetime(service) {}
     }
 
-    private func makeTrack(duration: TimeInterval) -> Track {
+    private func makeTrack(title: String = "Track", artist: String = "Artist", duration: TimeInterval) -> Track {
         Track(
-            title: "Track",
-            artist: "Artist",
+            title: title,
+            artist: artist,
             album: "Album",
             duration: duration,
             startedAt: .now,

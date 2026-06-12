@@ -887,11 +887,21 @@ private struct DashboardView: View {
             }
             HStack(spacing: 10) {
                 Button {
+                    Task { await scrobbleService.toggleCurrentTrackLove() }
+                } label: {
+                    Image(systemName: scrobbleService.listenBrainzCurrentTrackLoved ? "heart.fill" : "heart")
+                }
+                .disabled(scrobbleService.isUpdatingListenBrainzFeedback)
+                .help(scrobbleService.listenBrainzCurrentTrackLoved ? "Unlove on ListenBrainz" : "Love on ListenBrainz")
+                .foregroundStyle(scrobbleService.listenBrainzCurrentTrackLoved ? .pink : .secondary)
+
+                Button {
                     onCaptureObsession(obsessionDraft(for: nowPlaying))
                 } label: {
                     Image(systemName: "heart.text.square")
                 }
                 .help("Capture obsession")
+                .foregroundStyle(.secondary)
 
                 Button {
                     onShareTrack(shareDraft(for: nowPlaying))
@@ -899,11 +909,15 @@ private struct DashboardView: View {
                     Image(systemName: "square.and.arrow.up")
                 }
                 .help("Archive share")
+                .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
             .font(.system(size: 18, weight: .medium))
-            .foregroundStyle(.secondary)
             .padding(.top, 2)
+            Text(scrobbleService.listenBrainzFeedbackStatus)
+                .font(.custom("Avenir Next Medium", size: 11))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
         }
     }
 

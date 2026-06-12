@@ -153,6 +153,9 @@ final class ScrobbleService: ObservableObject {
     @Published private(set) var listenBrainzPlaylists: [ListenBrainzPlaylistSummary] = []
     @Published private(set) var listenBrainzRecommendationPlaylists: [ListenBrainzPlaylistSummary] = []
     @Published private(set) var listenBrainzPlaylistsStatus = "Not loaded"
+    @Published private(set) var listenBrainzCurrentTrackLoved = false
+    @Published private(set) var listenBrainzFeedbackStatus = "Pick a track to love"
+    @Published private(set) var isUpdatingListenBrainzFeedback = false
     @Published private(set) var storedAccounts: [CompatibilitySession] = []
     @Published private(set) var capabilitiesStatus = "Unknown"
     @Published private(set) var validationSource = "Live"
@@ -218,6 +221,7 @@ final class ScrobbleService: ObservableObject {
     private var separationTask: Task<Void, Never>?
     private var hasQueuedCurrentTrack = false
     private var hasSentNowPlayingForCurrentTrack = false
+    private var currentListenBrainzRecordingMSID: String?
     private var recentScrobbles: [String: Date] = [:]
     private var friendGraphCache: [String: [String]] = [:]
     // Two graph depths are kept on purpose: quick probes keep list rows cheap,
@@ -447,6 +451,9 @@ final class ScrobbleService: ObservableObject {
         listenBrainzPlaylists = []
         listenBrainzRecommendationPlaylists = []
         listenBrainzPlaylistsStatus = "Not configured"
+        listenBrainzCurrentTrackLoved = false
+        listenBrainzFeedbackStatus = "Connect ListenBrainz to love tracks"
+        isUpdatingListenBrainzFeedback = false
         refreshListenBrainzState()
         refreshBackendName()
     }
@@ -956,6 +963,48 @@ final class ScrobbleService: ObservableObject {
         }
     }
 
+    func toggleCurrentTrackLove() async {
+        guard let track = currentTrack else {
+            listenBrainzFeedbackStatus = "Pick a track to love"
+            return
+        }
+        guard !isUpdatingListenBrainzFeedback else { return }
+
+        refreshListenBrainzState()
+        guard listenBrainzEnabled else {
+            listenBrainzFeedbackStatus = "Connect ListenBrainz to love tracks"
+            return
+        }
+
+        isUpdatingListenBrainzFeedback = true
+        let shouldLove = !listenBrainzCurrentTrackLoved
+        listenBrainzFeedbackStatus = shouldLove ? "Loving \(track.title)..." : "Removing love for \(track.title)..."
+        defer { isUpdatingListenBrainzFeedback = false }
+
+        do {
+            let identity = try await listenBrainzFeedbackIdentity(for: track)
+            switch identity {
+            case let .recordingMBID(mbid):
+                if shouldLove {
+                    try await listenBrainz.loveRecording(recordingMbid: mbid)
+                } else {
+                    try await listenBrainz.unloveRecording(recordingMbid: mbid)
+                }
+            case let .recordingMSID(msid):
+                if shouldLove {
+                    try await listenBrainz.loveRecording(recordingMsid: msid)
+                } else {
+                    try await listenBrainz.unloveRecording(recordingMsid: msid)
+                }
+            }
+            listenBrainzCurrentTrackLoved = shouldLove
+            listenBrainzFeedbackStatus = shouldLove ? "Loved \(track.title)" : "Removed love for \(track.title)"
+        } catch {
+            handleListenBrainz(error: error)
+            listenBrainzFeedbackStatus = shouldLove ? "Could not love \(track.title)" : "Could not remove love for \(track.title)"
+        }
+    }
+
     func createListenBrainzPlaylist(title: String, from recommendations: [ListenBrainzRecommendedRecording]) async -> Bool {
         let mbids = recommendations.map(\.recordingMbid)
         guard !mbids.isEmpty else {
@@ -1058,6 +1107,10 @@ final class ScrobbleService: ObservableObject {
         listenBrainzPlaylists = []
         listenBrainzRecommendationPlaylists = []
         listenBrainzPlaylistsStatus = "Not loaded"
+        listenBrainzCurrentTrackLoved = false
+        listenBrainzFeedbackStatus = "Connect ListenBrainz to love tracks"
+        isUpdatingListenBrainzFeedback = false
+        currentListenBrainzRecordingMSID = nil
         separationByUser = [:]
         separationStatus = "Not calculated"
         socialGraph = nil
@@ -1595,6 +1648,10 @@ final class ScrobbleService: ObservableObject {
         accumulatedPlayTime = 0
         hasQueuedCurrentTrack = false
         hasSentNowPlayingForCurrentTrack = false
+        currentListenBrainzRecordingMSID = nil
+        listenBrainzCurrentTrackLoved = false
+        listenBrainzFeedbackStatus = listenBrainzEnabled ? "Ready to love \(track.title)" : "Connect ListenBrainz to love tracks"
+        isUpdatingListenBrainzFeedback = false
         elapsedForCurrentTrack = 0
         scrobbleThreshold = threshold(for: track)
         scrobbleProgress = 0
@@ -1758,9 +1815,12 @@ final class ScrobbleService: ObservableObject {
                             sent = true
                         }
                         if self.listenBrainz.isReadyForNowPlaying {
-                            try await self.listenBrainz.nowPlaying(track)
+                            let recordingMSID = try await self.listenBrainz.nowPlaying(track)
                             sent = true
                             await MainActor.run {
+                                if self.currentTrack?.id == track.id {
+                                    self.currentListenBrainzRecordingMSID = recordingMSID
+                                }
                                 self.listenBrainzStatus = "Submitted now playing"
                             }
                         }
@@ -1844,6 +1904,10 @@ final class ScrobbleService: ObservableObject {
         playbackState = "Stopped"
         hasQueuedCurrentTrack = false
         hasSentNowPlayingForCurrentTrack = false
+        currentListenBrainzRecordingMSID = nil
+        listenBrainzCurrentTrackLoved = false
+        listenBrainzFeedbackStatus = listenBrainzEnabled ? "Pick a track to love" : "Connect ListenBrainz to love tracks"
+        isUpdatingListenBrainzFeedback = false
     }
 
     private func refreshExploreData(for track: Track) async {
@@ -2234,6 +2298,34 @@ final class ScrobbleService: ObservableObject {
             normalizedName($0.name) == normalizedRelease &&
                 normalizedName($0.artistName) == normalizedArtist
         }?.listenCount
+    }
+
+    private enum ListenBrainzFeedbackIdentity {
+        case recordingMBID(String)
+        case recordingMSID(String)
+    }
+
+    private func listenBrainzFeedbackIdentity(for track: Track) async throws -> ListenBrainzFeedbackIdentity {
+        if let recordingMBID = currentOpenEntityDetails?.recordingMBID?.nilIfBlank {
+            return .recordingMBID(recordingMBID)
+        }
+
+        if let recordingMSID = currentListenBrainzRecordingMSID?.nilIfBlank {
+            return .recordingMSID(recordingMSID)
+        }
+
+        if let recordingMSID = await listenBrainzRecentRecordingMSID(title: track.title, artist: track.artist, forceRefresh: true) {
+            currentListenBrainzRecordingMSID = recordingMSID
+            return .recordingMSID(recordingMSID)
+        }
+
+        let details = try await musicBrainz.lookup(track: track.title, artist: track.artist, release: track.album)
+        if let recordingMBID = details.recordingMBID?.nilIfBlank {
+            currentOpenEntityDetails = details
+            return .recordingMBID(recordingMBID)
+        }
+
+        throw ListenBrainzError.api(message: "No ListenBrainz recording identity found for \(track.title).")
     }
 
     private func listenBrainzRecentRecordingMSID(
