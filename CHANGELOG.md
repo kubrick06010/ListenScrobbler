@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.0.0 - 2026-06-12
+
+Official 1.0.0 milestone release.
+
+### Added
+
+- ListenBrainz love/unlove, pin/unpin, and share actions on recent listen rows in the Listens section.
+- Matching listen actions on chart recent-activity rows where the same interaction model is useful.
+- ListenBrainz feedback support for arbitrary listens, using MBIDs when available and recent-listen MSID lookup as a fallback.
+- `docs/ENGINEERING_PRACTICES.md` as the repository protocol for focused files, feature folders, verification, and future refactors.
+
+### Changed
+
+- Restructured the SwiftUI app into feature folders so `ContentView` is the app shell instead of the main implementation container.
+- Split dashboard, queue, listens, charts, social, vault, profile, account, and reusable component views into dedicated files.
+- Regenerated the Xcode project from `project.yml` after the source layout and version changes.
+- Updated public documentation to describe the 1.0.0 product baseline and post-1.0 priorities.
+
+### Verified
+
+- `xcodebuild -scheme OpenScrobbler -project OpenScrobbler.xcodeproj -configuration Debug build`
+- `xcodebuild -scheme OpenScrobbler -project OpenScrobbler.xcodeproj -configuration Debug test`
+
 ## 0.1.3 - 2026-06-12
 
 ### Added
