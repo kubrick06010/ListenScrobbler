@@ -95,23 +95,19 @@ final class ListenBrainzServiceTests: XCTestCase {
         XCTAssertEqual(ListenBrainzURLProtocol.requests.count, 1)
     }
 
-    func testSubmitListenEncodesSourceMetadataForImportedServiceListens() async throws {
+    func testSubmitListenEncodesSpotifySourceMetadataForImportedServiceListens() async throws {
         let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
-            let body = try XCTUnwrap(request.httpBodyData)
-            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
-            let payload = try XCTUnwrap((json["payload"] as? [[String: Any]])?.first)
-            let metadata = try XCTUnwrap(payload["track_metadata"] as? [String: Any])
-            let additional = try XCTUnwrap(metadata["additional_info"] as? [String: Any])
-
-            XCTAssertEqual(additional["media_player"] as? String, "Spotify")
-            XCTAssertEqual(additional["music_service"] as? String, "spotify.com")
-            XCTAssertEqual(additional["music_service_name"] as? String, "Spotify")
-            XCTAssertEqual(additional["origin_url"] as? String, "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0")
-            XCTAssertEqual(additional["spotify_id"] as? String, "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0")
-            XCTAssertEqual(additional["duration_played"] as? Int, 300)
-            XCTAssertEqual(additional["original_submission_client"] as? String, "Spotify Recently Played")
-            XCTAssertEqual(additional["submission_client"] as? String, "OpenScrobbler")
-            XCTAssertEqual(additional["submission_client_version"] as? String, "1.1.0")
+            let additional = try Self.additionalInfo(from: request)
+            Self.assertSourceMetadata(
+                additional,
+                mediaPlayer: "Spotify",
+                musicService: "spotify.com",
+                musicServiceName: "Spotify",
+                originURL: "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0",
+                spotifyID: "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0",
+                durationPlayed: 300,
+                originalSubmissionClient: "Spotify Recently Played"
+            )
 
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
             return (response, Data())
@@ -133,6 +129,86 @@ final class ListenBrainzServiceTests: XCTestCase {
                     spotifyID: "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0",
                     durationPlayed: 300,
                     originalSubmissionClient: "Spotify Recently Played"
+                )
+            )
+        )
+
+        XCTAssertEqual(ListenBrainzURLProtocol.requests.count, 1)
+    }
+
+    func testSubmitListenEncodesAppleMusicSourceMetadataForImportedServiceListens() async throws {
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            let additional = try Self.additionalInfo(from: request)
+            Self.assertSourceMetadata(
+                additional,
+                mediaPlayer: "Apple Music",
+                musicService: "music.apple.com",
+                musicServiceName: "Apple Music",
+                originURL: "https://music.apple.com/us/album/future-days/1440844939?i=1440844944",
+                spotifyID: nil,
+                durationPlayed: 240,
+                originalSubmissionClient: "MusicKit Import"
+            )
+
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data())
+        }
+
+        try await service.submitListen(
+            Track(
+                title: "Future Days",
+                artist: "Can",
+                album: "Future Days",
+                duration: 360,
+                startedAt: Date(timeIntervalSince1970: 1_700_000_000),
+                sourceApp: "Apple Music Import",
+                sourceMetadata: TrackSourceMetadata(
+                    mediaPlayer: "Apple Music",
+                    musicService: "music.apple.com",
+                    musicServiceName: "Apple Music",
+                    originURL: "https://music.apple.com/us/album/future-days/1440844939?i=1440844944",
+                    durationPlayed: 240,
+                    originalSubmissionClient: "MusicKit Import"
+                )
+            )
+        )
+
+        XCTAssertEqual(ListenBrainzURLProtocol.requests.count, 1)
+    }
+
+    func testSubmitListenEncodesYouTubeMusicSourceMetadataForImportedServiceListens() async throws {
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            let additional = try Self.additionalInfo(from: request)
+            Self.assertSourceMetadata(
+                additional,
+                mediaPlayer: "YouTube Music",
+                musicService: "music.youtube.com",
+                musicServiceName: "YouTube Music",
+                originURL: "https://music.youtube.com/watch?v=qQ0zxuWFxrY",
+                spotifyID: nil,
+                durationPlayed: 210,
+                originalSubmissionClient: "YouTube Music Export Import"
+            )
+
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data())
+        }
+
+        try await service.submitListen(
+            Track(
+                title: "Sweet",
+                artist: "Little Dragon",
+                album: "Season High",
+                duration: 226,
+                startedAt: Date(timeIntervalSince1970: 1_700_000_000),
+                sourceApp: "YouTube Music Import",
+                sourceMetadata: TrackSourceMetadata(
+                    mediaPlayer: "YouTube Music",
+                    musicService: "music.youtube.com",
+                    musicServiceName: "YouTube Music",
+                    originURL: "https://music.youtube.com/watch?v=qQ0zxuWFxrY",
+                    durationPlayed: 210,
+                    originalSubmissionClient: "YouTube Music Export Import"
                 )
             )
         )
@@ -710,6 +786,37 @@ final class ListenBrainzServiceTests: XCTestCase {
         let defaults = UserDefaults(suiteName: suiteName)!
         defaults.removePersistentDomain(forName: suiteName)
         return defaults
+    }
+
+    private static func additionalInfo(from request: URLRequest) throws -> [String: Any] {
+        let body = try XCTUnwrap(request.httpBodyData)
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+        let payload = try XCTUnwrap((json["payload"] as? [[String: Any]])?.first)
+        let metadata = try XCTUnwrap(payload["track_metadata"] as? [String: Any])
+        return try XCTUnwrap(metadata["additional_info"] as? [String: Any])
+    }
+
+    private static func assertSourceMetadata(
+        _ additional: [String: Any],
+        mediaPlayer: String,
+        musicService: String,
+        musicServiceName: String,
+        originURL: String,
+        spotifyID: String?,
+        durationPlayed: Int,
+        originalSubmissionClient: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertEqual(additional["media_player"] as? String, mediaPlayer, file: file, line: line)
+        XCTAssertEqual(additional["music_service"] as? String, musicService, file: file, line: line)
+        XCTAssertEqual(additional["music_service_name"] as? String, musicServiceName, file: file, line: line)
+        XCTAssertEqual(additional["origin_url"] as? String, originURL, file: file, line: line)
+        XCTAssertEqual(additional["spotify_id"] as? String, spotifyID, file: file, line: line)
+        XCTAssertEqual(additional["duration_played"] as? Int, durationPlayed, file: file, line: line)
+        XCTAssertEqual(additional["original_submission_client"] as? String, originalSubmissionClient, file: file, line: line)
+        XCTAssertEqual(additional["submission_client"] as? String, "OpenScrobbler", file: file, line: line)
+        XCTAssertEqual(additional["submission_client_version"] as? String, "1.1.0", file: file, line: line)
     }
 
     private func fixtureData(named name: String) throws -> Data {

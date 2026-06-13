@@ -1941,7 +1941,6 @@ private struct ListenBrainzAdditionalInfo: Encodable {
         case musicServiceName = "music_service_name"
         case originURL = "origin_url"
         case spotifyID = "spotify_id"
-        case duration = "duration"
         case durationPlayed = "duration_played"
     }
 

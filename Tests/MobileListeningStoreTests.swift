@@ -120,6 +120,74 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(metadata.originalSubmissionClient, "Spotify Recently Played")
     }
 
+    func testSubmitScrobblePreservesAppleMusicSourceMetadata() async throws {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+
+        try await store.submitScrobble(
+            MobileScrobbleCandidate(
+                title: "Future Days",
+                artist: "Can",
+                album: "Future Days",
+                duration: 360,
+                listenedAt: Date(timeIntervalSince1970: 1_700_000_000),
+                source: "Apple Music Import",
+                sourceMetadata: MobileScrobbleSourceMetadata(
+                    mediaPlayer: "Apple Music",
+                    musicService: "music.apple.com",
+                    musicServiceName: "Apple Music",
+                    originURL: "https://music.apple.com/us/album/future-days/1440844939?i=1440844944",
+                    durationPlayed: 240,
+                    originalSubmissionClient: "MusicKit Import"
+                )
+            )
+        )
+
+        let metadata = try XCTUnwrap(client.submittedTracks.first?.sourceMetadata)
+        XCTAssertEqual(metadata.mediaPlayer, "Apple Music")
+        XCTAssertEqual(metadata.musicService, "music.apple.com")
+        XCTAssertEqual(metadata.musicServiceName, "Apple Music")
+        XCTAssertEqual(metadata.originURL, "https://music.apple.com/us/album/future-days/1440844939?i=1440844944")
+        XCTAssertNil(metadata.spotifyID)
+        XCTAssertEqual(metadata.durationPlayed, 240)
+        XCTAssertEqual(metadata.originalSubmissionClient, "MusicKit Import")
+    }
+
+    func testSubmitScrobblePreservesYouTubeMusicSourceMetadata() async throws {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+
+        try await store.submitScrobble(
+            MobileScrobbleCandidate(
+                title: "Sweet",
+                artist: "Little Dragon",
+                album: "Season High",
+                duration: 226,
+                listenedAt: Date(timeIntervalSince1970: 1_700_000_000),
+                source: "YouTube Music Import",
+                sourceMetadata: MobileScrobbleSourceMetadata(
+                    mediaPlayer: "YouTube Music",
+                    musicService: "music.youtube.com",
+                    musicServiceName: "YouTube Music",
+                    originURL: "https://music.youtube.com/watch?v=qQ0zxuWFxrY",
+                    durationPlayed: 210,
+                    originalSubmissionClient: "YouTube Music Export Import"
+                )
+            )
+        )
+
+        let metadata = try XCTUnwrap(client.submittedTracks.first?.sourceMetadata)
+        XCTAssertEqual(metadata.mediaPlayer, "YouTube Music")
+        XCTAssertEqual(metadata.musicService, "music.youtube.com")
+        XCTAssertEqual(metadata.musicServiceName, "YouTube Music")
+        XCTAssertEqual(metadata.originURL, "https://music.youtube.com/watch?v=qQ0zxuWFxrY")
+        XCTAssertNil(metadata.spotifyID)
+        XCTAssertEqual(metadata.durationPlayed, 210)
+        XCTAssertEqual(metadata.originalSubmissionClient, "YouTube Music Export Import")
+    }
+
     func testSubmitScrobbleRejectsDisconnectedStore() async {
         let settingsStore = makeSettingsStore()
         let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)

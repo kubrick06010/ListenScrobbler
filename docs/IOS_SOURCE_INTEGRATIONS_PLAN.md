@@ -64,10 +64,11 @@ References:
 - Add tests for Spotify, YouTube Music, Apple Music, and plain manual metadata
   payloads.
 
-Status: partially implemented. The mobile candidate, internal track model, and
-ListenBrainz encoder now preserve source metadata and have focused Spotify
-fixture coverage. Remaining work: add YouTube Music and Apple Music fixtures,
-then expose source selection/import UI.
+Status: implemented for the core contract. The mobile candidate, internal track
+model, and ListenBrainz encoder preserve source metadata, with fixture coverage
+for plain manual listens plus Spotify, Apple Music, and YouTube Music source
+payloads. Remaining work: expose source selection/import UI after the queue
+contract is promoted.
 
 ### Slice 2: Import Queue Contract
 

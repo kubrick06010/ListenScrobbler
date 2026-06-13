@@ -18,6 +18,8 @@
 - Source-aware ListenBrainz submission metadata for future iOS imports,
   including `music_service`, `origin_url`, `spotify_id`, `duration_played`, and
   `original_submission_client`.
+- Apple Music and YouTube Music source-metadata fixtures alongside Spotify so
+  the iOS import contract is covered before provider UI work begins.
 
 ### Changed
 
