@@ -15,6 +15,9 @@
 - Physical-device validation script for building, installing, launching, and
   tracing the iOS app once Apple Developer provisioning is available.
 - iOS source integration, cross-platform UI/UX, and repository release plans.
+- Source-aware ListenBrainz submission metadata for future iOS imports,
+  including `music_service`, `origin_url`, `spotify_id`, `duration_played`, and
+  `original_submission_client`.
 
 ### Changed
 
@@ -26,6 +29,7 @@
 
 - `xcodebuild test -project OpenScrobbler.xcodeproj -scheme OpenScrobbler -destination 'platform=macOS'`
 - `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO`
+- `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' -derivedDataPath tmp/ios-simulator-verify CODE_SIGNING_ALLOWED=NO`
 - `bash -n tools/ios_device_validation.sh`
 - `git diff --check`
 

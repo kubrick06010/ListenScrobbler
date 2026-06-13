@@ -38,7 +38,10 @@ public struct MobilePendingScrobble: Codable, Equatable, Identifiable {
             candidate.album ?? "",
             String(Int(candidate.listenedAt.timeIntervalSince1970)),
             String(Int(candidate.duration.rounded())),
-            candidate.source
+            candidate.source,
+            candidate.sourceMetadata?.musicService ?? "",
+            candidate.sourceMetadata?.originURL ?? "",
+            candidate.sourceMetadata?.spotifyID ?? ""
         ].joined(separator: "\u{1f}")
     }
 

@@ -1080,7 +1080,8 @@ final class ListenBrainzService {
                         additionalInfo: ListenBrainzAdditionalInfo(
                             mediaPlayer: track.sourceApp,
                             submissionClient: "OpenScrobbler",
-                            submissionClientVersion: "0.1.0"
+                            submissionClientVersion: "1.1.0",
+                            sourceMetadata: track.sourceMetadata
                         )
                     )
                 )
@@ -1929,11 +1930,32 @@ private struct ListenBrainzAdditionalInfo: Encodable {
     let mediaPlayer: String?
     let submissionClient: String
     let submissionClientVersion: String
+    let sourceMetadata: TrackSourceMetadata?
 
     enum CodingKeys: String, CodingKey {
         case mediaPlayer = "media_player"
         case submissionClient = "submission_client"
         case submissionClientVersion = "submission_client_version"
+        case originalSubmissionClient = "original_submission_client"
+        case musicService = "music_service"
+        case musicServiceName = "music_service_name"
+        case originURL = "origin_url"
+        case spotifyID = "spotify_id"
+        case duration = "duration"
+        case durationPlayed = "duration_played"
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(sourceMetadata?.mediaPlayer?.nilIfBlank ?? mediaPlayer?.nilIfBlank, forKey: .mediaPlayer)
+        try container.encode(submissionClient, forKey: .submissionClient)
+        try container.encode(submissionClientVersion, forKey: .submissionClientVersion)
+        try container.encodeIfPresent(sourceMetadata?.originalSubmissionClient?.nilIfBlank, forKey: .originalSubmissionClient)
+        try container.encodeIfPresent(sourceMetadata?.musicService?.nilIfBlank, forKey: .musicService)
+        try container.encodeIfPresent(sourceMetadata?.musicServiceName?.nilIfBlank, forKey: .musicServiceName)
+        try container.encodeIfPresent(sourceMetadata?.originURL?.nilIfBlank, forKey: .originURL)
+        try container.encodeIfPresent(sourceMetadata?.spotifyID?.nilIfBlank, forKey: .spotifyID)
+        try container.encodeIfPresent(sourceMetadata?.durationPlayed.map { Int($0.rounded()) }, forKey: .durationPlayed)
     }
 }
 

@@ -1,5 +1,33 @@
 import Foundation
 
+struct TrackSourceMetadata: Hashable, Codable {
+    let mediaPlayer: String?
+    let musicService: String?
+    let musicServiceName: String?
+    let originURL: String?
+    let spotifyID: String?
+    let durationPlayed: TimeInterval?
+    let originalSubmissionClient: String?
+
+    init(
+        mediaPlayer: String? = nil,
+        musicService: String? = nil,
+        musicServiceName: String? = nil,
+        originURL: String? = nil,
+        spotifyID: String? = nil,
+        durationPlayed: TimeInterval? = nil,
+        originalSubmissionClient: String? = nil
+    ) {
+        self.mediaPlayer = mediaPlayer
+        self.musicService = musicService
+        self.musicServiceName = musicServiceName
+        self.originURL = originURL
+        self.spotifyID = spotifyID
+        self.durationPlayed = durationPlayed
+        self.originalSubmissionClient = originalSubmissionClient
+    }
+}
+
 struct Track: Identifiable, Hashable, Codable {
     let id: UUID
     let title: String
@@ -8,6 +36,7 @@ struct Track: Identifiable, Hashable, Codable {
     let duration: TimeInterval
     let startedAt: Date
     let sourceApp: String?
+    let sourceMetadata: TrackSourceMetadata?
     let artworkURL: String?
 
     init(
@@ -18,6 +47,7 @@ struct Track: Identifiable, Hashable, Codable {
         duration: TimeInterval,
         startedAt: Date,
         sourceApp: String? = nil,
+        sourceMetadata: TrackSourceMetadata? = nil,
         artworkURL: String? = nil
     ) {
         self.id = id
@@ -27,6 +57,7 @@ struct Track: Identifiable, Hashable, Codable {
         self.duration = duration
         self.startedAt = startedAt
         self.sourceApp = sourceApp
+        self.sourceMetadata = sourceMetadata
         self.artworkURL = artworkURL
     }
 

@@ -29,6 +29,34 @@ public struct MobilePinnedRecording: Identifiable, Equatable {
     public let blurb: String?
 }
 
+public struct MobileScrobbleSourceMetadata: Codable, Equatable {
+    public let mediaPlayer: String?
+    public let musicService: String?
+    public let musicServiceName: String?
+    public let originURL: String?
+    public let spotifyID: String?
+    public let durationPlayed: TimeInterval?
+    public let originalSubmissionClient: String?
+
+    public init(
+        mediaPlayer: String? = nil,
+        musicService: String? = nil,
+        musicServiceName: String? = nil,
+        originURL: String? = nil,
+        spotifyID: String? = nil,
+        durationPlayed: TimeInterval? = nil,
+        originalSubmissionClient: String? = nil
+    ) {
+        self.mediaPlayer = mediaPlayer
+        self.musicService = musicService
+        self.musicServiceName = musicServiceName
+        self.originURL = originURL
+        self.spotifyID = spotifyID
+        self.durationPlayed = durationPlayed
+        self.originalSubmissionClient = originalSubmissionClient
+    }
+}
+
 public struct MobileScrobbleCandidate: Codable, Equatable {
     public let title: String
     public let artist: String
@@ -36,6 +64,7 @@ public struct MobileScrobbleCandidate: Codable, Equatable {
     public let duration: TimeInterval
     public let listenedAt: Date
     public let source: String
+    public let sourceMetadata: MobileScrobbleSourceMetadata?
 
     public init(
         title: String,
@@ -43,7 +72,8 @@ public struct MobileScrobbleCandidate: Codable, Equatable {
         album: String?,
         duration: TimeInterval,
         listenedAt: Date,
-        source: String
+        source: String,
+        sourceMetadata: MobileScrobbleSourceMetadata? = nil
     ) {
         self.title = title
         self.artist = artist
@@ -51,6 +81,7 @@ public struct MobileScrobbleCandidate: Codable, Equatable {
         self.duration = duration
         self.listenedAt = listenedAt
         self.source = source
+        self.sourceMetadata = sourceMetadata
     }
 }
 
@@ -214,7 +245,8 @@ public final class MobileListeningStore: ObservableObject {
             album: candidate.album,
             duration: candidate.duration,
             startedAt: startedAt,
-            sourceApp: candidate.source
+            sourceApp: candidate.source,
+            sourceMetadata: candidate.sourceMetadata.map(TrackSourceMetadata.init(mobile:))
         )
         try await listenBrainz.submitListen(track)
         logger.info("Mobile scrobble submit succeeded from source \(candidate.source, privacy: .public)")
@@ -262,6 +294,20 @@ private extension MobilePinnedRecording {
             trackName: pin.trackName,
             artistName: pin.artistName,
             blurb: pin.blurb
+        )
+    }
+}
+
+private extension TrackSourceMetadata {
+    init(mobile: MobileScrobbleSourceMetadata) {
+        self.init(
+            mediaPlayer: mobile.mediaPlayer,
+            musicService: mobile.musicService,
+            musicServiceName: mobile.musicServiceName,
+            originURL: mobile.originURL,
+            spotifyID: mobile.spotifyID,
+            durationPlayed: mobile.durationPlayed,
+            originalSubmissionClient: mobile.originalSubmissionClient
         )
     }
 }

@@ -95,6 +95,51 @@ final class ListenBrainzServiceTests: XCTestCase {
         XCTAssertEqual(ListenBrainzURLProtocol.requests.count, 1)
     }
 
+    func testSubmitListenEncodesSourceMetadataForImportedServiceListens() async throws {
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            let body = try XCTUnwrap(request.httpBodyData)
+            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            let payload = try XCTUnwrap((json["payload"] as? [[String: Any]])?.first)
+            let metadata = try XCTUnwrap(payload["track_metadata"] as? [String: Any])
+            let additional = try XCTUnwrap(metadata["additional_info"] as? [String: Any])
+
+            XCTAssertEqual(additional["media_player"] as? String, "Spotify")
+            XCTAssertEqual(additional["music_service"] as? String, "spotify.com")
+            XCTAssertEqual(additional["music_service_name"] as? String, "Spotify")
+            XCTAssertEqual(additional["origin_url"] as? String, "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0")
+            XCTAssertEqual(additional["spotify_id"] as? String, "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0")
+            XCTAssertEqual(additional["duration_played"] as? Int, 300)
+            XCTAssertEqual(additional["original_submission_client"] as? String, "Spotify Recently Played")
+            XCTAssertEqual(additional["submission_client"] as? String, "OpenScrobbler")
+            XCTAssertEqual(additional["submission_client_version"] as? String, "1.1.0")
+
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data())
+        }
+
+        try await service.submitListen(
+            Track(
+                title: "Inssegh Inssegh",
+                artist: "Les Filles de Illighadad",
+                album: "Eghass Malan",
+                duration: 320,
+                startedAt: Date(timeIntervalSince1970: 1_700_000_000),
+                sourceApp: "Spotify Import",
+                sourceMetadata: TrackSourceMetadata(
+                    mediaPlayer: "Spotify",
+                    musicService: "spotify.com",
+                    musicServiceName: "Spotify",
+                    originURL: "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0",
+                    spotifyID: "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0",
+                    durationPlayed: 300,
+                    originalSubmissionClient: "Spotify Recently Played"
+                )
+            )
+        )
+
+        XCTAssertEqual(ListenBrainzURLProtocol.requests.count, 1)
+    }
+
     func testNowPlayingRequestsRecordingMSIDForFeedback() async throws {
         let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
             XCTAssertEqual(request.httpMethod, "POST")

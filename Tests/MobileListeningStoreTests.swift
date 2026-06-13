@@ -85,6 +85,41 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(submitted.startedAt, listenedAt.addingTimeInterval(-240))
     }
 
+    func testSubmitScrobblePreservesSourceMetadata() async throws {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+
+        try await store.submitScrobble(
+            MobileScrobbleCandidate(
+                title: "Inssegh Inssegh",
+                artist: "Les Filles de Illighadad",
+                album: "Eghass Malan",
+                duration: 320,
+                listenedAt: Date(timeIntervalSince1970: 1_700_000_000),
+                source: "Spotify Import",
+                sourceMetadata: MobileScrobbleSourceMetadata(
+                    mediaPlayer: "Spotify",
+                    musicService: "spotify.com",
+                    musicServiceName: "Spotify",
+                    originURL: "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0",
+                    spotifyID: "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0",
+                    durationPlayed: 300,
+                    originalSubmissionClient: "Spotify Recently Played"
+                )
+            )
+        )
+
+        let metadata = try XCTUnwrap(client.submittedTracks.first?.sourceMetadata)
+        XCTAssertEqual(metadata.mediaPlayer, "Spotify")
+        XCTAssertEqual(metadata.musicService, "spotify.com")
+        XCTAssertEqual(metadata.musicServiceName, "Spotify")
+        XCTAssertEqual(metadata.originURL, "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0")
+        XCTAssertEqual(metadata.spotifyID, "https://open.spotify.com/track/5fEjp2F0Sqr9fMuLSaDqz0")
+        XCTAssertEqual(metadata.durationPlayed, 300)
+        XCTAssertEqual(metadata.originalSubmissionClient, "Spotify Recently Played")
+    }
+
     func testSubmitScrobbleRejectsDisconnectedStore() async {
         let settingsStore = makeSettingsStore()
         let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
