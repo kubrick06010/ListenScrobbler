@@ -25,6 +25,9 @@
   through the app route.
 - Shared iOS intent routing so system actions can drive tab selection and
   manual-scrobble presentation without duplicating view logic.
+- iOS beta diagnostics export from Account with app/build version, device/OS
+  context, ListenBrainz state, Music library scan summary, pending retries, last
+  error, and source metadata for queued items.
 
 ### Changed
 

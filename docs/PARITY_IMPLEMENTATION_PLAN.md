@@ -66,6 +66,12 @@ Status: implemented.
   - Promote pending retries into a provider-neutral import queue.
   - Add submitted/duplicate/rejected/failed states.
   - Export diagnostics with source metadata and payload preview.
+
+  Status: first beta diagnostics export is implemented from iOS Account. It
+  includes app/build version, OS/device context, ListenBrainz connection state,
+  Music library scan status, last scan summary, last error, pending retry count,
+  and source metadata for pending items. Payload preview remains part of the
+  provider-neutral queue work.
 - Integrations:
   - Keep web/service shortcuts honest.
   - Add Spotify recently played only as an explicit user import after OAuth and

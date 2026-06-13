@@ -29,6 +29,7 @@
 		3585575C7D463E86934A2B63 /* VaultComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382D55FD3E85641D0878E685 /* VaultComponents.swift */; };
 		397AB45ED758ECF7279FA88A /* VaultModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADAFD64BAE67C5E40286378 /* VaultModels.swift */; };
 		3A96694F0B4E72A2B433FCE7 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197F1D4622961233B897360E /* AccountView.swift */; };
+		3AED2763B14755D2B2DF7B4D /* MobileDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD14BC64DC87892E433AF5C /* MobileDiagnosticsView.swift */; };
 		44588E84C071620CD2820D90 /* ProxySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F743410C80AF526D938086 /* ProxySettings.swift */; };
 		4DCB72C02ED644195CA1B635 /* BottomTabShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2C5F0F5C8B370E472053EC /* BottomTabShell.swift */; };
 		50EF1085477D5827F768415A /* OpenScrobblerAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B350A810809D4904B6417E0B /* OpenScrobblerAppIntents.swift */; };
@@ -166,6 +167,7 @@
 		64522A5F740C6E1BDFF8DDB9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		67BC865FE8E7F5EB6B82A7B0 /* LaunchAtLoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginController.swift; sourceTree = "<group>"; };
 		6BBCB3507B380031E1E6B17C /* VaultHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultHelpers.swift; sourceTree = "<group>"; };
+		6CD14BC64DC87892E433AF5C /* MobileDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileDiagnosticsView.swift; sourceTree = "<group>"; };
 		751A93F1F2B3A4A9D7B86D65 /* NowPlayingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingView.swift; sourceTree = "<group>"; };
 		752253E349B9798E58E97634 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		76F743410C80AF526D938086 /* ProxySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySettings.swift; sourceTree = "<group>"; };
@@ -450,6 +452,7 @@
 			isa = PBXGroup;
 			children = (
 				A470520752891B8657AFC57E /* MobileAccountView.swift */,
+				6CD14BC64DC87892E433AF5C /* MobileDiagnosticsView.swift */,
 				7A1E504337C096711C4D5EDF /* MobileDiscoverView.swift */,
 				8D83BA08D7C896B2D6979662 /* MobileHomeView.swift */,
 				3D288CDC21AB26F533765036 /* MobileListensView.swift */,
@@ -738,6 +741,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EE335DFE94BD7F2FB6E2BADF /* MobileAccountView.swift in Sources */,
+				3AED2763B14755D2B2DF7B4D /* MobileDiagnosticsView.swift in Sources */,
 				7E84DDC83549BF75CE463B60 /* MobileDiscoverView.swift in Sources */,
 				0B96DBB4774BD2816949534A /* MobileHomeView.swift in Sources */,
 				7B8CCA0C9610E414D575E0C9 /* MobileListensView.swift in Sources */,

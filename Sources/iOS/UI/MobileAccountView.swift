@@ -6,6 +6,7 @@ struct MobileAccountView: View {
     @EnvironmentObject private var musicLibraryScanner: MusicLibraryScrobbleScanner
     @State private var token = ""
     @State private var isPendingQueuePresented = false
+    @State private var diagnosticsSnapshot: MobileDiagnosticsSnapshot?
 
     var body: some View {
         Form {
@@ -110,6 +111,22 @@ struct MobileAccountView: View {
                     .foregroundStyle(.secondary)
             }
 
+            Section("Beta Diagnostics") {
+                LabeledContent("ListenBrainz", value: listeningStore.connectionState.statusText)
+                LabeledContent("Music Access", value: musicLibraryScanner.authorizationState.statusText)
+                LabeledContent("Pending Retry", value: "\(musicLibraryScanner.pendingRetryCount)")
+
+                Button {
+                    musicLibraryScanner.refreshPendingScrobbles()
+                    diagnosticsSnapshot = MobileDiagnosticsSnapshot.make(
+                        listeningStore: listeningStore,
+                        musicLibraryScanner: musicLibraryScanner
+                    )
+                } label: {
+                    Label("Export Diagnostics", systemImage: "doc.text.magnifyingglass")
+                }
+            }
+
             Section("Open Music Data") {
                 Text("OpenScrobbler submits listens to ListenBrainz and uses official ListenBrainz logo assets from the MetaBrainz Design System.")
                     .font(.footnote)
@@ -124,6 +141,9 @@ struct MobileAccountView: View {
         .sheet(isPresented: $isPendingQueuePresented) {
             MobilePendingQueueView()
                 .environmentObject(musicLibraryScanner)
+        }
+        .sheet(item: $diagnosticsSnapshot) { snapshot in
+            MobileDiagnosticsView(snapshot: snapshot)
         }
     }
 }
