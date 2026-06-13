@@ -3,7 +3,7 @@ import SwiftUI
 
 struct MobileListensView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
-    @State private var isManualScrobblePresented = false
+    let openManualScrobble: () -> Void
 
     var body: some View {
         List {
@@ -34,17 +34,13 @@ struct MobileListensView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    isManualScrobblePresented = true
+                    openManualScrobble()
                 } label: {
                     Image(systemName: "plus")
                 }
                 .disabled(!listeningStore.hasStoredToken)
                 .accessibilityLabel("Manual Scrobble")
             }
-        }
-        .sheet(isPresented: $isManualScrobblePresented) {
-            MobileManualScrobbleView()
-                .environmentObject(listeningStore)
         }
         .overlay {
             if listeningStore.isRefreshing {

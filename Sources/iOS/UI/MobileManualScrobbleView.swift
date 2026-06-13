@@ -14,6 +14,12 @@ struct MobileManualScrobbleView: View {
     @State private var isSubmitting = false
     @State private var result: SubmissionResult?
 
+    init(draft: MobileManualScrobbleDraft = .empty) {
+        _title = State(initialValue: draft.title)
+        _artist = State(initialValue: draft.artist)
+        _album = State(initialValue: draft.album)
+    }
+
     var body: some View {
         NavigationStack {
             Form {

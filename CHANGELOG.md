@@ -20,6 +20,11 @@
   `original_submission_client`.
 - Apple Music and YouTube Music source-metadata fixtures alongside Spotify so
   the iOS import contract is covered before provider UI work begins.
+- iOS App Shortcuts for opening OpenScrobbler destinations, opening the manual
+  scrobble form with optional draft metadata, and refreshing ListenBrainz
+  through the app route.
+- Shared iOS intent routing so system actions can drive tab selection and
+  manual-scrobble presentation without duplicating view logic.
 
 ### Changed
 

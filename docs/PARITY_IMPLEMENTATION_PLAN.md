@@ -44,10 +44,20 @@ Status: implemented.
 
 - App Intents:
   - Open dashboard/listens/account/discover.
-  - Submit manual listen from Shortcuts.
+  - Open manual listen from Shortcuts with optional track, artist, and album
+    draft data.
+  - Refresh ListenBrainz by opening the app and routing through the shared
+    listening store.
+  - Submit manual listen from Shortcuts after the provider-neutral queue/dedupe
+    layer exists.
   - Submit current Music app listen when Music APIs expose enough identity.
   - Repeat a recent ListenBrainz listen.
   - Refresh widgets and recent listens.
+
+  Status: first pass implemented for open destination, open manual scrobble,
+  and refresh ListenBrainz routes. Inline submission, current Music app
+  submission, and repeat-last-listen remain gated on queue/dedupe and Music API
+  validation.
 - Widgets:
   - Connected account/status widget.
   - Recent listen widget.

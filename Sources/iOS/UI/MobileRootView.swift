@@ -3,7 +3,9 @@ import SwiftUI
 
 struct MobileRootView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
+    @EnvironmentObject private var appIntentRouter: MobileAppIntentRouter
     @State private var selectedTab: MobileTab = .home
+    @State private var manualScrobbleDraft: MobileManualScrobbleDraft?
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -16,7 +18,9 @@ struct MobileRootView: View {
             .tag(MobileTab.home)
 
             NavigationStack {
-                MobileListensView()
+                MobileListensView {
+                    manualScrobbleDraft = .empty
+                }
             }
             .tabItem {
                 Label("Listens", systemImage: "music.note.list")
@@ -42,12 +46,28 @@ struct MobileRootView: View {
         .task {
             await listeningStore.refresh()
         }
+        .sheet(item: $manualScrobbleDraft) { draft in
+            MobileManualScrobbleView(draft: draft)
+                .environmentObject(listeningStore)
+        }
+        .onReceive(appIntentRouter.$pendingRoute.compactMap { $0 }) { route in
+            handle(route)
+        }
     }
-}
 
-private enum MobileTab: Hashable {
-    case home
-    case listens
-    case discover
-    case account
+    private func handle(_ route: MobileAppRoute) {
+        switch route {
+        case let .tab(tab):
+            selectedTab = tab
+        case let .manualScrobble(draft):
+            selectedTab = .listens
+            manualScrobbleDraft = draft
+        case .refreshListenBrainz:
+            selectedTab = .home
+            Task {
+                await listeningStore.refresh()
+            }
+        }
+        appIntentRouter.clear()
+    }
 }
