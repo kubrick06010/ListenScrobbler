@@ -2,7 +2,8 @@
 
 OpenScrobbler is a macOS SwiftUI app for open listening history, centered on ListenBrainz, MusicBrainz, and local-first music memory.
 
-Version `1.0.0` is the first official milestone release.
+Version `1.1.0` is the current macOS release line. The iOS target is being
+prepared as its first `1.0.0` release after physical-device beta validation.
 
 The current app includes:
 
@@ -14,6 +15,8 @@ The current app includes:
 - Charts, listening archive views, and social discovery surfaces shaped around open data.
 - Local-first shared music and obsession vaults.
 - Menu bar controls, launch-at-login, proxy settings, diagnostics, and player monitoring.
+- iOS foundation work for ListenBrainz connection, manual submission, recent
+  listens, Music library scan baseline/delta behavior, and pending retries.
 
 ## Direction
 
@@ -54,6 +57,16 @@ xcodebuild build \
   -destination 'platform=macOS'
 ```
 
+Build the iOS target in the simulator:
+
+```bash
+xcodebuild build \
+  -project OpenScrobbler.xcodeproj \
+  -scheme OpenScrobbleriOS \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
+  CODE_SIGNING_ALLOWED=NO
+```
+
 Run tests:
 
 ```bash
@@ -86,5 +99,10 @@ Implementation work should stay aligned with the open ecosystem instead of inven
 - `docs/OPEN_ECOSYSTEM_REFERENCES.md`
 - `docs/LISTENBRAINZ_INTEGRATION.md`
 - `docs/ENGINEERING_PRACTICES.md`
+- `docs/ICONOGRAPHY.md`
+- `docs/IOS_DEVELOPMENT_PATH.md`
+- `docs/IOS_SOURCE_INTEGRATIONS_PLAN.md`
+- `docs/UI_UX_IMPROVEMENT_PLAN.md`
+- `docs/REPOSITORY_RELEASE_PLAN.md`
 - `docs/RELEASE_PROCESS.md`
 - `ROADMAP.md`

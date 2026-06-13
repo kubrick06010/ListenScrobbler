@@ -6,6 +6,8 @@ OpenScrobbler releases are published by GitHub Actions from version tags.
 
 1. Update `MARKETING_VERSION` in `project.yml`.
 2. Update `CURRENT_PROJECT_VERSION` in `project.yml` if the build number should advance.
+   iOS may override these settings in the `OpenScrobbleriOS` target when its
+   first-release version differs from the macOS line.
 3. Regenerate the Xcode project if `project.yml` changed:
 
    ```bash
@@ -62,6 +64,22 @@ The workflow uploads:
 - `OpenScrobbler-<version>-macOS.zip`
 
 The app is locally signed by the workflow. Notarization is not automated yet.
+
+## iOS Release Track
+
+iOS is not published by the current GitHub Actions workflow. Before tagging an
+iOS release or TestFlight build:
+
+1. Refresh Apple Developer credentials in Xcode.
+2. Run `tools/ios_device_validation.sh` against a paired physical iPhone.
+3. Complete the beta gate in `docs/IOS_DEVELOPMENT_PATH.md`.
+4. Capture current-build device traces under `tmp/device-traces/`.
+5. Archive/sign through Xcode or a future CI workflow with App Store Connect
+   credentials.
+
+Do not publish the iOS `1.0.0` release until manual submission, Music library
+baseline/delta behavior, duplicate prevention, retry persistence, and current
+device traces are verified on hardware.
 
 ## Future Automation
 

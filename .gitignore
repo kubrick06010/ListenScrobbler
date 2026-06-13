@@ -1,4 +1,4 @@
-.DS_Store
+**/.DS_Store
 
 # Local reference checkouts used while studying the open ecosystem.
 .references/
@@ -7,6 +7,7 @@
 DerivedData/
 build/
 dist/
+tmp/
 *.xcresult
 *.moved-aside
 *.xcuserstate

@@ -4,6 +4,9 @@ OpenScrobbler 1.0.0 is the official baseline for the app: a native macOS client 
 
 The roadmap below is intentionally post-1.0. It treats the current release as the product foundation and focuses future work on improving depth, maintainability, and polish in small reviewed increments.
 
+The current release track adds an iOS foundation. macOS moves toward `1.1.0`;
+iOS is prepared for its first `1.0.0` release after physical-device validation.
+
 ## 1.0.0 Baseline
 
 The release includes:
@@ -117,6 +120,25 @@ Targets:
 - Add persistence and migration tests before changing storage paths.
 - Keep release validation documented in `docs/RELEASE_PROCESS.md`.
 - Add notarization once Apple Developer credentials are available in GitHub Actions.
+
+### 8. iOS Beta And Source-Aware Scrobbling
+
+Make iOS a real scrobbling client without overpromising unsupported background
+monitoring.
+
+Targets:
+
+- Finish physical-device validation for the current iOS scanner build.
+- Keep Music library delta scanning and manual submission as the first reliable
+  mobile scrobbling paths.
+- Add source metadata to ListenBrainz submissions before adding Spotify,
+  YouTube, Apple Music, or export importers.
+- Treat Spotify recent plays as opt-in import/polling, not universal background
+  scrobbling.
+- Defer YouTube Music native integration unless a supported, app-store-safe API
+  path exists.
+- Keep cross-platform UI/UX language aligned through
+  `docs/UI_UX_IMPROVEMENT_PLAN.md`.
 
 ## Release Policy
 

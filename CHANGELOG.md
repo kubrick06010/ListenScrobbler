@@ -1,5 +1,34 @@
 # Changelog
 
+## 1.1.0 - 2026-06-13
+
+### Added
+
+- First iOS target with ListenBrainz connection, recent listens, current pin,
+  manual scrobble submission, Music library play-count delta scanning, and a
+  persistent retry queue for failed mobile submissions.
+- Shared mobile core services and tests for ListenBrainz connection, manual
+  submission, Music library differ behavior, scan-engine retry behavior, and
+  pending queue persistence.
+- Official ListenBrainz/MetaBrainz app icon, in-app image assets, and macOS
+  menu bar icon parity generated from documented source assets.
+- Physical-device validation script for building, installing, launching, and
+  tracing the iOS app once Apple Developer provisioning is available.
+- iOS source integration, cross-platform UI/UX, and repository release plans.
+
+### Changed
+
+- Bumped macOS to version `1.1.0` build `6`.
+- Set the first iOS release target to version `1.0.0` build `1`.
+- Documented the current physical-device signing blocker and beta gate.
+
+### Verified
+
+- `xcodebuild test -project OpenScrobbler.xcodeproj -scheme OpenScrobbler -destination 'platform=macOS'`
+- `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO`
+- `bash -n tools/ios_device_validation.sh`
+- `git diff --check`
+
 ## 1.0.0 - 2026-06-12
 
 Official 1.0.0 milestone release.
