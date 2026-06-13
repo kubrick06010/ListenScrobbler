@@ -9,6 +9,10 @@ struct MobileAccountView: View {
 
     var body: some View {
         Form {
+            Section {
+                MobileListenBrainzSetupGuide(connectionState: listeningStore.connectionState)
+            }
+
             Section("ListenBrainz") {
                 Text(listeningStore.connectionState.statusText)
                     .foregroundStyle(.secondary)
@@ -154,6 +158,100 @@ private struct MobilePendingQueueView: View {
             }
             .onAppear {
                 musicLibraryScanner.refreshPendingScrobbles()
+            }
+        }
+    }
+}
+
+private struct MobileListenBrainzSetupGuide: View {
+    let connectionState: MobileListeningStore.ConnectionState
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(spacing: 12) {
+                Image("ListenPulse")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 40, height: 40)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Guided Setup")
+                        .font(.headline)
+                    Label(statusText, systemImage: statusSymbol)
+                        .font(.subheadline)
+                        .foregroundStyle(statusTint)
+                }
+            }
+
+            ForEach(ListenBrainzSetupGuide.steps) { step in
+                MobileSetupStepRow(step: step)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Link(destination: ListenBrainzSetupGuide.musicBrainzSignupURL) {
+                    Label("Create Account", systemImage: "person.crop.circle.badge.plus")
+                }
+
+                Link(destination: ListenBrainzSetupGuide.tokenURL) {
+                    Label("Open User Token", systemImage: "key")
+                }
+
+                Link(destination: ListenBrainzSetupGuide.importersURL) {
+                    Label("Connect Music Services", systemImage: "point.3.connected.trianglepath.dotted")
+                }
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var statusText: String {
+        connectionState.statusText
+    }
+
+    private var statusSymbol: String {
+        switch connectionState {
+        case .connected:
+            return "checkmark.seal"
+        case .failed:
+            return "exclamationmark.triangle"
+        case .loading:
+            return "hourglass"
+        case .disconnected:
+            return "person.badge.key"
+        }
+    }
+
+    private var statusTint: Color {
+        switch connectionState {
+        case .connected:
+            return .green
+        case .failed:
+            return .red
+        default:
+            return .secondary
+        }
+    }
+}
+
+private struct MobileSetupStepRow: View {
+    let step: ListenBrainzSetupStep
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: step.symbolName)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
+                .frame(width: 24, height: 24)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(step.title)
+                    .font(.subheadline.weight(.semibold))
+                Text(step.detail)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

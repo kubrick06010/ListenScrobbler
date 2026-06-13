@@ -12,6 +12,7 @@
 		086E0F9FC388682B356DC284 /* ShareComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB125A722F9D614C74BB0163 /* ShareComposerView.swift */; };
 		090D7CD25F5394BFF3DE1E50 /* ScrobbleQueueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B4BEF0A1C8F7B573372444 /* ScrobbleQueueStore.swift */; };
 		0B96DBB4774BD2816949534A /* MobileHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D83BA08D7C896B2D6979662 /* MobileHomeView.swift */; };
+		0BBCE411288DFE93503E9E14 /* ListenBrainzSetupGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73FB71C2F0104581EDC7537 /* ListenBrainzSetupGuideTests.swift */; };
 		0DDD21A5A50E5DC9DB7D21CC /* MoodPaletteEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA73E2EE23E95E82C345B34A /* MoodPaletteEngine.swift */; };
 		10112D727B1AB7B05EB45610 /* MobileLibraryScrobbleDiffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64C97B5035AFE0C1F2AD080 /* MobileLibraryScrobbleDiffer.swift */; };
 		1BD25D57864122BC3EF0EE50 /* artist-map-openapi.json in Resources */ = {isa = PBXBuildFile; fileRef = DF283F9CB9E9060C8AF52F12 /* artist-map-openapi.json */; };
@@ -44,6 +45,7 @@
 		713D2AB9AA416BA16CFF76AC /* ArtistAffinityGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78691512CBD9957E5D1BE7DA /* ArtistAffinityGraphView.swift */; };
 		75271B21A49D115820DFBED8 /* PlayerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E766D6FC8095B2F1117475 /* PlayerMonitor.swift */; };
 		773A8148202AD1A9467933FF /* PlayerNormalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BDBC2FFA16433B45BA42F3 /* PlayerNormalization.swift */; };
+		7985EFD3DA4B1A7848047B60 /* ListenBrainzSetupGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2748D831288046F6AFEEC4 /* ListenBrainzSetupGuide.swift */; };
 		7B8CCA0C9610E414D575E0C9 /* MobileListensView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D288CDC21AB26F533765036 /* MobileListensView.swift */; };
 		7E84DDC83549BF75CE463B60 /* MobileDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1E504337C096711C4D5EDF /* MobileDiscoverView.swift */; };
 		87E6523C71C372F7804F86EB /* CompatibilityAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2548A98187D5CCC43BF807A /* CompatibilityAPI.swift */; };
@@ -82,6 +84,7 @@
 		E0E3A81BA853135C40FA1815 /* MusicBrainzServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 283B8DD77EC3F6CD9311B24A /* MusicBrainzServiceTests.swift */; };
 		E0E59F88C055F7A7B5493508 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64522A5F740C6E1BDFF8DDB9 /* ContentView.swift */; };
 		E1A85B54C56D0B3979A2D163 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752253E349B9798E58E97634 /* ProfileView.swift */; };
+		E3D42B4BA2D4A307059228C3 /* ListenBrainzSetupGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2748D831288046F6AFEEC4 /* ListenBrainzSetupGuide.swift */; };
 		E5C7506C622902681933338B /* CompatibilitySignatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A95E641685904D84AA7497 /* CompatibilitySignatureTests.swift */; };
 		E652B41C63F4A2F1C81C25CA /* ObsessionsVaultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 628BBADF573FD3DA58EA8E49 /* ObsessionsVaultView.swift */; };
 		EC963B537EA83EE6E4E08CE2 /* ListenBrainzService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3454FC6E9EC86078F7179BDF /* ListenBrainzService.swift */; };
@@ -203,6 +206,8 @@
 		E9B4BEF0A1C8F7B573372444 /* ScrobbleQueueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleQueueStore.swift; sourceTree = "<group>"; };
 		EC130637C79548554A953177 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		F5254D9C6FEAA307DB10BD0F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F73FB71C2F0104581EDC7537 /* ListenBrainzSetupGuideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenBrainzSetupGuideTests.swift; sourceTree = "<group>"; };
+		FC2748D831288046F6AFEEC4 /* ListenBrainzSetupGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenBrainzSetupGuide.swift; sourceTree = "<group>"; };
 		FD6E57E3CA79357ECEF8E7EB /* MusicBrainzService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicBrainzService.swift; sourceTree = "<group>"; };
 		FFCCF9DA53FAE2B7CEB06032 /* VaultStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultStoreTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -282,6 +287,7 @@
 		49813BBD62555505AD0CF6BE /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				FC2748D831288046F6AFEEC4 /* ListenBrainzSetupGuide.swift */,
 				CBB6CE2E1915DFA0515C3EF3 /* Mobile */,
 			);
 			path = Core;
@@ -481,6 +487,7 @@
 				948CD321C9C69762A3F9ED43 /* CompatibilityAPIErrorTests.swift */,
 				15A95E641685904D84AA7497 /* CompatibilitySignatureTests.swift */,
 				A0D17CC6E6769732AF5ADC9E /* ListenBrainzServiceTests.swift */,
+				F73FB71C2F0104581EDC7537 /* ListenBrainzSetupGuideTests.swift */,
 				50DC37262772A6561E753B28 /* MobileLibraryScanEngineTests.swift */,
 				462E69DCAE80415D28A2EA0C /* MobileLibraryScrobbleDifferTests.swift */,
 				771604AAC81CFF62D09ED05E /* MobileListeningStoreTests.swift */,
@@ -684,6 +691,7 @@
 				52538E2EA22B92E520D67711 /* InteractiveSeparationGraphView.swift in Sources */,
 				6A70A3ECE792D75D923FCB6B /* LaunchAtLoginController.swift in Sources */,
 				EC963B537EA83EE6E4E08CE2 /* ListenBrainzService.swift in Sources */,
+				E3D42B4BA2D4A307059228C3 /* ListenBrainzSetupGuide.swift in Sources */,
 				B2B4CF541D9BC375634C3CAA /* ListenBrainzSocialView.swift in Sources */,
 				2128627253A19C576BFA2172 /* ListeningClockView.swift in Sources */,
 				DA7C4F140213DF4EFBA16F6E /* MobileLibraryScanEngine.swift in Sources */,
@@ -741,6 +749,7 @@
 				31C4043BC352F08C41EBA901 /* CompatibilityAPIErrorTests.swift in Sources */,
 				E5C7506C622902681933338B /* CompatibilitySignatureTests.swift in Sources */,
 				55D717566443C29852C5CF15 /* ListenBrainzServiceTests.swift in Sources */,
+				0BBCE411288DFE93503E9E14 /* ListenBrainzSetupGuideTests.swift in Sources */,
 				D32E5A2C2AF2AC6BC765B79D /* MobileLibraryScanEngineTests.swift in Sources */,
 				61B9E13EABB994854E0D6457 /* MobileLibraryScrobbleDifferTests.swift in Sources */,
 				9DCB9406A57851ED34D16410 /* MobileListeningStoreTests.swift in Sources */,
@@ -758,6 +767,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C1248B074B815544AACA4BD /* ListenBrainzService.swift in Sources */,
+				7985EFD3DA4B1A7848047B60 /* ListenBrainzSetupGuide.swift in Sources */,
 				2407077F1F5868F91766EE06 /* MobileLibraryScanEngine.swift in Sources */,
 				C08727EB469EBEAE0C156965 /* MobileLibraryScrobbleDiffer.swift in Sources */,
 				AB9A3F135D878DE7F60E5A07 /* MobileListeningStore.swift in Sources */,

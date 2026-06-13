@@ -211,6 +211,12 @@ struct SettingsView: View {
                 subtitle: "The primary OpenScrobbler identity for submissions, charts, and social music data."
             )
 
+            ListenBrainzAccountSetupPanel(
+                connectionSummary: scrobbleService.listenBrainzStatus,
+                connectedUsername: scrobbleService.listenBrainzUsername,
+                hasError: scrobbleService.listenBrainzLastError != nil
+            )
+
             GroupBox("Connection") {
                 VStack(alignment: .leading, spacing: 12) {
                     Toggle("Enable ListenBrainz", isOn: $listenBrainzEnabled)
