@@ -131,8 +131,8 @@ struct ListenBrainzAccountSetupPanel: View {
                     Label("Open Token", systemImage: "key")
                 }
 
-                Link(destination: ListenBrainzSetupGuide.importersURL) {
-                    Label("Music Services", systemImage: "point.3.connected.trianglepath.dotted")
+                Link(destination: ListenBrainzSetupGuide.addDataURL) {
+                    Label("Add Data", systemImage: "arrow.down.doc")
                 }
             }
             .buttonStyle(.bordered)
@@ -163,11 +163,54 @@ struct ListenBrainzSetupStepTile: View {
     let step: ListenBrainzSetupStep
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: step.symbolName)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
+                    .frame(width: 24, height: 24)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(step.title)
+                        .font(.custom("Avenir Next Demi Bold", size: 13))
+                    Text(step.detail)
+                        .font(.custom("Avenir Next Regular", size: 12))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            if let actionTitle = step.actionTitle, let actionURL = step.actionURL {
+                Link(destination: actionURL) {
+                    Label(actionTitle, systemImage: "arrow.up.right")
+                }
+                .font(.custom("Avenir Next Medium", size: 12))
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding(10)
+        .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+}
+
+struct ListenBrainzNumberedSetupStepTile: View {
+    let index: Int
+    let step: ListenBrainzSetupStep
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
             Image(systemName: step.symbolName)
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
-                .frame(width: 24, height: 24)
+                .overlay(alignment: .bottomTrailing) {
+                    Text("\(index)")
+                        .font(.custom("Avenir Next Demi Bold", size: 9))
+                        .foregroundStyle(.white)
+                        .frame(width: 16, height: 16)
+                        .background(Color(red: 0.83, green: 0.06, blue: 0.09), in: Circle())
+                        .offset(x: 7, y: 7)
+                }
+                .frame(width: 30, height: 30)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(step.title)
@@ -176,6 +219,15 @@ struct ListenBrainzSetupStepTile: View {
                     .font(.custom("Avenir Next Regular", size: 12))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+
+                if let actionTitle = step.actionTitle, let actionURL = step.actionURL {
+                    Link(destination: actionURL) {
+                        Label(actionTitle, systemImage: "arrow.up.right")
+                    }
+                    .font(.custom("Avenir Next Medium", size: 12))
+                    .buttonStyle(.bordered)
+                    .padding(.top, 4)
+                }
             }
         }
         .padding(10)

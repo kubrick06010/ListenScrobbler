@@ -53,14 +53,14 @@ imports, and TestFlight release packaging.
 
 Status: implemented.
 
-- Add a shared `ListenBrainzSetupGuide` model with account, token, source, and
-  verification steps.
+- Add a shared `ListenBrainzSetupGuide` model with account, token, enablement,
+  verification, and optional import steps.
 - Show the guide in macOS Account.
 - Show the guide in macOS Preferences > ListenBrainz, where token validation
   actually happens.
 - Show the guide in iOS Account before the token connection form.
 - Link directly to MusicBrainz registration, ListenBrainz token/profile, and
-  ListenBrainz music-service settings.
+  ListenBrainz Add Data/import options.
 - Add tests that lock the step order and destination hosts.
 
 ## Phase 2: iOS Competitive Parity

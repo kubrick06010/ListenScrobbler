@@ -5,7 +5,7 @@ final class ListenBrainzSetupGuideTests: XCTestCase {
     func testSetupGuideKeepsModernAccountFlow() {
         XCTAssertEqual(
             ListenBrainzSetupGuide.steps.map(\.id),
-            ["account", "token", "sources", "verify"]
+            ["account", "token", "enable", "verify", "imports"]
         )
         XCTAssertTrue(ListenBrainzSetupGuide.steps.allSatisfy { !$0.title.isEmpty })
         XCTAssertTrue(ListenBrainzSetupGuide.steps.allSatisfy { !$0.detail.isEmpty })
@@ -16,8 +16,9 @@ final class ListenBrainzSetupGuideTests: XCTestCase {
         XCTAssertEqual(ListenBrainzSetupGuide.listenBrainzURL.host, "listenbrainz.org")
         XCTAssertEqual(ListenBrainzSetupGuide.tokenURL.host, "listenbrainz.org")
         XCTAssertEqual(ListenBrainzSetupGuide.importersURL.host, "listenbrainz.org")
+        XCTAssertTrue(ListenBrainzSetupGuide.addDataURL.absoluteString.hasPrefix("https://listenbrainz.org/add-data"))
         XCTAssertEqual(ListenBrainzSetupGuide.musicBrainzSignupURL.host, "musicbrainz.org")
-        XCTAssertEqual(ListenBrainzSetupGuide.importersURL.host, "listenbrainz.org")
+        XCTAssertFalse(ListenBrainzSetupGuide.importersURL.absoluteString.contains("music-services"))
     }
 
     func testOnboardingKeepsOpenMusicStoryAndActions() {

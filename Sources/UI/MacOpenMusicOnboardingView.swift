@@ -23,23 +23,29 @@ struct MacOpenMusicOnboardingView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Connect in minutes")
+                        Text("Setup checklist")
                             .font(.custom("Avenir Next Demi Bold", size: 18))
 
-                        ForEach(ListenBrainzSetupGuide.steps) { step in
-                            ListenBrainzSetupStepTile(step: step)
+                        ForEach(Array(ListenBrainzSetupGuide.steps.enumerated()), id: \.element.id) { offset, step in
+                            ListenBrainzNumberedSetupStepTile(index: offset + 1, step: step)
                         }
                     }
                     .appPanelStyle()
 
-                    HStack(spacing: 10) {
-                        ForEach(ListenBrainzSetupGuide.onboardingActions) { action in
-                            Button {
-                                openURL(action.url)
-                            } label: {
-                                Label(action.title, systemImage: action.symbolName)
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Use these only when you need the web step.")
+                            .font(.custom("Avenir Next Regular", size: 12))
+                            .foregroundStyle(.secondary)
+
+                        HStack(spacing: 10) {
+                            ForEach(ListenBrainzSetupGuide.onboardingActions) { action in
+                                Button {
+                                    openURL(action.url)
+                                } label: {
+                                    Label(action.title, systemImage: action.symbolName)
+                                }
+                                .buttonStyle(.bordered)
                             }
-                            .buttonStyle(.bordered)
                         }
                     }
                     .font(.custom("Avenir Next Medium", size: 12))

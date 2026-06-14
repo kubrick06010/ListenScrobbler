@@ -228,8 +228,8 @@ private struct MobileListenBrainzSetupGuide: View {
                     Label("Open User Token", systemImage: "key")
                 }
 
-                Link(destination: ListenBrainzSetupGuide.importersURL) {
-                    Label("Connect Music Services", systemImage: "point.3.connected.trianglepath.dotted")
+                Link(destination: ListenBrainzSetupGuide.addDataURL) {
+                    Label("Add Existing Data", systemImage: "arrow.down.doc")
                 }
             }
             .buttonStyle(.bordered)
@@ -347,11 +347,11 @@ struct MobileOpenMusicOnboardingView: View {
     private var setupPage: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Connect in minutes")
+                Text("Setup checklist")
                     .font(.title.bold())
 
-                ForEach(ListenBrainzSetupGuide.steps) { step in
-                    MobileSetupStepRow(step: step)
+                ForEach(Array(ListenBrainzSetupGuide.steps.enumerated()), id: \.element.id) { offset, step in
+                    MobileSetupStepRow(step: step, index: offset + 1)
                         .padding(14)
                         .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
@@ -477,13 +477,26 @@ private struct OnboardingFeatureRow: View {
 
 private struct MobileSetupStepRow: View {
     let step: ListenBrainzSetupStep
+    var index: Int?
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: step.symbolName)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
-                .frame(width: 24, height: 24)
+            ZStack(alignment: .bottomTrailing) {
+                Image(systemName: step.symbolName)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
+                    .frame(width: 26, height: 26)
+
+                if let index {
+                    Text("\(index)")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 16, height: 16)
+                        .background(Color(red: 0.83, green: 0.06, blue: 0.09), in: Circle())
+                        .offset(x: 5, y: 5)
+                }
+            }
+            .frame(width: 30, height: 30)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(step.title)
@@ -492,6 +505,15 @@ private struct MobileSetupStepRow: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+
+                if let actionTitle = step.actionTitle, let actionURL = step.actionURL {
+                    Link(destination: actionURL) {
+                        Label(actionTitle, systemImage: "arrow.up.right")
+                    }
+                    .font(.caption.weight(.semibold))
+                    .buttonStyle(.bordered)
+                    .padding(.top, 4)
+                }
             }
         }
     }

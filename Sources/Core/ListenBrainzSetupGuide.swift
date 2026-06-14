@@ -5,12 +5,23 @@ public struct ListenBrainzSetupStep: Identifiable, Equatable {
     public let title: String
     public let detail: String
     public let symbolName: String
+    public let actionTitle: String?
+    public let actionURL: URL?
 
-    public init(id: String, title: String, detail: String, symbolName: String) {
+    public init(
+        id: String,
+        title: String,
+        detail: String,
+        symbolName: String,
+        actionTitle: String? = nil,
+        actionURL: URL? = nil
+    ) {
         self.id = id
         self.title = title
         self.detail = detail
         self.symbolName = symbolName
+        self.actionTitle = actionTitle
+        self.actionURL = actionURL
     }
 }
 
@@ -46,38 +57,51 @@ public struct ListenBrainzOnboardingAction: Identifiable, Equatable {
 
 public enum ListenBrainzSetupGuide {
     public static let listenBrainzURL = URL(string: "https://listenbrainz.org/")!
+    public static let addDataURL = URL(string: "https://listenbrainz.org/add-data/")!
     public static let musicBrainzSignupURL = URL(string: "https://musicbrainz.org/register")!
     public static let tokenURL = URL(string: "https://listenbrainz.org/profile/")!
-    public static let importersURL = URL(string: "https://listenbrainz.org/settings/music-services/")!
+    public static let importersURL = addDataURL
 
     public static let eyebrow = "Open Music Setup"
-    public static let headline = "Scrobbling, rebuilt around open music data."
-    public static let summary = "ListenScrobbler keeps the fast account setup and familiar listening timeline of classic scrobblers, then connects it to ListenBrainz, MusicBrainz metadata, recommendations, social discovery, and portable exports."
+    public static let headline = "Connect ListenBrainz in a few deliberate steps."
+    public static let summary = "Create or sign in with MusicBrainz, copy your ListenBrainz user token, validate it in ListenScrobbler, then run one test submission or library scan. No password is stored in the app."
 
     public static let steps: [ListenBrainzSetupStep] = [
         ListenBrainzSetupStep(
             id: "account",
-            title: "Create or sign in",
-            detail: "Use a MusicBrainz account to unlock ListenBrainz listens, charts, pins, and recommendations.",
-            symbolName: "person.crop.circle.badge.plus"
+            title: "Create or sign in to MusicBrainz",
+            detail: "ListenBrainz uses your MusicBrainz account. Sign in on the web first so the token page can show your account token.",
+            symbolName: "person.crop.circle.badge.plus",
+            actionTitle: "Create Account",
+            actionURL: musicBrainzSignupURL
         ),
         ListenBrainzSetupStep(
             id: "token",
             title: "Copy your user token",
-            detail: "Open your ListenBrainz profile, copy the user token, and paste it here. ListenScrobbler never needs your password.",
-            symbolName: "key"
+            detail: "Open your ListenBrainz profile, copy the user token, paste it into the User token field, then choose Save & Validate.",
+            symbolName: "key",
+            actionTitle: "Open Token Page",
+            actionURL: tokenURL
         ),
         ListenBrainzSetupStep(
-            id: "sources",
-            title: "Connect listening sources",
-            detail: "Set up ListenBrainz music services such as Spotify or imports on the web, then let ListenScrobbler submit local and manual listens with clear source metadata.",
-            symbolName: "point.3.connected.trianglepath.dotted"
+            id: "enable",
+            title: "Enable submissions",
+            detail: "Keep ListenBrainz enabled, choose whether to send now playing and completed listens, then save the settings.",
+            symbolName: "switch.2"
         ),
         ListenBrainzSetupStep(
             id: "verify",
-            title: "Validate and scan",
-            detail: "Validate the token, review the connected username, then run a library scan or submit a manual listen to confirm the pipeline.",
+            title: "Verify with one listen",
+            detail: "After validation shows your username, submit a manual listen or run a Music library scan. The first scan builds a baseline instead of importing old history.",
             symbolName: "checkmark.seal"
+        ),
+        ListenBrainzSetupStep(
+            id: "imports",
+            title: "Optional: import older history",
+            detail: "Use ListenBrainz's Add Data page for supported imports. ListenScrobbler does not require web music-service settings to submit local or manual listens.",
+            symbolName: "arrow.down.doc",
+            actionTitle: "Open Add Data",
+            actionURL: addDataURL
         )
     ]
 
@@ -119,10 +143,10 @@ public enum ListenBrainzSetupGuide {
         ),
         ListenBrainzOnboardingAction(
             id: "import",
-            title: "Connect Music Services",
-            detail: "Configure web imports and connected listening sources.",
+            title: "Add Existing Data",
+            detail: "Open ListenBrainz import options for older listening history.",
             symbolName: "arrow.down.doc",
-            url: importersURL
+            url: addDataURL
         )
     ]
 }
