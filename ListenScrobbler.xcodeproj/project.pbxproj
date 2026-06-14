@@ -232,7 +232,7 @@
 		BCBB63A8F4557114FD683119 /* ListenScrobblerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenScrobblerApp.swift; sourceTree = "<group>"; };
 		BD95A03E08E3C747E938BB90 /* VaultStores.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultStores.swift; sourceTree = "<group>"; };
 		C37401A8DD5E1F66AEBB0861 /* MobileLibraryScanEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLibraryScanEngineTests.swift; sourceTree = "<group>"; };
-		C5679250ECFE47CA6AC3D0F7 /* ListenScrobbleriOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ListenScrobbleriOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5679250ECFE47CA6AC3D0F7 /* ListenScrobbler.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ListenScrobbler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5DA35C05A986A9D098E697B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C800090577C437719D0F720A /* ObsessionsVaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsessionsVaultView.swift; sourceTree = "<group>"; };
 		C84E7DC5282C57ACC74B50D9 /* ScrobbleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleService.swift; sourceTree = "<group>"; };
@@ -386,7 +386,7 @@
 			children = (
 				F3F7882E22ABA3E6A21D44DA /* ListenScrobbler.app */,
 				6C72880792F0515E6C7F4825 /* ListenScrobblerCore.framework */,
-				C5679250ECFE47CA6AC3D0F7 /* ListenScrobbleriOS.app */,
+				C5679250ECFE47CA6AC3D0F7 /* ListenScrobbler.app */,
 				33487FF816844CBF7ACC608D /* ListenScrobblerTests.xctest */,
 				EB8D0559F6295C296CD866EA /* ListenScrobblerWidgets.appex */,
 			);
@@ -672,7 +672,7 @@
 			packageProductDependencies = (
 			);
 			productName = ListenScrobbleriOS;
-			productReference = C5679250ECFE47CA6AC3D0F7 /* ListenScrobbleriOS.app */;
+			productReference = C5679250ECFE47CA6AC3D0F7 /* ListenScrobbler.app */;
 			productType = "com.apple.product-type.application";
 		};
 		C65E5ABD7B997597AA90D4C2 /* ListenScrobblerTests */ = {
