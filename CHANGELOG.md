@@ -25,6 +25,8 @@
   through the app route.
 - iOS direct manual scrobble App Intent for Shortcuts, including title, artist,
   album, duration, listened-at, and OpenScrobbler source metadata.
+- iOS repeat recent listen App Intent for Shortcuts, reusing the latest
+  ListenBrainz listen with an explicit duration fallback and source metadata.
 - Shared iOS intent routing so system actions can drive tab selection and
   manual-scrobble presentation without duplicating view logic.
 - iOS beta diagnostics export from Account with app/build version, device/OS

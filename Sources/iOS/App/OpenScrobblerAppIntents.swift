@@ -194,6 +194,59 @@ struct SubmitManualScrobbleIntent: AppIntent {
     }
 }
 
+struct RepeatRecentListenIntent: AppIntent {
+    static let title: LocalizedStringResource = "Repeat Recent Listen"
+    static let description = IntentDescription("Submit the latest ListenBrainz listen again with OpenScrobbler source metadata.")
+    static let openAppWhenRun = false
+
+    @Parameter(title: "Duration Minutes")
+    var durationMinutes: Int
+
+    @Parameter(title: "Duration Seconds")
+    var durationSeconds: Int
+
+    init() {
+        durationMinutes = 3
+        durationSeconds = 0
+    }
+
+    init(durationMinutes: Int = 3, durationSeconds: Int = 0) {
+        self.durationMinutes = durationMinutes
+        self.durationSeconds = durationSeconds
+    }
+
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        let duration = TimeInterval((max(0, durationMinutes) * 60) + min(max(0, durationSeconds), 59))
+        guard duration >= 30 else { throw RepeatRecentListenIntentError.shortDuration }
+
+        let store = await MainActor.run { MobileListeningStore() }
+        await store.refresh()
+
+        guard let listen = await MainActor.run(body: { store.recentListens.first }) else {
+            throw RepeatRecentListenIntentError.noRecentListen
+        }
+
+        try await store.submitScrobble(
+            MobileScrobbleCandidate(
+                title: listen.trackName,
+                artist: listen.artistName,
+                album: listen.releaseName,
+                duration: duration,
+                listenedAt: Date(),
+                source: "OpenScrobbler iOS Repeat Shortcut",
+                sourceMetadata: MobileScrobbleSourceMetadata(
+                    mediaPlayer: "Shortcuts",
+                    musicServiceName: "ListenBrainz",
+                    originalSubmissionClient: "Repeat Recent Listen Intent"
+                )
+            )
+        )
+        await store.refresh()
+
+        return .result(dialog: "Repeated \(listen.trackName) to ListenBrainz.")
+    }
+}
+
 private enum SubmitManualScrobbleIntentError: LocalizedError {
     case missingTitle
     case missingArtist
@@ -205,6 +258,20 @@ private enum SubmitManualScrobbleIntentError: LocalizedError {
             return "Add a track title before submitting."
         case .missingArtist:
             return "Add an artist before submitting."
+        case .shortDuration:
+            return "Use a duration of at least 30 seconds."
+        }
+    }
+}
+
+private enum RepeatRecentListenIntentError: LocalizedError {
+    case noRecentListen
+    case shortDuration
+
+    var errorDescription: String? {
+        switch self {
+        case .noRecentListen:
+            return "Connect ListenBrainz and refresh recent listens before repeating one."
         case .shortDuration:
             return "Use a duration of at least 30 seconds."
         }
@@ -251,6 +318,16 @@ struct OpenScrobblerAppShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Submit Listen",
             systemImageName: "checkmark.circle"
+        )
+
+        AppShortcut(
+            intent: RepeatRecentListenIntent(),
+            phrases: [
+                "Repeat recent listen with \(.applicationName)",
+                "Scrobble the last listen with \(.applicationName)"
+            ],
+            shortTitle: "Repeat Listen",
+            systemImageName: "repeat"
         )
     }
 }

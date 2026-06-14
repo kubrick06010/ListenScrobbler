@@ -46,8 +46,8 @@ Definition of done:
   or because they need a widget/extension or provider OAuth track.
 
 Current status: beta parity core is implemented. The next parity gaps are
-widgets, repeat-last/current-Music intents, recommendation actions
-(pin/share/playlists), provider imports, and TestFlight release packaging.
+widgets, current-Music intent, recommendation actions (pin/share/playlists),
+provider imports, and TestFlight release packaging.
 
 ## Phase 1: Guided Account Setup
 
@@ -83,13 +83,14 @@ Status: implemented.
     listening store.
   - Submit manual listen from Shortcuts with track, artist, album, duration, and
     listened-at parameters.
+  - Repeat the most recent ListenBrainz listen from Shortcuts with an explicit
+    duration fallback.
   - Submit current Music app listen when Music APIs expose enough identity.
-  - Repeat a recent ListenBrainz listen.
   - Refresh widgets and recent listens.
 
   Status: first pass implemented for open destination, open manual scrobble,
-  refresh ListenBrainz, and direct manual scrobble submission. Current Music app,
-  repeat-last-listen, and widget refresh remain.
+  refresh ListenBrainz, direct manual scrobble submission, and repeat recent
+  listen. Current Music app and widget refresh remain.
 - Widgets:
   - Connected account/status widget.
   - Recent listen widget.
