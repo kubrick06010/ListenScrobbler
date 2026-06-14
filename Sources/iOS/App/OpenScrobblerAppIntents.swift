@@ -1,5 +1,6 @@
 import AppIntents
 import Foundation
+import OpenScrobblerCore
 
 enum OpenScrobblerDestination: String, AppEnum {
     case home
@@ -109,6 +110,107 @@ struct RefreshListenBrainzIntent: AppIntent {
     }
 }
 
+struct SubmitManualScrobbleIntent: AppIntent {
+    static let title: LocalizedStringResource = "Submit Manual Scrobble"
+    static let description = IntentDescription("Submit a manual listen directly to ListenBrainz.")
+    static let openAppWhenRun = false
+
+    @Parameter(title: "Track Title", inputConnectionBehavior: .connectToPreviousIntentResult)
+    var trackTitle: String
+
+    @Parameter(title: "Artist")
+    var artist: String
+
+    @Parameter(title: "Album")
+    var album: String?
+
+    @Parameter(title: "Duration Minutes")
+    var durationMinutes: Int
+
+    @Parameter(title: "Duration Seconds")
+    var durationSeconds: Int
+
+    @Parameter(title: "Listened At")
+    var listenedAt: Date?
+
+    init() {
+        trackTitle = ""
+        artist = ""
+        album = nil
+        durationMinutes = 3
+        durationSeconds = 0
+        listenedAt = nil
+    }
+
+    init(
+        trackTitle: String,
+        artist: String,
+        album: String? = nil,
+        durationMinutes: Int = 3,
+        durationSeconds: Int = 0,
+        listenedAt: Date? = nil
+    ) {
+        self.trackTitle = trackTitle
+        self.artist = artist
+        self.album = album
+        self.durationMinutes = durationMinutes
+        self.durationSeconds = durationSeconds
+        self.listenedAt = listenedAt
+    }
+
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        let title = normalized(trackTitle)
+        let artistName = normalized(artist)
+        let albumName = normalized(album).nilIfBlank
+        let duration = TimeInterval((max(0, durationMinutes) * 60) + min(max(0, durationSeconds), 59))
+
+        guard !title.isEmpty else { throw SubmitManualScrobbleIntentError.missingTitle }
+        guard !artistName.isEmpty else { throw SubmitManualScrobbleIntentError.missingArtist }
+        guard duration >= 30 else { throw SubmitManualScrobbleIntentError.shortDuration }
+
+        let store = await MainActor.run { MobileListeningStore() }
+        try await store.submitScrobble(
+            MobileScrobbleCandidate(
+                title: title,
+                artist: artistName,
+                album: albumName,
+                duration: duration,
+                listenedAt: listenedAt ?? Date(),
+                source: "OpenScrobbler iOS Shortcut",
+                sourceMetadata: MobileScrobbleSourceMetadata(
+                    mediaPlayer: "Shortcuts",
+                    musicServiceName: "OpenScrobbler",
+                    originalSubmissionClient: "Submit Manual Scrobble Intent"
+                )
+            )
+        )
+        await store.refresh()
+
+        return .result(dialog: "Submitted \(title) to ListenBrainz.")
+    }
+
+    private func normalized(_ value: String?) -> String {
+        value?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+}
+
+private enum SubmitManualScrobbleIntentError: LocalizedError {
+    case missingTitle
+    case missingArtist
+    case shortDuration
+
+    var errorDescription: String? {
+        switch self {
+        case .missingTitle:
+            return "Add a track title before submitting."
+        case .missingArtist:
+            return "Add an artist before submitting."
+        case .shortDuration:
+            return "Use a duration of at least 30 seconds."
+        }
+    }
+}
+
 struct OpenScrobblerAppShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
@@ -140,5 +242,21 @@ struct OpenScrobblerAppShortcuts: AppShortcutsProvider {
             shortTitle: "Refresh",
             systemImageName: "arrow.clockwise"
         )
+
+        AppShortcut(
+            intent: SubmitManualScrobbleIntent(),
+            phrases: [
+                "Submit a listen with \(.applicationName)",
+                "Add a scrobble with \(.applicationName)"
+            ],
+            shortTitle: "Submit Listen",
+            systemImageName: "checkmark.circle"
+        )
+    }
+}
+
+private extension String {
+    var nilIfBlank: String? {
+        isEmpty ? nil : self
     }
 }

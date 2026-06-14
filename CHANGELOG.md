@@ -23,6 +23,8 @@
 - iOS App Shortcuts for opening OpenScrobbler destinations, opening the manual
   scrobble form with optional draft metadata, and refreshing ListenBrainz
   through the app route.
+- iOS direct manual scrobble App Intent for Shortcuts, including title, artist,
+  album, duration, listened-at, and OpenScrobbler source metadata.
 - Shared iOS intent routing so system actions can drive tab selection and
   manual-scrobble presentation without duplicating view logic.
 - iOS beta diagnostics export from Account with app/build version, device/OS

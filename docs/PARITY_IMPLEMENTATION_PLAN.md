@@ -26,6 +26,29 @@ macOS, transparent about iOS limits, and visibly grounded in ListenBrainz.
 - Shared: official ListenBrainz/MetaBrainz brand assets, source-aware listen
   metadata, honest platform limits, and beta diagnostics.
 
+## Active Parity Goal
+
+Goal: reach competitive iOS parity with Scrobbler for ListenBrainz while keeping
+OpenScrobbler native, transparent about platform limits, and shared with the
+macOS codebase.
+
+Definition of done:
+
+- A new user can connect ListenBrainz, understand setup, submit a manual listen,
+  scan local Music library plays, and export diagnostics.
+- A connected user can see recent listens, current pin, stats, recommendations,
+  and social feed without leaving the app.
+- System surfaces cover navigation, refresh, manual scrobble draft, and direct
+  manual scrobble submission.
+- Release gates pass on macOS tests, iOS Simulator build, and paired physical
+  iPhone build/install/launch.
+- Remaining non-parity gaps are explicitly deferred because of platform limits
+  or because they need a widget/extension or provider OAuth track.
+
+Current status: beta parity core is implemented. The next parity gaps are
+widgets, repeat-last/current-Music intents, recommendation actions
+(pin/share/playlists), provider imports, and TestFlight release packaging.
+
 ## Phase 1: Guided Account Setup
 
 Status: implemented.
@@ -58,16 +81,15 @@ Status: implemented.
     draft data.
   - Refresh ListenBrainz by opening the app and routing through the shared
     listening store.
-  - Submit manual listen from Shortcuts after the provider-neutral queue/dedupe
-    layer exists.
+  - Submit manual listen from Shortcuts with track, artist, album, duration, and
+    listened-at parameters.
   - Submit current Music app listen when Music APIs expose enough identity.
   - Repeat a recent ListenBrainz listen.
   - Refresh widgets and recent listens.
 
   Status: first pass implemented for open destination, open manual scrobble,
-  and refresh ListenBrainz routes. Inline submission, current Music app
-  submission, and repeat-last-listen remain gated on queue/dedupe and Music API
-  validation.
+  refresh ListenBrainz, and direct manual scrobble submission. Current Music app,
+  repeat-last-listen, and widget refresh remain.
 - Widgets:
   - Connected account/status widget.
   - Recent listen widget.
