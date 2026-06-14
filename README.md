@@ -1,9 +1,30 @@
-# OpenScrobbler
+# ListenScrobbler
 
-OpenScrobbler is a macOS SwiftUI app for open listening history, centered on ListenBrainz, MusicBrainz, and local-first music memory.
+ListenScrobbler is a macOS SwiftUI app for open listening history, centered on ListenBrainz, MusicBrainz, and local-first music memory.
 
 Version `1.1.0` is the current macOS release line. The iOS target is being
 prepared as its first `1.0.0` release after physical-device beta validation.
+
+## Repository Plan
+
+ListenScrobbler should be published as one new GitHub repository, not split into
+separate macOS and iOS repos. The single-repo shape keeps shared ListenBrainz
+services, domain models, tests, release docs, icon assets, and WidgetKit support
+reviewable in one place while the product is still settling.
+
+Recommended GitHub target:
+
+- Repository name: `ListenScrobbler`
+- Default branch: `main`
+- Working branches: short-lived branches such as `codex/ios-foundation`
+- Release tags: `v<version>`, for example `v1.1.0`
+
+After creating the new repository, point this local checkout at it:
+
+```bash
+git remote add origin git@github.com:kubrick06010/ListenScrobbler.git
+git push -u origin main
+```
 
 The current app includes:
 
@@ -52,8 +73,8 @@ Build from the command line:
 
 ```bash
 xcodebuild build \
-  -project OpenScrobbler.xcodeproj \
-  -scheme OpenScrobbler \
+  -project ListenScrobbler.xcodeproj \
+  -scheme ListenScrobbler \
   -destination 'platform=macOS'
 ```
 
@@ -61,8 +82,8 @@ Build the iOS target in the simulator:
 
 ```bash
 xcodebuild build \
-  -project OpenScrobbler.xcodeproj \
-  -scheme OpenScrobbleriOS \
+  -project ListenScrobbler.xcodeproj \
+  -scheme ListenScrobbleriOS \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
   CODE_SIGNING_ALLOWED=NO
 ```
@@ -74,15 +95,15 @@ DEVELOPMENT_TEAM=YOURTEAMID ./tools/ios_device_validation.sh
 ```
 
 The iOS app and WidgetKit extension share their latest ListenBrainz snapshot
-through the App Group `group.org.openscrobbler.app`, so physical-device signing
+through the App Group `group.org.listenscrobbler.app`, so physical-device signing
 must enable that capability for both bundle identifiers.
 
 Run tests:
 
 ```bash
 xcodebuild test \
-  -project OpenScrobbler.xcodeproj \
-  -scheme OpenScrobbler \
+  -project ListenScrobbler.xcodeproj \
+  -scheme ListenScrobbler \
   -destination 'platform=macOS'
 ```
 
@@ -96,7 +117,7 @@ xcodebuild test \
 
 ## Post-1.0 Maintenance
 
-OpenScrobbler 1.0.0 is a stable milestone, not the end of the architecture work. Remaining cleanup should happen in narrow, tested slices:
+ListenScrobbler 1.0.0 is a stable milestone, not the end of the architecture work. Remaining cleanup should happen in narrow, tested slices:
 
 - Reduce migration-era naming in orchestration and storage.
 - Keep expanding ListenBrainz, MusicBrainz, and local archive behavior behind focused services.

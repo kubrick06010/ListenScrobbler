@@ -1,8 +1,8 @@
 # iOS Source Integrations Plan
 
-OpenScrobbler iOS should support ListenBrainz's source-aware listen model
+ListenScrobbler iOS should support ListenBrainz's source-aware listen model
 without pretending that iOS allows global background scrobbling for every music
-app. The product rule is: submit real listens when OpenScrobbler has reliable
+app. The product rule is: submit real listens when ListenScrobbler has reliable
 timestamps and track identity, and attach source metadata when it can be proven.
 
 ## Current Ground Truth
@@ -45,7 +45,7 @@ References:
 | Manual listen | High | Keep as the reliable fallback and QA tool. |
 | Apple Music / MusicKit | Medium | Add after scanner beta; use supported MusicKit permissions and avoid duplicate submissions against library scan. |
 | Spotify recent plays | Medium | Add as opt-in account import/polling, with explicit limits and dedupe. Do not market as background Spotify scrobbling. |
-| Spotify App Remote | Low to medium | Only consider if OpenScrobbler adds a Spotify control surface. It should not be required for core scrobbling. |
+| Spotify App Remote | Low to medium | Only consider if ListenScrobbler adds a Spotify control surface. It should not be required for core scrobbling. |
 | YouTube / YouTube Music | Low | Defer native integration. Prefer user-export import if ListenBrainz server support stabilizes, or manual scrobble with `origin_url`. |
 | Bandcamp / SoundCloud / web sources | Low | Use manual/import flows with source metadata; do not scrape apps or webviews. |
 
@@ -59,7 +59,7 @@ References:
 - Extend `Track` or the ListenBrainz submission mapper so source metadata is
   serialized into `additional_info` only when present.
 - Preserve existing manual and Music library behavior with defaults:
-  `submission_client = OpenScrobbler`, source app from candidate, and no
+  `submission_client = ListenScrobbler`, source app from candidate, and no
   fabricated `music_service`.
 - Add tests for Spotify, YouTube Music, Apple Music, and plain manual metadata
   payloads.

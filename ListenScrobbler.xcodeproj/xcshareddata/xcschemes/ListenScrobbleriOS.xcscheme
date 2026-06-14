@@ -16,10 +16,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "890517730F78767F05D96F6A"
-               BuildableName = "OpenScrobblerWidgets.appex"
-               BlueprintName = "OpenScrobblerWidgets"
-               ReferencedContainer = "container:OpenScrobbler.xcodeproj">
+               BlueprintIdentifier = "359D10DC6231293AD04FFC6F"
+               BuildableName = "ListenScrobblerWidgets.appex"
+               BlueprintName = "ListenScrobblerWidgets"
+               ReferencedContainer = "container:ListenScrobbler.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -30,10 +30,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DF5860F77F7D637041868BF9"
-               BuildableName = "OpenScrobbleriOS.app"
-               BlueprintName = "OpenScrobbleriOS"
-               ReferencedContainer = "container:OpenScrobbler.xcodeproj">
+               BlueprintIdentifier = "83DF1719BB4485B1ED27A2CB"
+               BuildableName = "ListenScrobbleriOS.app"
+               BlueprintName = "ListenScrobbleriOS"
+               ReferencedContainer = "container:ListenScrobbler.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,10 +47,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "890517730F78767F05D96F6A"
-            BuildableName = "OpenScrobblerWidgets.appex"
-            BlueprintName = "OpenScrobblerWidgets"
-            ReferencedContainer = "container:OpenScrobbler.xcodeproj">
+            BlueprintIdentifier = "359D10DC6231293AD04FFC6F"
+            BuildableName = "ListenScrobblerWidgets.appex"
+            BlueprintName = "ListenScrobblerWidgets"
+            ReferencedContainer = "container:ListenScrobbler.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -71,10 +71,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "890517730F78767F05D96F6A"
-            BuildableName = "OpenScrobblerWidgets.appex"
-            BlueprintName = "OpenScrobblerWidgets"
-            ReferencedContainer = "container:OpenScrobbler.xcodeproj">
+            BlueprintIdentifier = "359D10DC6231293AD04FFC6F"
+            BuildableName = "ListenScrobblerWidgets.appex"
+            BlueprintName = "ListenScrobblerWidgets"
+            ReferencedContainer = "container:ListenScrobbler.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -88,10 +88,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "890517730F78767F05D96F6A"
-            BuildableName = "OpenScrobblerWidgets.appex"
-            BlueprintName = "OpenScrobblerWidgets"
-            ReferencedContainer = "container:OpenScrobbler.xcodeproj">
+            BlueprintIdentifier = "359D10DC6231293AD04FFC6F"
+            BuildableName = "ListenScrobblerWidgets.appex"
+            BlueprintName = "ListenScrobblerWidgets"
+            ReferencedContainer = "container:ListenScrobbler.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

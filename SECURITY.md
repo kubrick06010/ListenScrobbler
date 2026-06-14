@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-OpenScrobbler is in early public development. Security fixes are handled on the latest released version and the `main` branch.
+ListenScrobbler is in early public development. Security fixes are handled on the latest released version and the `main` branch.
 
 ## Reporting A Vulnerability
 
@@ -23,7 +23,7 @@ Useful details to include:
 
 ## Sensitive Data
 
-OpenScrobbler can handle ListenBrainz user tokens and local listening archives. Reports and sample files should remove:
+ListenScrobbler can handle ListenBrainz user tokens and local listening archives. Reports and sample files should remove:
 
 - ListenBrainz tokens.
 - Local usernames if privacy matters.

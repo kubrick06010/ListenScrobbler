@@ -1,4 +1,4 @@
-import OpenScrobblerCore
+import ListenScrobblerCore
 import SwiftUI
 
 struct MobileManualScrobbleView: View {
@@ -99,7 +99,7 @@ struct MobileManualScrobbleView: View {
             album: trimmed(album).nilIfBlank,
             duration: duration,
             listenedAt: listenedAt,
-            source: "OpenScrobbler iOS Manual"
+            source: "ListenScrobbler iOS Manual"
         )
 
         do {

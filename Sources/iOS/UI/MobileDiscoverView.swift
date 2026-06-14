@@ -1,4 +1,4 @@
-import OpenScrobblerCore
+import ListenScrobblerCore
 import SwiftUI
 import WidgetKit
 

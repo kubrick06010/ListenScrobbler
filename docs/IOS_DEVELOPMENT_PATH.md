@@ -1,15 +1,15 @@
 # iOS Development Path
 
-OpenScrobbler's iOS version should live in this repository while the product
+ListenScrobbler's iOS version should live in this repository while the product
 shape is still settling. The current structure keeps the macOS app stable and
 adds a small iOS foundation without copying the desktop UI.
 
 ## Targets
 
-- `OpenScrobbler`: the existing macOS app.
-- `OpenScrobblerCore`: an iOS framework target that exposes a narrow mobile
+- `ListenScrobbler`: the existing macOS app.
+- `ListenScrobblerCore`: an iOS framework target that exposes a narrow mobile
   facade over shared ListenBrainz/domain code.
-- `OpenScrobbleriOS`: the first native iOS app target.
+- `ListenScrobbleriOS`: the first native iOS app target.
 
 `project.yml` remains the source of truth. Run `xcodegen generate` after target
 or source layout changes.
@@ -38,7 +38,7 @@ specific playback adapters.
 The historical `lastfm/lastfm-iphone` repository is mirrored locally under
 `.references/lastfm-iphone` for product reference only. It is Objective-C,
 GPL-licensed, and built on old UIKit-era dependencies, so do not copy code or
-assets into OpenScrobbler.
+assets into ListenScrobbler.
 
 Ideas worth carrying forward:
 
@@ -54,7 +54,7 @@ Ideas worth carrying forward:
 - Scrobbling is modeled separately from playback UI, with a queue saved on app
   termination.
 
-OpenScrobbler's translation:
+ListenScrobbler's translation:
 
 - Keep the iOS shell tab-first, but map the old Last.fm tabs to open ecosystem
   concepts: ListenBrainz profile, recommendations, search, playlists, pins, and
@@ -93,8 +93,8 @@ Build the iOS target in this environment with the simulator SDK:
 
 ```bash
 xcodebuild build \
-  -project OpenScrobbler.xcodeproj \
-  -scheme OpenScrobbleriOS \
+  -project ListenScrobbler.xcodeproj \
+  -scheme ListenScrobbleriOS \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' \
   CODE_SIGNING_ALLOWED=NO
 ```
@@ -115,38 +115,38 @@ Current known device:
 - Device model: `iPhone 15`
 - Device app identifier: `A04FE658-891B-575D-A47B-26424DACB600`
 - Xcode destination id: `00008120-0004388834C3601E`
-- Installed bundle id: `org.openscrobbler.app.ios`
+- Installed bundle id: `org.listenscrobbler.app.ios`
 
 The current local blocker is signing, not app code. Command-line signing reaches
 the device, but Xcode cannot load the Apple account credentials for team
 `7K778AG29F` and therefore cannot create or find a provisioning profile for
-`org.openscrobbler.app.ios`. After refreshing the Apple ID in Xcode Settings,
+`org.listenscrobbler.app.ios`. After refreshing the Apple ID in Xcode Settings,
 rerun `tools/ios_device_validation.sh`; it builds, installs, verifies the
 installed bundle, launches the app, and prints the trace command to run while
 exercising connect, refresh, and Music library scan.
 
 A trace of the already-installed device build exists at
-`tmp/device-traces/OpenScrobbler-installed-build.trace`. That build is bundle
-version `5` and its executable name is `OpenScrobbler`, so it proves the
+`tmp/device-traces/ListenScrobbler-installed-build.trace`. That build is bundle
+version `5` and its executable name is `ListenScrobbler`, so it proves the
 device-launch and trace path but does not validate the latest scanner changes.
 
 Keep validating macOS:
 
 ```bash
 xcodebuild build \
-  -project OpenScrobbler.xcodeproj \
-  -scheme OpenScrobbler \
+  -project ListenScrobbler.xcodeproj \
+  -scheme ListenScrobbler \
   -destination 'platform=macOS'
 
 xcodebuild test \
-  -project OpenScrobbler.xcodeproj \
-  -scheme OpenScrobbler \
+  -project ListenScrobbler.xcodeproj \
+  -scheme ListenScrobbler \
   -destination 'platform=macOS'
 ```
 
 ## Next Slices
 
-- Move more Foundation-only services into `OpenScrobblerCore` behind focused
+- Move more Foundation-only services into `ListenScrobblerCore` behind focused
   public facades.
 - Add device-level trace evidence for the current scanner build after installing
   it on a physical iPhone.
@@ -172,7 +172,7 @@ The iOS app is beta-ready when this checklist is true on a physical device:
 - Music library baseline, new-play submit, failed-submit persistence, retry
   success, and retry failure summaries are covered by the shared scan engine
   tests.
-- Device traces include OpenScrobbler `Logger` events for connect, refresh,
+- Device traces include ListenScrobbler `Logger` events for connect, refresh,
   permission status, scan start, baseline, candidates, submissions, and errors.
 - App icon, in-app image assets, and macOS menu bar icon are generated from
   official ListenBrainz assets documented in `docs/ICONOGRAPHY.md`.

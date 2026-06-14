@@ -1,12 +1,12 @@
 import XCTest
-@testable import OpenScrobbler
+@testable import ListenScrobbler
 
 final class ScrobbleQueueStoreTests: XCTestCase {
     private var tempRoot: URL!
 
     override func setUpWithError() throws {
         tempRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("OpenScrobblerQueueTests-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("ListenScrobblerQueueTests-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
     }
 
@@ -16,15 +16,15 @@ final class ScrobbleQueueStoreTests: XCTestCase {
         }
     }
 
-    func testStoreUsesOpenScrobblerPath() {
+    func testStoreUsesListenScrobblerPath() {
         let store = ScrobbleQueueStore(fileManager: .default, appSupportRoot: tempRoot)
 
-        XCTAssertTrue(store.queueFileURL.path.contains("/OpenScrobbler/"))
-        XCTAssertFalse(store.queueFileURL.path.contains("/LegacyOpenScrobbler/"))
+        XCTAssertTrue(store.queueFileURL.path.contains("/ListenScrobbler/"))
+        XCTAssertFalse(store.queueFileURL.path.contains("/LegacyListenScrobbler/"))
     }
 
     func testMigratesLegacyTrackQueueIntoNewPath() throws {
-        let legacyURL = try makeLegacyQueueURL()
+        let legacyURL = try makeLegacyQueueURL("LegacyOpenScrobbler")
         let track = makeTrack()
         let data = try JSONEncoder().encode([track])
         try data.write(to: legacyURL, options: .atomic)
@@ -39,7 +39,7 @@ final class ScrobbleQueueStoreTests: XCTestCase {
     }
 
     func testMigratesLegacyJobQueueIntoNewPath() throws {
-        let legacyURL = try makeLegacyQueueURL()
+        let legacyURL = try makeLegacyQueueURL("OpenScrobbler")
         let job = ScrobbleSubmissionJob(backend: .listenBrainz, track: makeTrack())
         let data = try JSONEncoder().encode([job])
         try data.write(to: legacyURL, options: .atomic)
@@ -50,8 +50,8 @@ final class ScrobbleQueueStoreTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: legacyURL.path))
     }
 
-    private func makeLegacyQueueURL() throws -> URL {
-        let legacyDir = tempRoot.appendingPathComponent("LegacyOpenScrobbler", isDirectory: true)
+    private func makeLegacyQueueURL(_ directoryName: String) throws -> URL {
+        let legacyDir = tempRoot.appendingPathComponent(directoryName, isDirectory: true)
         try FileManager.default.createDirectory(at: legacyDir, withIntermediateDirectories: true)
         return legacyDir.appendingPathComponent("scrobble-queue.json")
     }

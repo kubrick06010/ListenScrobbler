@@ -1,6 +1,6 @@
 # Iconography
 
-OpenScrobbler currently uses official ListenBrainz logo variants from the
+ListenScrobbler currently uses official ListenBrainz logo variants from the
 MetaBrainz Design System for its app icon and in-app image assets. The assets
 are copied into the Xcode asset catalog as deterministic PNG renders generated
 from the local design-system checkout.

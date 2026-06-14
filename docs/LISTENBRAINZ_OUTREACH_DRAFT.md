@@ -4,23 +4,24 @@ Suggested venue: MetaBrainz Community, ListenBrainz category.
 
 Suggested title:
 
-OpenScrobbler macOS 1.0.0 and iOS beta: native ListenBrainz scrobbling work
+ListenScrobbler macOS/iOS: native ListenBrainz scrobbling work
 
 ## Post Draft
 
 Hi ListenBrainz and MetaBrainz folks,
 
-I wanted to share the current OpenScrobbler work because the project is now
+I wanted to share the current ListenScrobbler work because the project is now
 centered on ListenBrainz and MusicBrainz rather than treating them as secondary
 compatibility targets.
 
-OpenScrobbler is a native Swift app for scrobbling, listening history, and
+ListenScrobbler is a native Swift app for scrobbling, listening history, and
 ListenBrainz/MusicBrainz exploration:
 
-- Repository: https://github.com/kubrick06010/OpenScrobbler
-- Current amended release: https://github.com/kubrick06010/OpenScrobbler/releases/tag/v1.0.0
-- macOS branch: `OpenScrobbler-MacOs`
-- iOS beta branch: `OpenScrobbler-iOS`
+- Planned public repository: `https://github.com/kubrick06010/ListenScrobbler`
+- Repository shape: one repo for macOS, iOS, widgets, shared services, tests,
+  and release documentation.
+- Current public release: not republished yet after the rename.
+- Development branch policy: `main` plus short-lived review branches.
 
 What is already working on macOS:
 
@@ -29,9 +30,8 @@ What is already working on macOS:
   love/unlove feedback, and pin/unpin workflows.
 - MusicBrainz lookup for recordings, artists, releases, tags, relationships,
   and Cover Art Archive artwork.
-- A packaged `OpenScrobbler-1.0.0-macOS.zip` attached to the current release.
 
-What is now working on the iOS beta branch:
+What is now working on iOS:
 
 - A first native iOS target.
 - ListenBrainz account connection.
@@ -48,13 +48,13 @@ What is now working on the iOS beta branch:
 
 We are intentionally not claiming universal iOS background scrobbling. The iOS
 implementation follows platform limits: real listens are submitted only when
-OpenScrobbler has reliable timestamps and track identity. Spotify and YouTube
+ListenScrobbler has reliable timestamps and track identity. Spotify and YouTube
 Music are treated as explicit import/source-metadata paths rather than hidden
 background listeners.
 
 Current verification:
 
-- macOS tests pass locally on the iOS beta branch.
+- macOS tests pass locally.
 - iOS simulator build succeeds with code signing disabled.
 - Physical-device validation is the next gate before treating iOS as a signed
   beta/TestFlight candidate.
@@ -67,10 +67,10 @@ The feedback I would especially value:
   of Spotify, Apple Music, YouTube Music, and export-based imports.
 - Whether there is an existing ListenBrainz iOS/mobile effort we should align
   with before going further.
-- Whether OpenScrobbler should be listed, documented, or coordinated somewhere
+- Whether ListenScrobbler should be listed, documented, or coordinated somewhere
   in the ListenBrainz ecosystem once the iOS device gate is green.
 
-Relevant local docs in the repo:
+Relevant docs in the repo:
 
 - `docs/IOS_DEVELOPMENT_PATH.md`
 - `docs/IOS_SOURCE_INTEGRATIONS_PLAN.md`
@@ -78,22 +78,22 @@ Relevant local docs in the repo:
 - `docs/ICONOGRAPHY.md`
 - `docs/RELEASE_PROCESS.md`
 
-Thanks for building ListenBrainz. OpenScrobbler is becoming much better because
+Thanks for building ListenBrainz. ListenScrobbler is becoming much better because
 the ListenBrainz API is open, documented, and rich enough to build a real native
 client around it.
 
 ## Short Chat Version
 
-Hi folks. I have been building OpenScrobbler, a native Swift macOS/iOS app
-centered on ListenBrainz and MusicBrainz. macOS 1.0.0 is packaged, and the iOS
-beta branch now has ListenBrainz connection, manual scrobbling, Music library
+Hi folks. I have been building ListenScrobbler, a native Swift macOS/iOS app
+centered on ListenBrainz and MusicBrainz. The renamed public repository is
+planned as `kubrick06010/ListenScrobbler`, and the iOS target now has
+ListenBrainz connection, manual scrobbling, Music library
 delta scanning, retry queue, and source-aware `additional_info` payload coverage
 for Spotify, Apple Music, YouTube Music, and manual listens.
 
-Release/repo:
+Repo:
 
-- https://github.com/kubrick06010/OpenScrobbler/releases/tag/v1.0.0
-- https://github.com/kubrick06010/OpenScrobbler
+- https://github.com/kubrick06010/ListenScrobbler
 
 I would appreciate feedback on whether the iOS source metadata/import plan
 matches ListenBrainz expectations, and whether there is an existing iOS/mobile

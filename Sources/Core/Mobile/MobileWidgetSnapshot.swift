@@ -67,7 +67,7 @@ public struct MobileWidgetSnapshot: Codable, Equatable {
 
     public static var empty: MobileWidgetSnapshot {
         MobileWidgetSnapshot(
-            connectionStatus: "Open OpenScrobbler to connect ListenBrainz",
+            connectionStatus: "Open ListenScrobbler to connect ListenBrainz",
             username: nil,
             recentListen: nil,
             currentPin: nil,
@@ -79,8 +79,8 @@ public struct MobileWidgetSnapshot: Codable, Equatable {
 }
 
 public struct MobileWidgetSnapshotStore {
-    public static let defaultSuiteName = "group.org.openscrobbler.app"
-    private static let snapshotKey = "OpenScrobbler.MobileWidgetSnapshot"
+    public static let defaultSuiteName = "group.org.listenscrobbler.app"
+    private static let snapshotKey = "ListenScrobbler.MobileWidgetSnapshot"
 
     private let defaults: UserDefaults
     private let encoder = JSONEncoder()

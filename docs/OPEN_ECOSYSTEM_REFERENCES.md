@@ -1,6 +1,6 @@
 # Open Ecosystem References
 
-This document records the external codebases and specs we are using as references while turning `OpenScrobbler` into a ListenBrainz-first macOS app.
+This document records the external codebases and specs we are using as references while turning `ListenScrobbler` into a ListenBrainz-first macOS app.
 
 The goal is to avoid reinventing solved problems while still shipping a native Swift product with its own codebase and identity.
 
@@ -18,7 +18,7 @@ These mirrors are for reading, testing assumptions, and tracing API and UX behav
 ## Usage Rules
 
 1. Use official MetaBrainz projects as product and protocol references.
-2. Do not copy GPL code into `OpenScrobbler`.
+2. Do not copy GPL code into `ListenScrobbler`.
 3. Reuse concepts, payload shapes, user flows, and naming where they improve compatibility.
 4. Prefer the OpenAPI spec when deciding field names, optionality, and response structure.
 5. Prefer native Swift implementations for app logic, networking, caching, and UI.
@@ -82,7 +82,7 @@ Most useful files:
 - `.references/listenbrainz-client/api/openapi.yaml`
 - `.references/listenbrainz-client/README.md`
 
-High-value operations already relevant to `OpenScrobbler`:
+High-value operations already relevant to `ListenScrobbler`:
 - `similarUsersForUser`
 - `similarityOfUserForUser`
 - `artistMapForUser`
@@ -193,4 +193,4 @@ Adoption decision:
 - `listenbrainz-client` gives us a stable schema source instead of guesswork.
 - `listenbrainz-content-resolver` keeps playlists and local-resolution work open and portable.
 
-Taken together, they let `OpenScrobbler` become a strong native macOS client without drifting away from the ecosystem it is built to serve.
+Taken together, they let `ListenScrobbler` become a strong native macOS client without drifting away from the ecosystem it is built to serve.

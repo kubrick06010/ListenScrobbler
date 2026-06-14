@@ -116,7 +116,7 @@ struct ObsessionsVaultView: View {
                 .disabled(store.entries.isEmpty)
             }
 
-            Text("Obsessions are recovered from this app's local per-account store and optional `.openscrobbler-obsessions.json` imports. They remain portable, private, and independent from any single platform.")
+            Text("Obsessions are recovered from this app's local per-account store and optional `.listenscrobbler-obsessions.json` imports. They remain portable, private, and independent from any single platform.")
                 .font(.custom("Avenir Next Regular", size: 13))
                 .foregroundStyle(.secondary)
         }
@@ -196,7 +196,7 @@ struct ObsessionsVaultView: View {
     private var importedCount: Int { store.entries.filter { $0.source != .userCaptured }.count }
 
     private func exportObsessionBundle() {
-        guard let url = savePanelURL(defaultName: "openscrobbler-obsessions.openscrobbler-obsessions.json") else { return }
+        guard let url = savePanelURL(defaultName: "listenscrobbler-obsessions.listenscrobbler-obsessions.json") else { return }
         do {
             try store.export(to: url)
         } catch {

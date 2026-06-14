@@ -211,7 +211,7 @@ public final class MobileListeningStore: ObservableObject {
     private let settingsStore: ListenBrainzSettingsStore
     private let listenBrainz: MobileListenBrainzClient
     private let widgetSnapshotStore: MobileWidgetSnapshotStore
-    private let logger = Logger(subsystem: "org.openscrobbler.app.ios", category: "listenbrainz")
+    private let logger = Logger(subsystem: "org.listenscrobbler.app.ios", category: "listenbrainz")
 
     public convenience init() {
         let settingsStore = ListenBrainzSettingsStore()

@@ -125,13 +125,13 @@ struct ContentView: View {
                         .tag(tab)
                         .font(.custom("Avenir Next Medium", size: 13))
             }
-            .navigationTitle("OpenScrobbler")
+            .navigationTitle("ListenScrobbler")
             .listStyle(.sidebar)
             .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
         } detail: {
                 VStack(spacing: 0) {
                     VStack(spacing: 4) {
-                        Text("OpenScrobbler")
+                        Text("ListenScrobbler")
                             .font(.custom("Avenir Next Medium", size: 21))
                         Text(nowPlayingSubtitle)
                             .font(.custom("Avenir Next Medium", size: 13))

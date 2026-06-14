@@ -135,8 +135,8 @@ struct ObsessionEntry: Codable, Identifiable, Equatable {
 }
 
 struct SharedMusicVaultBundle: Codable, Equatable {
-    static let schemaName = "org.openmusic.openscrobbler.shared"
-    static let legacySchemaName = "org.openscrobbler.shared"
+    static let schemaName = "org.openmusic.listenscrobbler.shared"
+    static let legacySchemaName = "org.listenscrobbler.shared"
 
     var schema: String
     var schemaVersion: Int
@@ -148,7 +148,7 @@ struct SharedMusicVaultBundle: Codable, Equatable {
     init(ownerUsername: String, records: [SharedMusicEntry]) {
         self.schema = Self.schemaName
         self.schemaVersion = 1
-        self.exportedBy = "OpenScrobbler"
+        self.exportedBy = "ListenScrobbler"
         self.ownerUsername = ownerUsername
         self.exportedAt = Date()
         self.records = records
@@ -156,8 +156,8 @@ struct SharedMusicVaultBundle: Codable, Equatable {
 }
 
 struct ObsessionVaultBundle: Codable, Equatable {
-    static let schemaName = "org.openmusic.openscrobbler.obsessions"
-    static let legacySchemaName = "org.openscrobbler.obsessions"
+    static let schemaName = "org.openmusic.listenscrobbler.obsessions"
+    static let legacySchemaName = "org.listenscrobbler.obsessions"
 
     var schema: String
     var schemaVersion: Int
@@ -169,7 +169,7 @@ struct ObsessionVaultBundle: Codable, Equatable {
     init(ownerUsername: String, records: [ObsessionEntry]) {
         self.schema = Self.schemaName
         self.schemaVersion = 1
-        self.exportedBy = "OpenScrobbler"
+        self.exportedBy = "ListenScrobbler"
         self.ownerUsername = ownerUsername
         self.exportedAt = Date()
         self.records = records

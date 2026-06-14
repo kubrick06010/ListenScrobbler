@@ -1,12 +1,29 @@
 # Release Process
 
-OpenScrobbler releases are published by GitHub Actions from version tags.
+ListenScrobbler releases are published by GitHub Actions from version tags.
+
+## Repository Prerequisite
+
+Publish releases only from the new single GitHub repository:
+
+- `kubrick06010/ListenScrobbler`
+
+The previous `OpenScrobbler` repository was removed during the rebrand. Do not
+push release tags, release assets, or documentation links to that old remote.
+Before the first new release, verify:
+
+```bash
+git remote -v
+```
+
+The remote should point to `ListenScrobbler`, and the release tag should be
+created from the validated `main` branch.
 
 ## Normal Flow
 
 1. Update `MARKETING_VERSION` in `project.yml`.
 2. Update `CURRENT_PROJECT_VERSION` in `project.yml` if the build number should advance.
-   iOS may override these settings in the `OpenScrobbleriOS` target when its
+   iOS may override these settings in the `ListenScrobbleriOS` target when its
    first-release version differs from the macOS line.
 3. Regenerate the Xcode project if `project.yml` changed:
 
@@ -31,23 +48,24 @@ OpenScrobbler releases are published by GitHub Actions from version tags.
 
    ```bash
    xcodebuild build \
-     -project OpenScrobbler.xcodeproj \
-     -scheme OpenScrobbler \
+     -project ListenScrobbler.xcodeproj \
+     -scheme ListenScrobbler \
      -destination 'platform=macOS'
    ```
 
    ```bash
    xcodebuild test \
-     -project OpenScrobbler.xcodeproj \
-     -scheme OpenScrobbler \
+     -project ListenScrobbler.xcodeproj \
+     -scheme ListenScrobbler \
      -destination 'platform=macOS'
    ```
 
-7. Open a release pull request and merge it after review.
+7. Open a release pull request and merge it after review, unless this is the
+   first import into the new repository.
 8. Create and push the release tag from the validated `main` commit:
 
    ```bash
-   git tag -a v1.0.1 -m "OpenScrobbler 1.0.1"
+   git tag -a v1.0.1 -m "ListenScrobbler 1.0.1"
    git push origin v1.0.1
    ```
 
@@ -61,7 +79,7 @@ If the tag exists but publishing failed, run the `Release` workflow manually in 
 
 The workflow uploads:
 
-- `OpenScrobbler-<version>-macOS.zip`
+- `ListenScrobbler-<version>-macOS.zip`
 
 The app is locally signed by the workflow. Notarization is not automated yet.
 

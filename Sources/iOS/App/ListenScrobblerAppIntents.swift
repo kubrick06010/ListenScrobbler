@@ -1,9 +1,9 @@
 import AppIntents
 import Foundation
-import OpenScrobblerCore
+import ListenScrobblerCore
 import WidgetKit
 
-enum OpenScrobblerDestination: String, AppEnum {
+enum ListenScrobblerDestination: String, AppEnum {
     case home
     case listens
     case discover
@@ -35,19 +35,19 @@ enum OpenScrobblerDestination: String, AppEnum {
     }
 }
 
-struct OpenOpenScrobblerDestinationIntent: AppIntent {
-    static let title: LocalizedStringResource = "Open OpenScrobbler"
-    static let description = IntentDescription("Open OpenScrobbler to a selected section.")
+struct OpenListenScrobblerDestinationIntent: AppIntent {
+    static let title: LocalizedStringResource = "Open ListenScrobbler"
+    static let description = IntentDescription("Open ListenScrobbler to a selected section.")
     static let openAppWhenRun = true
 
     @Parameter(title: "Destination")
-    var destination: OpenScrobblerDestination
+    var destination: ListenScrobblerDestination
 
     init() {
         destination = .home
     }
 
-    init(destination: OpenScrobblerDestination) {
+    init(destination: ListenScrobblerDestination) {
         self.destination = destination
     }
 
@@ -61,7 +61,7 @@ struct OpenOpenScrobblerDestinationIntent: AppIntent {
 
 struct OpenManualScrobbleIntent: AppIntent {
     static let title: LocalizedStringResource = "Open Manual Scrobble"
-    static let description = IntentDescription("Open OpenScrobbler's manual listen form.")
+    static let description = IntentDescription("Open ListenScrobbler's manual listen form.")
     static let openAppWhenRun = true
 
     @Parameter(title: "Track Title", inputConnectionBehavior: .connectToPreviousIntentResult)
@@ -100,7 +100,7 @@ struct OpenManualScrobbleIntent: AppIntent {
 
 struct RefreshListenBrainzIntent: AppIntent {
     static let title: LocalizedStringResource = "Refresh ListenBrainz"
-    static let description = IntentDescription("Open OpenScrobbler and refresh the connected ListenBrainz account.")
+    static let description = IntentDescription("Open ListenScrobbler and refresh the connected ListenBrainz account.")
     static let openAppWhenRun = true
 
     func perform() async throws -> some IntentResult {
@@ -111,14 +111,14 @@ struct RefreshListenBrainzIntent: AppIntent {
     }
 }
 
-struct RefreshOpenScrobblerWidgetsIntent: AppIntent {
-    static let title: LocalizedStringResource = "Refresh OpenScrobbler Widgets"
-    static let description = IntentDescription("Reload OpenScrobbler widgets with the latest saved ListenBrainz snapshot.")
+struct RefreshListenScrobblerWidgetsIntent: AppIntent {
+    static let title: LocalizedStringResource = "Refresh ListenScrobbler Widgets"
+    static let description = IntentDescription("Reload ListenScrobbler widgets with the latest saved ListenBrainz snapshot.")
     static let openAppWhenRun = false
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         WidgetCenter.shared.reloadAllTimelines()
-        return .result(dialog: "OpenScrobbler widgets are refreshing.")
+        return .result(dialog: "ListenScrobbler widgets are refreshing.")
     }
 }
 
@@ -188,10 +188,10 @@ struct SubmitManualScrobbleIntent: AppIntent {
                 album: albumName,
                 duration: duration,
                 listenedAt: listenedAt ?? Date(),
-                source: "OpenScrobbler iOS Shortcut",
+                source: "ListenScrobbler iOS Shortcut",
                 sourceMetadata: MobileScrobbleSourceMetadata(
                     mediaPlayer: "Shortcuts",
-                    musicServiceName: "OpenScrobbler",
+                    musicServiceName: "ListenScrobbler",
                     originalSubmissionClient: "Submit Manual Scrobble Intent"
                 )
             )
@@ -208,7 +208,7 @@ struct SubmitManualScrobbleIntent: AppIntent {
 
 struct RepeatRecentListenIntent: AppIntent {
     static let title: LocalizedStringResource = "Repeat Recent Listen"
-    static let description = IntentDescription("Submit the latest ListenBrainz listen again with OpenScrobbler source metadata.")
+    static let description = IntentDescription("Submit the latest ListenBrainz listen again with ListenScrobbler source metadata.")
     static let openAppWhenRun = false
 
     @Parameter(title: "Duration Minutes")
@@ -245,7 +245,7 @@ struct RepeatRecentListenIntent: AppIntent {
                 album: listen.releaseName,
                 duration: duration,
                 listenedAt: Date(),
-                source: "OpenScrobbler iOS Repeat Shortcut",
+                source: "ListenScrobbler iOS Repeat Shortcut",
                 sourceMetadata: MobileScrobbleSourceMetadata(
                     mediaPlayer: "Shortcuts",
                     musicServiceName: "ListenBrainz",
@@ -290,10 +290,10 @@ private enum RepeatRecentListenIntentError: LocalizedError {
     }
 }
 
-struct OpenScrobblerAppShortcuts: AppShortcutsProvider {
+struct ListenScrobblerAppShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
-            intent: OpenOpenScrobblerDestinationIntent(),
+            intent: OpenListenScrobblerDestinationIntent(),
             phrases: [
                 "Open \(.applicationName)",
                 "Open \(\.$destination) in \(.applicationName)"
@@ -323,10 +323,10 @@ struct OpenScrobblerAppShortcuts: AppShortcutsProvider {
         )
 
         AppShortcut(
-            intent: RefreshOpenScrobblerWidgetsIntent(),
+            intent: RefreshListenScrobblerWidgetsIntent(),
             phrases: [
-                "Refresh OpenScrobbler widgets with \(.applicationName)",
-                "Update OpenScrobbler widgets with \(.applicationName)"
+                "Refresh ListenScrobbler widgets with \(.applicationName)",
+                "Update ListenScrobbler widgets with \(.applicationName)"
             ],
             shortTitle: "Refresh Widgets",
             systemImageName: "rectangle.3.group"

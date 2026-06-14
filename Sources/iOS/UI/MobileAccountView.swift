@@ -1,4 +1,4 @@
-import OpenScrobblerCore
+import ListenScrobblerCore
 import SwiftUI
 
 struct MobileAccountView: View {
@@ -132,7 +132,7 @@ struct MobileAccountView: View {
             }
 
             Section("Open Music Data") {
-                Text("OpenScrobbler submits listens to ListenBrainz and uses official ListenBrainz logo assets from the MetaBrainz Design System.")
+                Text("ListenScrobbler submits listens to ListenBrainz and uses official ListenBrainz logo assets from the MetaBrainz Design System.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
@@ -441,7 +441,7 @@ private struct OpenMusicOnboardingBadge: View {
                 Text(ListenBrainzSetupGuide.eyebrow)
                     .font(.caption.weight(.bold))
                     .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
-                Text("OpenScrobbler")
+                Text("ListenScrobbler")
                     .font(.headline)
             }
         }

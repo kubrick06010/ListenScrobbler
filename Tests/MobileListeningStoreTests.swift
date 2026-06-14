@@ -1,5 +1,5 @@
 import XCTest
-@testable import OpenScrobbler
+@testable import ListenScrobbler
 
 @MainActor
 final class MobileListeningStoreTests: XCTestCase {
@@ -151,7 +151,7 @@ final class MobileListeningStoreTests: XCTestCase {
                 score: 0.98
             )
         ]
-        let snapshotDefaults = UserDefaults(suiteName: "OpenScrobblerTests-Widget-\(UUID().uuidString)")!
+        let snapshotDefaults = UserDefaults(suiteName: "ListenScrobblerTests-Widget-\(UUID().uuidString)")!
         let snapshotStore = MobileWidgetSnapshotStore(defaults: snapshotDefaults)
         let store = MobileListeningStore(
             settingsStore: settingsStore,
@@ -244,7 +244,7 @@ final class MobileListeningStoreTests: XCTestCase {
                 album: "Future Days",
                 duration: 360,
                 listenedAt: listenedAt,
-                source: "OpenScrobbler iOS Manual"
+                source: "ListenScrobbler iOS Manual"
             )
         )
 
@@ -253,7 +253,7 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(submitted.artist, "Can")
         XCTAssertEqual(submitted.album, "Future Days")
         XCTAssertEqual(submitted.duration, 360)
-        XCTAssertEqual(submitted.sourceApp, "OpenScrobbler iOS Manual")
+        XCTAssertEqual(submitted.sourceApp, "ListenScrobbler iOS Manual")
         XCTAssertEqual(submitted.startedAt, listenedAt.addingTimeInterval(-240))
     }
 
@@ -384,7 +384,7 @@ final class MobileListeningStoreTests: XCTestCase {
     }
 
     private func makeSettingsStore(username: String? = nil, token: String? = nil) -> ListenBrainzSettingsStore {
-        let defaults = UserDefaults(suiteName: "OpenScrobblerTests-MobileListening-\(UUID().uuidString)")!
+        let defaults = UserDefaults(suiteName: "ListenScrobblerTests-MobileListening-\(UUID().uuidString)")!
         let tokenStore = MobileListeningTestTokenStore(token: token)
         let store = ListenBrainzSettingsStore(defaults: defaults, tokenStore: tokenStore)
         store.save(

@@ -1,6 +1,6 @@
-# OpenScrobbler Roadmap
+# ListenScrobbler Roadmap
 
-OpenScrobbler 1.0.0 is the official baseline for the app: a native macOS client for open listening history with ListenBrainz submission, MusicBrainz-aware enrichment, local-first memory features, and a reorganized SwiftUI codebase.
+ListenScrobbler 1.0.0 is the official baseline for the app: a native macOS client for open listening history with ListenBrainz submission, MusicBrainz-aware enrichment, local-first memory features, and a reorganized SwiftUI codebase.
 
 The roadmap below is intentionally post-1.0. It treats the current release as the product foundation and focuses future work on improving depth, maintainability, and polish in small reviewed increments.
 
@@ -22,7 +22,7 @@ The release includes:
 
 ## Product Direction
 
-OpenScrobbler should remain:
+ListenScrobbler should remain:
 
 - ListenBrainz-first for identity, submission, listens, charts, pins, recommendations, and social discovery.
 - MusicBrainz-aware for portable identifiers, cleaner metadata, and open ecosystem compatibility.

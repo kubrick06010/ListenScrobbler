@@ -20,11 +20,11 @@
   `original_submission_client`.
 - Apple Music and YouTube Music source-metadata fixtures alongside Spotify so
   the iOS import contract is covered before provider UI work begins.
-- iOS App Shortcuts for opening OpenScrobbler destinations, opening the manual
+- iOS App Shortcuts for opening ListenScrobbler destinations, opening the manual
   scrobble form with optional draft metadata, and refreshing ListenBrainz
   through the app route.
 - iOS direct manual scrobble App Intent for Shortcuts, including title, artist,
-  album, duration, listened-at, and OpenScrobbler source metadata.
+  album, duration, listened-at, and ListenScrobbler source metadata.
 - iOS repeat recent listen App Intent for Shortcuts, reusing the latest
   ListenBrainz listen with an explicit duration fallback and source metadata.
 - iOS WidgetKit extension with status, recent listen, and discovery widgets
@@ -51,12 +51,12 @@
 
 ### Verified
 
-- `xcodebuild test -project OpenScrobbler.xcodeproj -scheme OpenScrobbler -destination 'platform=macOS'`
-- `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO`
-- `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' -derivedDataPath tmp/ios-simulator-verify CODE_SIGNING_ALLOWED=NO`
-- `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS,id=00008120-0004388834C3601E' -derivedDataPath tmp/ios-device-derived CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates`
-- `xcrun devicectl device install app --device A04FE658-891B-575D-A47B-26424DACB600 tmp/ios-device-derived/Build/Products/Debug-iphoneos/OpenScrobbler.app`
-- `xcrun devicectl device process launch --device A04FE658-891B-575D-A47B-26424DACB600 --terminate-existing org.openscrobbler.app.ios`
+- `xcodebuild test -project ListenScrobbler.xcodeproj -scheme ListenScrobbler -destination 'platform=macOS'`
+- `xcodebuild build -project ListenScrobbler.xcodeproj -scheme ListenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO`
+- `xcodebuild build -project ListenScrobbler.xcodeproj -scheme ListenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' -derivedDataPath tmp/ios-simulator-verify CODE_SIGNING_ALLOWED=NO`
+- `xcodebuild build -project ListenScrobbler.xcodeproj -scheme ListenScrobbleriOS -destination 'platform=iOS,id=00008120-0004388834C3601E' -derivedDataPath tmp/ios-device-derived CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates`
+- `xcrun devicectl device install app --device A04FE658-891B-575D-A47B-26424DACB600 tmp/ios-device-derived/Build/Products/Debug-iphoneos/ListenScrobbler.app`
+- `xcrun devicectl device process launch --device A04FE658-891B-575D-A47B-26424DACB600 --terminate-existing org.listenscrobbler.app.ios`
 - `bash -n tools/ios_device_validation.sh`
 - `git diff --check`
 
@@ -80,8 +80,8 @@ Official 1.0.0 milestone release.
 
 ### Verified
 
-- `xcodebuild -scheme OpenScrobbler -project OpenScrobbler.xcodeproj -configuration Debug build`
-- `xcodebuild -scheme OpenScrobbler -project OpenScrobbler.xcodeproj -configuration Debug test`
+- `xcodebuild -scheme ListenScrobbler -project ListenScrobbler.xcodeproj -configuration Debug build`
+- `xcodebuild -scheme ListenScrobbler -project ListenScrobbler.xcodeproj -configuration Debug test`
 
 ## 0.1.3 - 2026-06-12
 
@@ -123,11 +123,11 @@ Official 1.0.0 milestone release.
 - Preserved album context when opening track details so MusicBrainz resolves the intended recording instead of a similarly named entry.
 - Loaded ListenBrainz recent listens and account identity from a valid ListenBrainz token without requiring legacy compatibility authentication.
 - Resolved ListenBrainz recommendations to readable track and artist names instead of raw recording MBIDs.
-- Improved Apple Music and Spotify artwork propagation into OpenScrobbler views.
+- Improved Apple Music and Spotify artwork propagation into ListenScrobbler views.
 
 ## 0.1.0 - 2026-05-27
 
-First public development release of OpenScrobbler.
+First public development release of ListenScrobbler.
 
 ### Added
 

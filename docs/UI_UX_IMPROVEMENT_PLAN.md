@@ -1,6 +1,6 @@
 # UI/UX Improvement Plan
 
-OpenScrobbler should feel like one product across macOS and iOS while respecting
+ListenScrobbler should feel like one product across macOS and iOS while respecting
 each platform. macOS remains a dense desktop control room; iOS should be a
 focused listening companion with fast account, listens, scan, and discovery
 flows.

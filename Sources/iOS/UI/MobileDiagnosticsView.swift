@@ -1,4 +1,4 @@
-import OpenScrobblerCore
+import ListenScrobblerCore
 import SwiftUI
 import UIKit
 
@@ -44,7 +44,7 @@ struct MobileDiagnosticsSnapshot: Identifiable {
 
     var exportText: String {
         var lines: [String] = [
-            "OpenScrobbler iOS Diagnostics",
+            "ListenScrobbler iOS Diagnostics",
             "Generated: \(Self.isoDate(generatedAt))",
             "App: \(appVersion) (\(buildVersion))",
             "OS: \(osVersion)",

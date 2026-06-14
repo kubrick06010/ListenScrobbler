@@ -1,8 +1,8 @@
 # Parity Implementation Plan
 
 This plan converts the Scrobbler for ListenBrainz review and the older Last.fm
-desktop/iOS setup pattern into concrete OpenScrobbler work. The goal is product
-parity where it makes sense, not a clone: OpenScrobbler should remain native on
+desktop/iOS setup pattern into concrete ListenScrobbler work. The goal is product
+parity where it makes sense, not a clone: ListenScrobbler should remain native on
 macOS, transparent about iOS limits, and visibly grounded in ListenBrainz.
 
 ## Baseline From Scrobbler For ListenBrainz
@@ -29,7 +29,7 @@ macOS, transparent about iOS limits, and visibly grounded in ListenBrainz.
 ## Active Parity Goal
 
 Goal: reach competitive iOS parity with Scrobbler for ListenBrainz while keeping
-OpenScrobbler native, transparent about platform limits, and shared with the
+ListenScrobbler native, transparent about platform limits, and shared with the
 macOS codebase.
 
 Definition of done:
@@ -157,7 +157,7 @@ Status: implemented.
 - iOS Simulator build passes.
 - macOS unit test suite passes.
 - Physical device build, install, and launch pass on the paired iPhone with the
-  `org.openscrobbler.app.ios` bundle.
+  `org.listenscrobbler.app.ios` bundle.
 - Account setup screenshots are captured for macOS compact width and iPhone
   small/Pro widths.
 - Release notes mention iOS as beta until physical device and TestFlight gates

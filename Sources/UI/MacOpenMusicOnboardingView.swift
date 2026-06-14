@@ -79,7 +79,7 @@ struct MacOpenMusicOnboardingView: View {
                     Text(ListenBrainzSetupGuide.eyebrow)
                         .font(.custom("Avenir Next Demi Bold", size: 12))
                         .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
-                    Text("OpenScrobbler")
+                    Text("ListenScrobbler")
                         .font(.custom("Avenir Next Demi Bold", size: 20))
                 }
             }

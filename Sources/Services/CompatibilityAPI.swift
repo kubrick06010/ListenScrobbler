@@ -1192,7 +1192,7 @@ final class CompatibilityAPIClient: CompatibilityAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("text/html,application/xhtml+xml", forHTTPHeaderField: "Accept")
-        request.setValue("OpenScrobbler/1.0", forHTTPHeaderField: "User-Agent")
+        request.setValue("ListenScrobbler/1.0", forHTTPHeaderField: "User-Agent")
 
         let data: Data
         do {
@@ -1369,7 +1369,7 @@ final class CompatibilityAPIClient: CompatibilityAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("text/html,application/xhtml+xml", forHTTPHeaderField: "Accept")
-        request.setValue("OpenScrobbler/1.0", forHTTPHeaderField: "User-Agent")
+        request.setValue("ListenScrobbler/1.0", forHTTPHeaderField: "User-Agent")
 
         do {
             let (data, _) = try await activeURLSession.data(for: request)
@@ -1752,7 +1752,7 @@ final class CompatibilityAPIClient: CompatibilityAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("text/html,application/xhtml+xml", forHTTPHeaderField: "Accept")
-        request.setValue("OpenScrobbler/1.0", forHTTPHeaderField: "User-Agent")
+        request.setValue("ListenScrobbler/1.0", forHTTPHeaderField: "User-Agent")
 
         guard let (data, _) = try? await activeURLSession.data(for: request),
               let html = String(data: data, encoding: .utf8),

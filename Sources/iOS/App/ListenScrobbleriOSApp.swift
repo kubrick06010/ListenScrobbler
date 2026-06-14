@@ -1,15 +1,15 @@
-import OpenScrobblerCore
+import ListenScrobblerCore
 import AppIntents
 import SwiftUI
 
 @main
-struct OpenScrobbleriOSApp: App {
+struct ListenScrobbleriOSApp: App {
     @StateObject private var listeningStore = MobileListeningStore()
     @StateObject private var musicLibraryScanner = MusicLibraryScrobbleScanner()
     @StateObject private var appIntentRouter = MobileAppIntentRouter.shared
 
     init() {
-        OpenScrobblerAppShortcuts.updateAppShortcutParameters()
+        ListenScrobblerAppShortcuts.updateAppShortcutParameters()
     }
 
     var body: some Scene {

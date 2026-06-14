@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEVICE_ID="${DEVICE_ID:-A04FE658-891B-575D-A47B-26424DACB600}"
 DEVICE_DESTINATION="${DEVICE_DESTINATION:-platform=iOS,id=00008120-0004388834C3601E}"
 DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM:-}"
-BUNDLE_ID="${BUNDLE_ID:-org.openscrobbler.app.ios}"
+BUNDLE_ID="${BUNDLE_ID:-org.listenscrobbler.app.ios}"
 DERIVED_DATA="${DERIVED_DATA:-$ROOT_DIR/tmp/ios-device-derived}"
 TRACE_DIR="${TRACE_DIR:-$ROOT_DIR/tmp/device-traces}"
 
@@ -16,7 +16,7 @@ echo "== Device =="
 xcrun devicectl list devices | rg -n "Name:|Identifier:|State:|Model:" || true
 
 echo
-echo "== Installed OpenScrobbler app, before install =="
+echo "== Installed ListenScrobbler app, before install =="
 xcrun devicectl device info apps \
   --device "$DEVICE_ID" \
   --bundle-id "$BUNDLE_ID" || true
@@ -24,8 +24,8 @@ xcrun devicectl device info apps \
 echo
 echo "== Build signed iOS app =="
 BUILD_ARGS=(
-  -project OpenScrobbler.xcodeproj
-  -scheme OpenScrobbleriOS
+  -project ListenScrobbler.xcodeproj
+  -scheme ListenScrobbleriOS
   -destination "$DEVICE_DESTINATION"
   -derivedDataPath "$DERIVED_DATA"
   CODE_SIGN_STYLE=Automatic
@@ -36,7 +36,7 @@ if [[ -n "$DEVELOPMENT_TEAM" ]]; then
 fi
 xcodebuild build "${BUILD_ARGS[@]}"
 
-APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphoneos/OpenScrobbler.app"
+APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphoneos/ListenScrobbler.app"
 if [[ ! -d "$APP_PATH" ]]; then
   echo "Expected app not found at: $APP_PATH" >&2
   exit 1
@@ -49,7 +49,7 @@ xcrun devicectl device install app \
   "$APP_PATH"
 
 echo
-echo "== Installed OpenScrobbler app, after install =="
+echo "== Installed ListenScrobbler app, after install =="
 xcrun devicectl device info apps \
   --device "$DEVICE_ID" \
   --bundle-id "$BUNDLE_ID"
@@ -64,4 +64,4 @@ xcrun devicectl device process launch \
 echo
 echo "== Optional trace command =="
 echo "Run this while exercising connect, refresh, and Music library scan:"
-echo "xcrun xctrace record --template 'Time Profiler' --device 00008120-0004388834C3601E --attach OpenScrobbler --time-limit 30s --output '$TRACE_DIR/OpenScrobbler-current-device.trace' --no-prompt"
+echo "xcrun xctrace record --template 'Time Profiler' --device 00008120-0004388834C3601E --attach ListenScrobbler --time-limit 30s --output '$TRACE_DIR/ListenScrobbler-current-device.trace' --no-prompt"

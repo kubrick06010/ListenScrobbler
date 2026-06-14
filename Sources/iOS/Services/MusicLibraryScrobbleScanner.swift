@@ -1,5 +1,5 @@
 import MediaPlayer
-import OpenScrobblerCore
+import ListenScrobblerCore
 import OSLog
 import SwiftUI
 
@@ -36,7 +36,7 @@ final class MusicLibraryScrobbleScanner: ObservableObject {
     private let pendingStore: MobilePendingScrobbleStoring
     private let snapshotsKey = "ios.music-library-scrobbler.snapshots"
     private let lastScanAtKey = "ios.music-library-scrobbler.last-scan-at"
-    private let logger = Logger(subsystem: "org.openscrobbler.app.ios", category: "music-library-scanner")
+    private let logger = Logger(subsystem: "org.listenscrobbler.app.ios", category: "music-library-scanner")
 
     init(
         defaults: UserDefaults = .standard,

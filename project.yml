@@ -1,4 +1,4 @@
-name: OpenScrobbler
+name: ListenScrobbler
 options:
   createIntermediateGroups: true
 settings:
@@ -7,10 +7,10 @@ settings:
     CURRENT_PROJECT_VERSION: 6
     MARKETING_VERSION: 1.1.0
     GENERATE_INFOPLIST_FILE: YES
-    PRODUCT_BUNDLE_IDENTIFIER: org.openscrobbler.app
+    PRODUCT_BUNDLE_IDENTIFIER: org.listenscrobbler.app
 
 targets:
-  OpenScrobblerCore:
+  ListenScrobblerCore:
     type: framework
     platform: iOS
     deploymentTarget: "17.0"
@@ -21,14 +21,14 @@ targets:
       - path: Sources/Core
     settings:
       base:
-        PRODUCT_NAME: OpenScrobblerCore
-        PRODUCT_MODULE_NAME: OpenScrobblerCore
-        PRODUCT_BUNDLE_IDENTIFIER: org.openscrobbler.core
+        PRODUCT_NAME: ListenScrobblerCore
+        PRODUCT_MODULE_NAME: ListenScrobblerCore
+        PRODUCT_BUNDLE_IDENTIFIER: org.listenscrobbler.core
         GENERATE_INFOPLIST_FILE: YES
         SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
         SUPPORTS_MACCATALYST: NO
 
-  OpenScrobbler:
+  ListenScrobbler:
     type: application
     platform: macOS
     deploymentTarget: "13.0"
@@ -41,16 +41,16 @@ targets:
         buildPhase: resources
     settings:
       base:
-        PRODUCT_NAME: OpenScrobbler
-        PRODUCT_MODULE_NAME: OpenScrobbler
+        PRODUCT_NAME: ListenScrobbler
+        PRODUCT_MODULE_NAME: ListenScrobbler
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_CFBundleIconFile: AppIcon.icns
-        INFOPLIST_KEY_CFBundleName: OpenScrobbler
-        INFOPLIST_KEY_CFBundleDisplayName: OpenScrobbler
+        INFOPLIST_KEY_CFBundleName: ListenScrobbler
+        INFOPLIST_KEY_CFBundleDisplayName: ListenScrobbler
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.music
         INFOPLIST_KEY_NSHumanReadableCopyright: Copyright (c) 2026
 
-  OpenScrobbleriOS:
+  ListenScrobbleriOS:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
@@ -59,29 +59,29 @@ targets:
       - path: Resources
         buildPhase: resources
     dependencies:
-      - target: OpenScrobblerCore
-      - target: OpenScrobblerWidgets
+      - target: ListenScrobblerCore
+      - target: ListenScrobblerWidgets
         embed: true
     settings:
       base:
-        PRODUCT_NAME: OpenScrobbler
-        PRODUCT_MODULE_NAME: OpenScrobbleriOS
-        PRODUCT_BUNDLE_IDENTIFIER: org.openscrobbler.app.ios
+        PRODUCT_NAME: ListenScrobbler
+        PRODUCT_MODULE_NAME: ListenScrobbleriOS
+        PRODUCT_BUNDLE_IDENTIFIER: org.listenscrobbler.app.ios
         CURRENT_PROJECT_VERSION: 1
         MARKETING_VERSION: 1.0.0
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleName: OpenScrobbler
-        INFOPLIST_KEY_CFBundleDisplayName: OpenScrobbler
+        INFOPLIST_KEY_CFBundleName: ListenScrobbler
+        INFOPLIST_KEY_CFBundleDisplayName: ListenScrobbler
         INFOPLIST_KEY_NSHumanReadableCopyright: Copyright (c) 2026
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
-        INFOPLIST_KEY_NSAppleMusicUsageDescription: OpenScrobbler scans your music library play counts to submit new listens to ListenBrainz.
+        INFOPLIST_KEY_NSAppleMusicUsageDescription: ListenScrobbler scans your music library play counts to submit new listens to ListenBrainz.
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        CODE_SIGN_ENTITLEMENTS: Config/OpenScrobbleriOS.entitlements
+        CODE_SIGN_ENTITLEMENTS: Config/ListenScrobbleriOS.entitlements
         SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
         SUPPORTS_MACCATALYST: NO
 
-  OpenScrobblerWidgets:
+  ListenScrobblerWidgets:
     type: app-extension
     platform: iOS
     deploymentTarget: "17.0"
@@ -90,26 +90,26 @@ targets:
       - path: Resources
         buildPhase: resources
     dependencies:
-      - target: OpenScrobblerCore
+      - target: ListenScrobblerCore
     settings:
       base:
-        PRODUCT_NAME: OpenScrobblerWidgets
-        PRODUCT_MODULE_NAME: OpenScrobblerWidgets
-        PRODUCT_BUNDLE_IDENTIFIER: org.openscrobbler.app.ios.widgets
+        PRODUCT_NAME: ListenScrobblerWidgets
+        PRODUCT_MODULE_NAME: ListenScrobblerWidgets
+        PRODUCT_BUNDLE_IDENTIFIER: org.listenscrobbler.app.ios.widgets
         CURRENT_PROJECT_VERSION: 1
         MARKETING_VERSION: 1.0.0
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Sources/iOSWidgets/Info.plist
-        INFOPLIST_KEY_CFBundleDisplayName: OpenScrobbler
+        INFOPLIST_KEY_CFBundleDisplayName: ListenScrobbler
         INFOPLIST_KEY_NSHumanReadableCopyright: Copyright (c) 2026
-        CODE_SIGN_ENTITLEMENTS: Config/OpenScrobblerWidgets.entitlements
+        CODE_SIGN_ENTITLEMENTS: Config/ListenScrobblerWidgets.entitlements
         SKIP_INSTALL: YES
         APPLICATION_EXTENSION_API_ONLY: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: ""
         SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
         SUPPORTS_MACCATALYST: NO
 
-  OpenScrobblerTests:
+  ListenScrobblerTests:
     type: bundle.unit-test
     platform: macOS
     deploymentTarget: "13.0"
@@ -121,26 +121,26 @@ targets:
       - path: Tests/Fixtures
         buildPhase: resources
     dependencies:
-      - target: OpenScrobbler
+      - target: ListenScrobbler
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
-        PRODUCT_BUNDLE_IDENTIFIER: org.openscrobbler.app.tests
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/OpenScrobbler.app/Contents/MacOS/OpenScrobbler"
+        PRODUCT_BUNDLE_IDENTIFIER: org.listenscrobbler.app.tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ListenScrobbler.app/Contents/MacOS/ListenScrobbler"
         BUNDLE_LOADER: "$(TEST_HOST)"
 
 schemes:
-  OpenScrobbler:
+  ListenScrobbler:
     build:
       targets:
-        OpenScrobbler: all
-        OpenScrobblerTests: [test]
+        ListenScrobbler: all
+        ListenScrobblerTests: [test]
     test:
       targets:
-        - OpenScrobblerTests
+        - ListenScrobblerTests
 
-  OpenScrobbleriOS:
+  ListenScrobbleriOS:
     build:
       targets:
-        OpenScrobbleriOS: all
-        OpenScrobblerWidgets: all
+        ListenScrobbleriOS: all
+        ListenScrobblerWidgets: all

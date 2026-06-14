@@ -28,7 +28,7 @@ struct OpenMusicEntityDetails: Equatable {
 }
 
 final class MusicBrainzService {
-    // OpenScrobbler treats MusicBrainz as the identity layer and supplements it
+    // ListenScrobbler treats MusicBrainz as the identity layer and supplements it
     // with Cover Art Archive, Wikidata, and Wikipedia. If a future contributor
     // adds Discogs/AcousticBrainz/etc., prefer enriching this open entity value
     // rather than leaking more provider-specific models into SwiftUI.
@@ -119,7 +119,7 @@ final class MusicBrainzService {
 
     private func fetchCoverArt(url: URL) async throws -> String? {
         var request = URLRequest(url: url)
-        request.setValue("OpenScrobbler/0.1.0 ( https://github.com/openscrobbler )", forHTTPHeaderField: "User-Agent")
+        request.setValue("ListenScrobbler/0.1.0 ( https://github.com/listenscrobbler )", forHTTPHeaderField: "User-Agent")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         let (data, response) = try await urlSession.data(for: request)
@@ -259,7 +259,7 @@ final class MusicBrainzService {
         guard let url = components?.url else { throw MusicBrainzError.invalidResponse }
 
         var request = URLRequest(url: url)
-        request.setValue("OpenScrobbler/0.1.0 ( https://github.com/openscrobbler )", forHTTPHeaderField: "User-Agent")
+        request.setValue("ListenScrobbler/0.1.0 ( https://github.com/listenscrobbler )", forHTTPHeaderField: "User-Agent")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         let (data, response) = try await urlSession.data(for: request)
@@ -274,7 +274,7 @@ final class MusicBrainzService {
 
     private func fetchJSON<T: Decodable>(url: URL) async throws -> T {
         var request = URLRequest(url: url)
-        request.setValue("OpenScrobbler/0.1.0 ( https://github.com/openscrobbler )", forHTTPHeaderField: "User-Agent")
+        request.setValue("ListenScrobbler/0.1.0 ( https://github.com/listenscrobbler )", forHTTPHeaderField: "User-Agent")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         let (data, response) = try await urlSession.data(for: request)

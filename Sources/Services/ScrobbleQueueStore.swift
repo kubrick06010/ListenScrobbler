@@ -71,17 +71,26 @@ extension ScrobbleQueueStoring {
 
 final class ScrobbleQueueStore: ScrobbleQueueStoring {
     let queueFileURL: URL
-    private let legacyQueueFileURL: URL
+    private let legacyQueueFileURLs: [URL]
     private let fileManager: FileManager
 
     init(fileManager: FileManager = .default, appSupportRoot: URL? = nil) {
         self.fileManager = fileManager
         let appSupport = appSupportRoot ?? fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let dir = appSupport.appendingPathComponent("OpenScrobbler", isDirectory: true)
+        let dir = appSupport.appendingPathComponent("ListenScrobbler", isDirectory: true)
         try? fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
         queueFileURL = dir.appendingPathComponent("scrobble-queue.json")
-        let legacyDir = appSupport.appendingPathComponent("LegacyOpenScrobbler", isDirectory: true)
-        legacyQueueFileURL = legacyDir.appendingPathComponent("scrobble-queue.json")
+        legacyQueueFileURLs = [
+            appSupport
+                .appendingPathComponent("OpenScrobbler", isDirectory: true)
+                .appendingPathComponent("scrobble-queue.json"),
+            appSupport
+                .appendingPathComponent("LegacyOpenScrobbler", isDirectory: true)
+                .appendingPathComponent("scrobble-queue.json"),
+            appSupport
+                .appendingPathComponent("LegacyListenScrobbler", isDirectory: true)
+                .appendingPathComponent("scrobble-queue.json")
+        ]
         migrateLegacyQueueIfNeeded()
     }
 
@@ -111,15 +120,17 @@ final class ScrobbleQueueStore: ScrobbleQueueStoring {
 
     private func migrateLegacyQueueIfNeeded() {
         guard !fileManager.fileExists(atPath: queueFileURL.path) else { return }
-        guard fileManager.fileExists(atPath: legacyQueueFileURL.path) else { return }
-        guard let data = try? Data(contentsOf: legacyQueueFileURL) else { return }
-        guard !data.isEmpty else { return }
-        do {
-            try data.write(to: queueFileURL, options: .atomic)
-            try? fileManager.removeItem(at: legacyQueueFileURL)
-        } catch {
-            // Leave the legacy queue untouched if migration fails; loadJobs()
-            // can still decode the old format from the migrated copy path later.
+        for legacyQueueFileURL in legacyQueueFileURLs {
+            guard fileManager.fileExists(atPath: legacyQueueFileURL.path) else { continue }
+            guard let data = try? Data(contentsOf: legacyQueueFileURL), !data.isEmpty else { continue }
+            do {
+                try data.write(to: queueFileURL, options: .atomic)
+                try? fileManager.removeItem(at: legacyQueueFileURL)
+                return
+            } catch {
+                // Leave the legacy queue untouched if migration fails; loadJobs()
+                // can still decode the old format from the migrated copy path later.
+            }
         }
     }
 }

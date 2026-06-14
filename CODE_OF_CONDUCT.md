@@ -1,6 +1,6 @@
 # Code of Conduct
 
-OpenScrobbler should be a focused, respectful place to build open music tooling.
+ListenScrobbler should be a focused, respectful place to build open music tooling.
 
 ## Expected Behavior
 

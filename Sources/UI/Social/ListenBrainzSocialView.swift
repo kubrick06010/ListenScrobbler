@@ -16,7 +16,7 @@ struct ListenBrainzSocialView: View {
     @EnvironmentObject private var scrobbleService: ScrobbleService
     @State private var usernameToFollow = ""
     @State private var usernameToCompare = ""
-    @State private var playlistTitle = "OpenScrobbler Picks"
+    @State private var playlistTitle = "ListenScrobbler Picks"
     @State private var selectedSection: SocialSection = .people
     let onOpenRecommendation: (ListenBrainzRecommendedRecording) -> Void
     let onShareRecommendation: (ListenBrainzRecommendedRecording) -> Void
@@ -446,7 +446,7 @@ struct ListenBrainzSocialView: View {
                 let title = playlistTitle.trimmingCharacters(in: .whitespacesAndNewlines)
                 Task {
                     _ = await scrobbleService.createListenBrainzPlaylist(
-                        title: title.isEmpty ? "OpenScrobbler Picks" : title,
+                        title: title.isEmpty ? "ListenScrobbler Picks" : title,
                         from: picks
                     )
                 }

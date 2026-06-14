@@ -215,7 +215,7 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 16) {
             preferencesHeader(
                 title: "ListenBrainz",
-                subtitle: "The primary OpenScrobbler identity for submissions, charts, and social music data."
+                subtitle: "The primary ListenScrobbler identity for submissions, charts, and social music data."
             )
 
             ListenBrainzAccountSetupPanel(

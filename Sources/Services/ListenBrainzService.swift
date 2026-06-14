@@ -300,6 +300,7 @@ final class ListenBrainzSettingsStore {
 final class ListenBrainzTokenStore: ListenBrainzTokenStoring {
     private let fileManager: FileManager
     private let tokenFileURL: URL
+    private let legacyTokenFileURLs: [URL]
 
     init(fileManager: FileManager = .default, appSupportRoot: URL? = nil) {
         self.fileManager = fileManager
@@ -307,7 +308,7 @@ final class ListenBrainzTokenStore: ListenBrainzTokenStoring {
         // Keep tokens out of UserDefaults. The boolean flag below is only for
         // UI state; the token itself lives in an app-support file with narrow
         // POSIX permissions so contributors can swap in Keychain later.
-        let dir = appSupport.appendingPathComponent("OpenScrobbler", isDirectory: true)
+        let dir = appSupport.appendingPathComponent("ListenScrobbler", isDirectory: true)
             .appendingPathComponent("Secrets", isDirectory: true)
         try? fileManager.createDirectory(
             at: dir,
@@ -316,6 +317,13 @@ final class ListenBrainzTokenStore: ListenBrainzTokenStoring {
         )
         try? fileManager.setAttributes([.posixPermissions: 0o700], ofItemAtPath: dir.path)
         self.tokenFileURL = dir.appendingPathComponent("listenbrainz-token")
+        self.legacyTokenFileURLs = [
+            appSupport
+                .appendingPathComponent("OpenScrobbler", isDirectory: true)
+                .appendingPathComponent("Secrets", isDirectory: true)
+                .appendingPathComponent("listenbrainz-token")
+        ]
+        migrateLegacyTokenIfNeeded()
     }
 
     func readToken() throws -> String? {
@@ -349,6 +357,20 @@ final class ListenBrainzTokenStore: ListenBrainzTokenStoring {
             try fileManager.removeItem(at: tokenFileURL)
         } catch {
             throw ListenBrainzError.invalidResponse
+        }
+    }
+
+    private func migrateLegacyTokenIfNeeded() {
+        guard !fileManager.fileExists(atPath: tokenFileURL.path) else { return }
+        for legacyTokenFileURL in legacyTokenFileURLs {
+            guard fileManager.fileExists(atPath: legacyTokenFileURL.path) else { continue }
+            do {
+                try fileManager.copyItem(at: legacyTokenFileURL, to: tokenFileURL)
+                try fileManager.setAttributes([.posixPermissions: 0o600], ofItemAtPath: tokenFileURL.path)
+                return
+            } catch {
+                continue
+            }
         }
     }
 }
@@ -1079,7 +1101,7 @@ final class ListenBrainzService {
                         releaseName: track.album,
                         additionalInfo: ListenBrainzAdditionalInfo(
                             mediaPlayer: track.sourceApp,
-                            submissionClient: "OpenScrobbler",
+                            submissionClient: "ListenScrobbler",
                             submissionClientVersion: "1.1.0",
                             sourceMetadata: track.sourceMetadata
                         )

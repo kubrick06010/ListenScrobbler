@@ -1,5 +1,5 @@
 import XCTest
-@testable import OpenScrobbler
+@testable import ListenScrobbler
 
 final class MusicBrainzServiceTests: XCTestCase {
     override func tearDown() {
@@ -113,7 +113,7 @@ final class MusicBrainzServiceTests: XCTestCase {
             }
         }
 
-        // When OpenScrobbler looks up the track with album metadata from the player.
+        // When ListenScrobbler looks up the track with album metadata from the player.
         let details = try await service.lookup(
             track: "Arnos Park",
             artist: "Bochum Welt",
@@ -202,7 +202,7 @@ final class MusicBrainzServiceTests: XCTestCase {
             }
         }
 
-        // When OpenScrobbler searches for the track and release from the now-playing metadata.
+        // When ListenScrobbler searches for the track and release from the now-playing metadata.
         let details = try await service.lookup(
             track: "My Silks And Fine Arrays",
             artist: "Julie Covington",

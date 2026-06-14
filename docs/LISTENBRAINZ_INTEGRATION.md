@@ -1,6 +1,6 @@
 # ListenBrainz Integration
 
-This document defines how `OpenScrobbler` integrates with ListenBrainz today and where that integration should go next.
+This document defines how `ListenScrobbler` integrates with ListenBrainz today and where that integration should go next.
 
 The product position is simple:
 
@@ -22,7 +22,7 @@ Primary references:
 
 ## Product Scope
 
-ListenBrainz in `OpenScrobbler` should cover:
+ListenBrainz in `ListenScrobbler` should cover:
 
 - token-based account setup
 - `playing_now` and completed listen submission
@@ -71,7 +71,7 @@ ListenBrainz settings should remain centered on:
 - optional custom base URL for compatible deployments
 - toggles for `playing_now` and completed listens when needed
 
-The token is stored in `~/Library/Application Support/OpenScrobbler/Secrets/listenbrainz-token` with user-only file permissions. This avoids repeated macOS Keychain prompts during local development builds. Non-sensitive state such as "token present" is cached separately to keep launch and test flows quiet.
+The token is stored in `~/Library/Application Support/ListenScrobbler/Secrets/listenbrainz-token` with user-only file permissions. This avoids repeated macOS Keychain prompts during local development builds. Non-sensitive state such as "token present" is cached separately to keep launch and test flows quiet.
 
 ## Submission Model
 
@@ -109,8 +109,8 @@ Payload shape:
         "track_name": "The Rip",
         "release_name": "Third",
         "additional_info": {
-          "media_player": "OpenScrobbler",
-          "submission_client": "OpenScrobbler",
+          "media_player": "ListenScrobbler",
+          "submission_client": "ListenScrobbler",
           "submission_client_version": "1.0.0"
         }
       }
@@ -127,11 +127,11 @@ Mapping from app `Track`:
 - scrobble completion time -> `listened_at`
 - `track.sourceApp` -> `additional_info.media_player` when useful
 
-When sending `playing_now`, OpenScrobbler requests `return_msid=true`. ListenBrainz can return a `recording_msid` for the now-playing listen, which the app keeps with the current track and reuses for feedback when no MusicBrainz recording MBID is available.
+When sending `playing_now`, ListenScrobbler requests `return_msid=true`. ListenBrainz can return a `recording_msid` for the now-playing listen, which the app keeps with the current track and reuses for feedback when no MusicBrainz recording MBID is available.
 
 ## Feedback Model
 
-OpenScrobbler uses the native ListenBrainz recording feedback endpoint:
+ListenScrobbler uses the native ListenBrainz recording feedback endpoint:
 
 ```json
 {
@@ -208,7 +208,7 @@ The medium-term direction is:
 - track unresolved MBIDs when local files cannot be matched
 - evolve `Shared` and `Obsessions` toward open, MusicBrainz-aware artifacts
 
-This aligns `OpenScrobbler` with the broader open ecosystem rather than creating a private side format.
+This aligns `ListenScrobbler` with the broader open ecosystem rather than creating a private side format.
 
 ## Testing Requirements
 

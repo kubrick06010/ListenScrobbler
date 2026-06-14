@@ -96,7 +96,7 @@ struct ListenBrainzAccountSetupPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("ListenBrainz Setup")
                         .font(.custom("Avenir Next Demi Bold", size: 18))
-                    Text("A guided setup path for the open music identity OpenScrobbler uses across submissions, charts, and diagnostics.")
+                    Text("A guided setup path for the open music identity ListenScrobbler uses across submissions, charts, and diagnostics.")
                         .font(.custom("Avenir Next Regular", size: 13))
                         .foregroundStyle(.secondary)
                 }

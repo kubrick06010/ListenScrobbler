@@ -1,5 +1,5 @@
 import XCTest
-@testable import OpenScrobbler
+@testable import ListenScrobbler
 
 final class ScrobbleServiceTests: XCTestCase {
     @MainActor
@@ -284,11 +284,11 @@ final class ScrobbleServiceTests: XCTestCase {
             queueStore: InMemoryQueueStore()
         )
 
-        // When the user pins a different recording from OpenScrobbler.
+        // When the user pins a different recording from ListenScrobbler.
         await service.refreshListenBrainzPins()
         let didPin = await service.pinListenBrainzRecording(recordingMbid: "bochum-mbid", title: "New Pin")
 
-        // Then OpenScrobbler must remove the old remote pin before creating the new one.
+        // Then ListenScrobbler must remove the old remote pin before creating the new one.
         XCTAssertTrue(didPin, "The pin action should report success after replacing the old ListenBrainz pin.")
         let paths = MockURLProtocol.requests.map { "\($0.httpMethod ?? "") \($0.url?.path ?? "")" }
         XCTAssertLessThan(
@@ -483,7 +483,7 @@ final class ScrobbleServiceTests: XCTestCase {
     }
 
     private func isolatedListenBrainzService() -> ListenBrainzService {
-        let defaults = UserDefaults(suiteName: "OpenScrobblerTests-\(UUID().uuidString)")!
+        let defaults = UserDefaults(suiteName: "ListenScrobblerTests-\(UUID().uuidString)")!
         let settingsStore = ListenBrainzSettingsStore(
             defaults: defaults,
             tokenStore: InMemoryListenBrainzTokenStore()
@@ -492,7 +492,7 @@ final class ScrobbleServiceTests: XCTestCase {
     }
 
     private func configuredListenBrainzService(urlSession: URLSession) -> ListenBrainzService {
-        let defaults = UserDefaults(suiteName: "OpenScrobblerTests-ListenBrainz-\(UUID().uuidString)")!
+        let defaults = UserDefaults(suiteName: "ListenScrobblerTests-ListenBrainz-\(UUID().uuidString)")!
         let tokenStore = InMemoryListenBrainzTokenStore()
         let settingsStore = ListenBrainzSettingsStore(defaults: defaults, tokenStore: tokenStore)
         settingsStore.save(
@@ -818,7 +818,7 @@ private final class InMemorySessionStore: CompatibilityAccountsStoring {
 }
 
 private final class InMemoryQueueStore: ScrobbleQueueStoring {
-    let queueFileURL = URL(fileURLWithPath: "/tmp/openscrobbler-test-queue.json")
+    let queueFileURL = URL(fileURLWithPath: "/tmp/listenscrobbler-test-queue.json")
     private var tracks: [Track] = []
 
     init(initialTracks: [Track] = []) {

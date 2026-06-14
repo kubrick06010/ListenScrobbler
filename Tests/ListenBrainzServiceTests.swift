@@ -1,5 +1,5 @@
 import XCTest
-@testable import OpenScrobbler
+@testable import ListenScrobbler
 
 final class ListenBrainzServiceTests: XCTestCase {
     override func tearDown() {
@@ -43,7 +43,7 @@ final class ListenBrainzServiceTests: XCTestCase {
 
     func testFileTokenStorePersistsWithoutKeychain() throws {
         let tempRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("OpenScrobblerTokenStoreTests-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("ListenScrobblerTokenStoreTests-\(UUID().uuidString)", isDirectory: true)
         defer { try? FileManager.default.removeItem(at: tempRoot) }
 
         let store = ListenBrainzTokenStore(fileManager: .default, appSupportRoot: tempRoot)
@@ -51,7 +51,7 @@ final class ListenBrainzServiceTests: XCTestCase {
 
         XCTAssertEqual(try store.readToken(), "file-token")
         let tokenURL = tempRoot
-            .appendingPathComponent("OpenScrobbler", isDirectory: true)
+            .appendingPathComponent("ListenScrobbler", isDirectory: true)
             .appendingPathComponent("Secrets", isDirectory: true)
             .appendingPathComponent("listenbrainz-token")
         let attributes = try FileManager.default.attributesOfItem(atPath: tokenURL.path)
@@ -61,7 +61,24 @@ final class ListenBrainzServiceTests: XCTestCase {
         XCTAssertNil(try store.readToken())
     }
 
-    func testSubmitListenUsesOpenScrobblerClientMetadata() async throws {
+    func testFileTokenStoreMigratesOpenScrobblerToken() throws {
+        let tempRoot = FileManager.default.temporaryDirectory
+            .appendingPathComponent("ListenScrobblerTokenMigrationTests-\(UUID().uuidString)", isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: tempRoot) }
+        let legacyDir = tempRoot
+            .appendingPathComponent("OpenScrobbler", isDirectory: true)
+            .appendingPathComponent("Secrets", isDirectory: true)
+        try FileManager.default.createDirectory(at: legacyDir, withIntermediateDirectories: true)
+        let legacyTokenURL = legacyDir.appendingPathComponent("listenbrainz-token")
+        try Data("legacy-token".utf8).write(to: legacyTokenURL, options: .atomic)
+
+        let store = ListenBrainzTokenStore(fileManager: .default, appSupportRoot: tempRoot)
+
+        XCTAssertEqual(try store.readToken(), "legacy-token")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: legacyTokenURL.path))
+    }
+
+    func testSubmitListenUsesListenScrobblerClientMetadata() async throws {
         let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
             XCTAssertEqual(request.httpMethod, "POST")
             XCTAssertEqual(request.url?.absoluteString, "https://api.listenbrainz.org/1/submit-listens")
@@ -76,7 +93,7 @@ final class ListenBrainzServiceTests: XCTestCase {
             XCTAssertEqual(metadata["track_name"] as? String, "Track")
             XCTAssertEqual(metadata["release_name"] as? String, "Album")
             XCTAssertEqual(additional["media_player"] as? String, "Test Player")
-            XCTAssertEqual(additional["submission_client"] as? String, "OpenScrobbler")
+            XCTAssertEqual(additional["submission_client"] as? String, "ListenScrobbler")
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
             return (response, Data())
         }
@@ -576,13 +593,13 @@ final class ListenBrainzServiceTests: XCTestCase {
             let body = try XCTUnwrap(request.httpBodyData)
             let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
             XCTAssertEqual(json["recording_mbid"] as? String, "mbid-9", "ListenBrainz expects recording_mbid when MusicBrainz resolution succeeded.")
-            XCTAssertEqual(json["blurb_content"] as? String, "Pinned from OpenScrobbler", "The app should include the user's pin note/blurb.")
+            XCTAssertEqual(json["blurb_content"] as? String, "Pinned from ListenScrobbler", "The app should include the user's pin note/blurb.")
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
             return (response, Data())
         }
 
-        // When OpenScrobbler pins it.
-        try await service.pinRecording(recordingMbid: "mbid-9", blurb: "Pinned from OpenScrobbler")
+        // When ListenScrobbler pins it.
+        try await service.pinRecording(recordingMbid: "mbid-9", blurb: "Pinned from ListenScrobbler")
     }
 
     func testPinningByListenBrainzMSIDPostsRecordingMSIDWithoutMBID() async throws {
@@ -594,13 +611,13 @@ final class ListenBrainzServiceTests: XCTestCase {
             let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
             XCTAssertEqual(json["recording_msid"] as? String, "msid-9", "ListenBrainz accepts recording_msid as the fallback pin identity.")
             XCTAssertNil(json["recording_mbid"], "The fallback request must not invent a MusicBrainz ID.")
-            XCTAssertEqual(json["blurb_content"] as? String, "Pinned from OpenScrobbler", "The app should include the user's pin note/blurb.")
+            XCTAssertEqual(json["blurb_content"] as? String, "Pinned from ListenScrobbler", "The app should include the user's pin note/blurb.")
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
             return (response, Data())
         }
 
-        // When OpenScrobbler pins it.
-        try await service.pinRecording(recordingMsid: "msid-9", blurb: "Pinned from OpenScrobbler")
+        // When ListenScrobbler pins it.
+        try await service.pinRecording(recordingMsid: "msid-9", blurb: "Pinned from ListenScrobbler")
     }
 
     func testReplacingCurrentPinPostsToListenBrainzUnpinEndpoint() async throws {
@@ -613,7 +630,7 @@ final class ListenBrainzServiceTests: XCTestCase {
             return (response, Data())
         }
 
-        // When OpenScrobbler asks ListenBrainz to unpin the current recording.
+        // When ListenScrobbler asks ListenBrainz to unpin the current recording.
         try await service.unpinCurrentRecording()
     }
 
@@ -627,7 +644,7 @@ final class ListenBrainzServiceTests: XCTestCase {
             return (response, Data())
         }
 
-        // When OpenScrobbler deletes that row.
+        // When ListenScrobbler deletes that row.
         try await service.deletePin(rowID: 42)
     }
 
@@ -743,7 +760,7 @@ final class ListenBrainzServiceTests: XCTestCase {
             let body = try XCTUnwrap(request.httpBodyData)
             let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
             let playlist = try XCTUnwrap(json["playlist"] as? [String: Any])
-            XCTAssertEqual(playlist["title"] as? String, "OpenScrobbler Picks")
+            XCTAssertEqual(playlist["title"] as? String, "ListenScrobbler Picks")
             let tracks = try XCTUnwrap(playlist["track"] as? [[String: Any]])
             XCTAssertEqual(tracks.count, 2)
             XCTAssertEqual(tracks.first?["identifier"] as? String, "https://musicbrainz.org/recording/mbid-1")
@@ -751,7 +768,7 @@ final class ListenBrainzServiceTests: XCTestCase {
             return (response, Data())
         }
 
-        try await service.createPlaylist(title: "OpenScrobbler Picks", recordingMBIDs: ["mbid-1", "mbid-2"])
+        try await service.createPlaylist(title: "ListenScrobbler Picks", recordingMBIDs: ["mbid-1", "mbid-2"])
     }
 
     private func makeService(
@@ -782,7 +799,7 @@ final class ListenBrainzServiceTests: XCTestCase {
     }
 
     private func makeDefaults() -> UserDefaults {
-        let suiteName = "OpenScrobbler.ListenBrainzTests.\(UUID().uuidString)"
+        let suiteName = "ListenScrobbler.ListenBrainzTests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suiteName)!
         defaults.removePersistentDomain(forName: suiteName)
         return defaults
@@ -815,7 +832,7 @@ final class ListenBrainzServiceTests: XCTestCase {
         XCTAssertEqual(additional["spotify_id"] as? String, spotifyID, file: file, line: line)
         XCTAssertEqual(additional["duration_played"] as? Int, durationPlayed, file: file, line: line)
         XCTAssertEqual(additional["original_submission_client"] as? String, originalSubmissionClient, file: file, line: line)
-        XCTAssertEqual(additional["submission_client"] as? String, "OpenScrobbler", file: file, line: line)
+        XCTAssertEqual(additional["submission_client"] as? String, "ListenScrobbler", file: file, line: line)
         XCTAssertEqual(additional["submission_client_version"] as? String, "1.1.0", file: file, line: line)
     }
 

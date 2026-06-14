@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping make OpenScrobbler better. The project is a macOS SwiftUI app centered on ListenBrainz, MusicBrainz, Cover Art Archive, and local-first listening archives.
+Thanks for helping make ListenScrobbler better. The project is a macOS SwiftUI app centered on ListenBrainz, MusicBrainz, Cover Art Archive, and local-first listening archives.
 
 ## Project Direction
 
@@ -16,7 +16,7 @@ Requirements:
 
 - macOS 13 or newer.
 - Xcode with the macOS SDK.
-- XcodeGen when regenerating `OpenScrobbler.xcodeproj` from `project.yml`.
+- XcodeGen when regenerating `ListenScrobbler.xcodeproj` from `project.yml`.
 
 Generate the project:
 
@@ -28,8 +28,8 @@ Run tests:
 
 ```bash
 xcodebuild test \
-  -project OpenScrobbler.xcodeproj \
-  -scheme OpenScrobbler \
+  -project ListenScrobbler.xcodeproj \
+  -scheme ListenScrobbler \
   -destination 'platform=macOS'
 ```
 

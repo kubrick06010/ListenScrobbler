@@ -7,7 +7,7 @@ enum VaultStoreError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .unsupportedSchema:
-            return "This vault file is not supported by this version of OpenScrobbler."
+            return "This vault file is not supported by this version of ListenScrobbler."
         case .encodingFailed:
             return "The vault file could not be encoded."
         }
@@ -37,7 +37,7 @@ final class VaultFileStore {
             .replacingOccurrences(of: "/", with: "_")
             .nilIfBlank ?? "local"
         return appSupport
-            .appendingPathComponent("OpenScrobbler", isDirectory: true)
+            .appendingPathComponent("ListenScrobbler", isDirectory: true)
             .appendingPathComponent("Vault", isDirectory: true)
             .appendingPathComponent(safeUsername, isDirectory: true)
     }
@@ -272,13 +272,13 @@ final class SharedMusicVaultStore: ObservableObject {
                 )
             }
 
-        let resolvedTitle = title?.nilIfBlank ?? "OpenScrobbler Shared"
+        let resolvedTitle = title?.nilIfBlank ?? "ListenScrobbler Shared"
         return OpenPlaylistBundle(
             playlist: OpenPlaylistJSPF(
                 title: resolvedTitle,
                 creator: username,
-                annotation: "Exported by OpenScrobbler",
-                identifier: "openscrobbler:shared:\(username.lowercased())",
+                annotation: "Exported by ListenScrobbler",
+                identifier: "listenscrobbler:shared:\(username.lowercased())",
                 date: Date(),
                 track: exportedTracks,
                 extension: [

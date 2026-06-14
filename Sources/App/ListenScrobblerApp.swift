@@ -3,11 +3,11 @@ import AppKit
 import ServiceManagement
 
 enum AppEvents {
-    static let showDiagnostics = Notification.Name("fm.openscrobbler.showDiagnostics")
+    static let showDiagnostics = Notification.Name("fm.listenscrobbler.showDiagnostics")
 }
 
 @main
-struct OpenScrobblerApp: App {
+struct ListenScrobblerApp: App {
     @StateObject private var scrobbleService = ScrobbleService()
     @StateObject private var launchAtLoginController = LaunchAtLoginController()
     @StateObject private var proxySettingsController = ProxySettingsController()
@@ -17,7 +17,7 @@ struct OpenScrobblerApp: App {
     @State private var handledInitialWindowPresentation = false
 
     var body: some Scene {
-        Window("OpenScrobbler", id: "main") {
+        Window("ListenScrobbler", id: "main") {
             ContentView()
                 .environmentObject(scrobbleService)
                 .environmentObject(launchAtLoginController)
@@ -110,7 +110,7 @@ struct OpenScrobblerApp: App {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
             guard !NSApp.isActive else { return }
             NSApp.windows
-                .first(where: { $0.identifier?.rawValue == "main" || $0.title == "OpenScrobbler" })?
+                .first(where: { $0.identifier?.rawValue == "main" || $0.title == "ListenScrobbler" })?
                 .orderOut(nil)
         }
     }

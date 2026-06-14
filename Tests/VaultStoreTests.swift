@@ -1,5 +1,5 @@
 import XCTest
-@testable import OpenScrobbler
+@testable import ListenScrobbler
 
 @MainActor
 final class VaultStoreTests: XCTestCase {
@@ -7,7 +7,7 @@ final class VaultStoreTests: XCTestCase {
 
     override func setUpWithError() throws {
         tempRoot = FileManager.default.temporaryDirectory
-            .appendingPathComponent("OpenScrobblerVaultTests-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("ListenScrobblerVaultTests-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
     }
 

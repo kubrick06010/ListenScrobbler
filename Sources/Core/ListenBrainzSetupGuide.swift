@@ -52,7 +52,7 @@ public enum ListenBrainzSetupGuide {
 
     public static let eyebrow = "Open Music Setup"
     public static let headline = "Scrobbling, rebuilt around open music data."
-    public static let summary = "OpenScrobbler keeps the fast account setup and familiar listening timeline of classic scrobblers, then connects it to ListenBrainz, MusicBrainz metadata, recommendations, social discovery, and portable exports."
+    public static let summary = "ListenScrobbler keeps the fast account setup and familiar listening timeline of classic scrobblers, then connects it to ListenBrainz, MusicBrainz metadata, recommendations, social discovery, and portable exports."
 
     public static let steps: [ListenBrainzSetupStep] = [
         ListenBrainzSetupStep(
@@ -64,13 +64,13 @@ public enum ListenBrainzSetupGuide {
         ListenBrainzSetupStep(
             id: "token",
             title: "Copy your user token",
-            detail: "Open your ListenBrainz profile, copy the user token, and paste it here. OpenScrobbler never needs your password.",
+            detail: "Open your ListenBrainz profile, copy the user token, and paste it here. ListenScrobbler never needs your password.",
             symbolName: "key"
         ),
         ListenBrainzSetupStep(
             id: "sources",
             title: "Connect listening sources",
-            detail: "Set up ListenBrainz music services such as Spotify or imports on the web, then let OpenScrobbler submit local and manual listens with clear source metadata.",
+            detail: "Set up ListenBrainz music services such as Spotify or imports on the web, then let ListenScrobbler submit local and manual listens with clear source metadata.",
             symbolName: "point.3.connected.trianglepath.dotted"
         ),
         ListenBrainzSetupStep(
@@ -113,7 +113,7 @@ public enum ListenBrainzSetupGuide {
         ListenBrainzOnboardingAction(
             id: "token",
             title: "Copy ListenBrainz Token",
-            detail: "Paste the token in OpenScrobbler.",
+            detail: "Paste the token in ListenScrobbler.",
             symbolName: "key",
             url: tokenURL
         ),

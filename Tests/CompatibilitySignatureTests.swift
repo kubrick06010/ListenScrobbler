@@ -1,5 +1,5 @@
 import XCTest
-@testable import OpenScrobbler
+@testable import ListenScrobbler
 
 final class CompatibilitySignatureTests: XCTestCase {
     func testSignatureIsStableAndSorted() {

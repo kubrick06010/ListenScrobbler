@@ -4,7 +4,7 @@
 
 ## Verification
 
-- [ ] `xcodebuild test -project OpenScrobbler.xcodeproj -scheme OpenScrobbler -destination 'platform=macOS'`
+- [ ] `xcodebuild test -project ListenScrobbler.xcodeproj -scheme ListenScrobbler -destination 'platform=macOS'`
 
 ## Notes
 

@@ -1,9 +1,9 @@
 import XCTest
-@testable import OpenScrobbler
+@testable import ListenScrobbler
 
 final class MobilePendingScrobbleStoreTests: XCTestCase {
     func testStorePersistsPendingScrobbles() {
-        let suiteName = "OpenScrobblerTests-Pending-\(UUID().uuidString)"
+        let suiteName = "ListenScrobblerTests-Pending-\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suiteName)!
         defer { defaults.removePersistentDomain(forName: suiteName) }
         let store = MobilePendingScrobbleStore(defaults: defaults)

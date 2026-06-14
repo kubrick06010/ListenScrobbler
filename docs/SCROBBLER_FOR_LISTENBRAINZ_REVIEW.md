@@ -87,7 +87,7 @@ shared widget/app state. No user token or private database content was read.
 - The icon uses a light iOS 26-style glass treatment with blue music notes,
   vertical chart bars, and a rounded translucent background.
 - It does not visually use the ListenBrainz/MetaBrainz mark family. That leaves
-  room for OpenScrobbler to stay differentiated with explicit MetaBrainz
+  room for ListenScrobbler to stay differentiated with explicit MetaBrainz
   ecosystem iconography and cross-platform parity.
 
 ## Screen Audit
@@ -257,12 +257,12 @@ These need device testing with a ListenBrainz account:
   - Dark mode contrast.
   - Reduced Motion.
 
-## Differentiation For OpenScrobbler
+## Differentiation For ListenScrobbler
 
-Avoid positioning OpenScrobbler as "another generic ListenBrainz iOS app".
+Avoid positioning ListenScrobbler as "another generic ListenBrainz iOS app".
 Dominik's app appears to own the pure iOS ListenBrainz-client lane already.
 
-OpenScrobbler should emphasize:
+ListenScrobbler should emphasize:
 
 - Cross-platform macOS + iOS scrobbling with shared core models.
 - macOS player monitoring and local workflow tooling.
@@ -283,7 +283,7 @@ Specific lessons to consider:
   queue contract is solid.
 - Consider a group container only when widgets or extensions actually need
   shared state.
-- Keep OpenScrobbler's macOS story native rather than iOS-on-Mac; that is a
+- Keep ListenScrobbler's macOS story native rather than iOS-on-Mac; that is a
   concrete differentiation from Scrobbler for ListenBrainz.
 
 ## Hands-On Test Script

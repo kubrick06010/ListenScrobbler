@@ -1,4 +1,4 @@
-# OpenScrobbler Engineering Practices
+# ListenScrobbler Engineering Practices
 
 This document is the working protocol for future changes in this repository.
 Every implementation should keep the codebase easier to understand after the
@@ -64,8 +64,8 @@ Use this layout for new or moved UI code:
 4. Avoid unrelated refactors in the same change.
 5. Update this document when we intentionally change the architecture.
 6. Run `xcodegen generate` after adding, moving, or deleting source files.
-7. Run `xcodebuild -scheme OpenScrobbler -project OpenScrobbler.xcodeproj -configuration Debug build`.
-8. Run `xcodebuild -scheme OpenScrobbler -project OpenScrobbler.xcodeproj -configuration Debug test` when service logic, models, parsing, persistence, or important user flows change.
+7. Run `xcodebuild -scheme ListenScrobbler -project ListenScrobbler.xcodeproj -configuration Debug build`.
+8. Run `xcodebuild -scheme ListenScrobbler -project ListenScrobbler.xcodeproj -configuration Debug test` when service logic, models, parsing, persistence, or important user flows change.
 
 ## Review Checklist
 

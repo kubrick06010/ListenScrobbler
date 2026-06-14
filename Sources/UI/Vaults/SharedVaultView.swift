@@ -85,7 +85,7 @@ struct SharedVaultView: View {
                 .disabled(store.entries.filter { $0.entityKind == .track }.isEmpty)
             }
 
-            Text("Share with another app user by exporting a `.openscrobbler-shared.json` bundle, or move track-based shares into portable `.jspf` playlists with MusicBrainz identifiers when available.")
+            Text("Share with another app user by exporting a `.listenscrobbler-shared.json` bundle, or move track-based shares into portable `.jspf` playlists with MusicBrainz identifiers when available.")
                 .font(.custom("Avenir Next Regular", size: 13))
                 .foregroundStyle(.secondary)
         }
@@ -136,7 +136,7 @@ struct SharedVaultView: View {
                 }
 
                 if filteredEntries.isEmpty {
-                    VaultEmptyState(title: "No shared music archived", detail: "Create a share or import a bundle from another OpenScrobbler user.")
+                    VaultEmptyState(title: "No shared music archived", detail: "Create a share or import a bundle from another ListenScrobbler user.")
                 } else {
                     ForEach(filteredEntries) { entry in
                         SharedTimelineRow(entry: entry, isSelected: selectedEntry?.id == entry.id)
@@ -167,7 +167,7 @@ struct SharedVaultView: View {
     }
 
     private func exportSharedBundle() {
-        guard let url = savePanelURL(defaultName: "openscrobbler-shared.openscrobbler-shared.json") else { return }
+        guard let url = savePanelURL(defaultName: "listenscrobbler-shared.listenscrobbler-shared.json") else { return }
         do {
             try store.export(to: url)
         } catch {
@@ -186,7 +186,7 @@ struct SharedVaultView: View {
     }
 
     private func exportSharedJSPF() {
-        guard let url = savePanelURL(defaultName: "openscrobbler-shared.jspf") else { return }
+        guard let url = savePanelURL(defaultName: "listenscrobbler-shared.jspf") else { return }
         do {
             try store.exportJSPF(to: url)
         } catch {

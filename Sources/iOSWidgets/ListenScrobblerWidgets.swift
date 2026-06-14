@@ -1,68 +1,68 @@
-import OpenScrobblerCore
+import ListenScrobblerCore
 import SwiftUI
 import WidgetKit
 
-private enum OpenScrobblerWidgetKind {
-    static let status = "OpenScrobblerStatusWidget"
-    static let recentListen = "OpenScrobblerRecentListenWidget"
-    static let discovery = "OpenScrobblerDiscoveryWidget"
+private enum ListenScrobblerWidgetKind {
+    static let status = "ListenScrobblerStatusWidget"
+    static let recentListen = "ListenScrobblerRecentListenWidget"
+    static let discovery = "ListenScrobblerDiscoveryWidget"
 }
 
-private struct OpenScrobblerWidgetEntry: TimelineEntry {
+private struct ListenScrobblerWidgetEntry: TimelineEntry {
     let date: Date
     let snapshot: MobileWidgetSnapshot
 }
 
-private struct OpenScrobblerWidgetProvider: TimelineProvider {
-    func placeholder(in context: Context) -> OpenScrobblerWidgetEntry {
-        OpenScrobblerWidgetEntry(date: .now, snapshot: .empty)
+private struct ListenScrobblerWidgetProvider: TimelineProvider {
+    func placeholder(in context: Context) -> ListenScrobblerWidgetEntry {
+        ListenScrobblerWidgetEntry(date: .now, snapshot: .empty)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (OpenScrobblerWidgetEntry) -> Void) {
-        completion(OpenScrobblerWidgetEntry(date: .now, snapshot: MobileWidgetSnapshotStore().load()))
+    func getSnapshot(in context: Context, completion: @escaping (ListenScrobblerWidgetEntry) -> Void) {
+        completion(ListenScrobblerWidgetEntry(date: .now, snapshot: MobileWidgetSnapshotStore().load()))
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<OpenScrobblerWidgetEntry>) -> Void) {
-        let entry = OpenScrobblerWidgetEntry(date: .now, snapshot: MobileWidgetSnapshotStore().load())
+    func getTimeline(in context: Context, completion: @escaping (Timeline<ListenScrobblerWidgetEntry>) -> Void) {
+        let entry = ListenScrobblerWidgetEntry(date: .now, snapshot: MobileWidgetSnapshotStore().load())
         completion(Timeline(entries: [entry], policy: .after(.now.addingTimeInterval(15 * 60))))
     }
 }
 
-struct OpenScrobblerStatusWidget: Widget {
+struct ListenScrobblerStatusWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(
-            kind: OpenScrobblerWidgetKind.status,
-            provider: OpenScrobblerWidgetProvider()
+            kind: ListenScrobblerWidgetKind.status,
+            provider: ListenScrobblerWidgetProvider()
         ) { entry in
-            OpenScrobblerStatusWidgetView(snapshot: entry.snapshot)
+            ListenScrobblerStatusWidgetView(snapshot: entry.snapshot)
         }
-        .configurationDisplayName("OpenScrobbler Status")
+        .configurationDisplayName("ListenScrobbler Status")
         .description("Show ListenBrainz connection state and queued mobile listens.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
 
-struct OpenScrobblerRecentListenWidget: Widget {
+struct ListenScrobblerRecentListenWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(
-            kind: OpenScrobblerWidgetKind.recentListen,
-            provider: OpenScrobblerWidgetProvider()
+            kind: ListenScrobblerWidgetKind.recentListen,
+            provider: ListenScrobblerWidgetProvider()
         ) { entry in
-            OpenScrobblerRecentListenWidgetView(snapshot: entry.snapshot)
+            ListenScrobblerRecentListenWidgetView(snapshot: entry.snapshot)
         }
         .configurationDisplayName("Recent Listen")
-        .description("Show the latest ListenBrainz listen captured by OpenScrobbler.")
+        .description("Show the latest ListenBrainz listen captured by ListenScrobbler.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
 
-struct OpenScrobblerDiscoveryWidget: Widget {
+struct ListenScrobblerDiscoveryWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(
-            kind: OpenScrobblerWidgetKind.discovery,
-            provider: OpenScrobblerWidgetProvider()
+            kind: ListenScrobblerWidgetKind.discovery,
+            provider: ListenScrobblerWidgetProvider()
         ) { entry in
-            OpenScrobblerDiscoveryWidgetView(snapshot: entry.snapshot)
+            ListenScrobblerDiscoveryWidgetView(snapshot: entry.snapshot)
         }
         .configurationDisplayName("Open Discovery")
         .description("Show the current pin or first ListenBrainz recommendation.")
@@ -71,20 +71,20 @@ struct OpenScrobblerDiscoveryWidget: Widget {
 }
 
 @main
-struct OpenScrobblerWidgets: WidgetBundle {
+struct ListenScrobblerWidgets: WidgetBundle {
     var body: some Widget {
-        OpenScrobblerStatusWidget()
-        OpenScrobblerRecentListenWidget()
-        OpenScrobblerDiscoveryWidget()
+        ListenScrobblerStatusWidget()
+        ListenScrobblerRecentListenWidget()
+        ListenScrobblerDiscoveryWidget()
     }
 }
 
-private struct OpenScrobblerStatusWidgetView: View {
+private struct ListenScrobblerStatusWidgetView: View {
     let snapshot: MobileWidgetSnapshot
 
     var body: some View {
         WidgetPanel {
-            WidgetHeader(title: "OpenScrobbler", imageName: "ListenPulse")
+            WidgetHeader(title: "ListenScrobbler", imageName: "ListenPulse")
 
             Spacer(minLength: 6)
 
@@ -113,7 +113,7 @@ private struct OpenScrobblerStatusWidgetView: View {
     }
 }
 
-private struct OpenScrobblerRecentListenWidgetView: View {
+private struct ListenScrobblerRecentListenWidgetView: View {
     let snapshot: MobileWidgetSnapshot
 
     var body: some View {
@@ -142,7 +142,7 @@ private struct OpenScrobblerRecentListenWidgetView: View {
             } else {
                 EmptyWidgetState(
                     title: "No recent listen",
-                    detail: "Refresh OpenScrobbler to update ListenBrainz."
+                    detail: "Refresh ListenScrobbler to update ListenBrainz."
                 )
             }
 
@@ -151,7 +151,7 @@ private struct OpenScrobblerRecentListenWidgetView: View {
     }
 }
 
-private struct OpenScrobblerDiscoveryWidgetView: View {
+private struct ListenScrobblerDiscoveryWidgetView: View {
     let snapshot: MobileWidgetSnapshot
 
     var body: some View {
@@ -189,7 +189,7 @@ private struct OpenScrobblerDiscoveryWidgetView: View {
             } else {
                 EmptyWidgetState(
                     title: "No discovery yet",
-                    detail: "Refresh recommendations in OpenScrobbler."
+                    detail: "Refresh recommendations in ListenScrobbler."
                 )
             }
 
@@ -269,9 +269,9 @@ private struct WidgetUpdatedFooter: View {
 }
 
 #Preview("Recent Listen", as: .systemSmall) {
-    OpenScrobblerRecentListenWidget()
+    ListenScrobblerRecentListenWidget()
 } timeline: {
-    OpenScrobblerWidgetEntry(
+    ListenScrobblerWidgetEntry(
         date: .now,
         snapshot: MobileWidgetSnapshot(
             connectionStatus: "open-user on ListenBrainz",

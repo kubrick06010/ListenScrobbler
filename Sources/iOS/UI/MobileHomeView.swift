@@ -1,4 +1,4 @@
-import OpenScrobblerCore
+import ListenScrobblerCore
 import SwiftUI
 import WidgetKit
 
@@ -17,7 +17,7 @@ struct MobileHomeView: View {
                         .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("OpenScrobbler")
+                        Text("ListenScrobbler")
                             .font(.largeTitle.bold())
                         Text(listeningStore.connectionState.statusText)
                             .foregroundStyle(.secondary)

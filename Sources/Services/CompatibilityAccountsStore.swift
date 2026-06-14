@@ -21,7 +21,7 @@ final class CompatibilitySessionStore: CompatibilityAccountsStoring {
     init(fileManager: FileManager = .default) {
         self.fileManager = fileManager
         let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let dir = appSupport.appendingPathComponent("OpenScrobbler", isDirectory: true)
+        let dir = appSupport.appendingPathComponent("ListenScrobbler", isDirectory: true)
         try? fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
         self.storageFileURL = dir.appendingPathComponent("accounts.json")
     }

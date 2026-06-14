@@ -1,6 +1,6 @@
 # Experimental Memory Vault
 
-This document scopes the local-first memory features in `OpenScrobbler`.
+This document scopes the local-first memory features in `ListenScrobbler`.
 
 The vault is intentionally app-native. It stores portable music memories that can later connect to ListenBrainz, MusicBrainz, playlists, pins, and local library resolution without depending on a private social inbox.
 
@@ -21,8 +21,8 @@ The current sharing flow is file-based:
 
 1. A user creates a share with track, artist, optional album, recipients, and a note.
 2. The app stores the share locally.
-3. The user exports a `.openscrobbler-shared.json` bundle or a JSPF playlist where recording MBIDs are available.
-4. Another OpenScrobbler user imports the bundle.
+3. The user exports a `.listenscrobbler-shared.json` bundle or a JSPF playlist where recording MBIDs are available.
+4. Another ListenScrobbler user imports the bundle.
 5. Imported records keep sender, recipient, note, date, source, and MusicBrainz metadata where present.
 
 The export contains no account token, password, API secret, or local credential.
@@ -33,7 +33,7 @@ The current obsession flow is also local-first:
 
 1. A user captures an obsession from the current track or manual entry.
 2. The app stores track, artist, optional album, note, date, source, and identifiers where present.
-3. The user can export or import `.openscrobbler-obsessions.json` bundles.
+3. The user can export or import `.listenscrobbler-obsessions.json` bundles.
 4. Imported records are marked as manual imports so provenance stays visible.
 
 ## Design Principles

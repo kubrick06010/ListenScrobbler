@@ -20,9 +20,9 @@ jobs:
     runs-on: macos-15
 
     env:
-      APP_NAME: OpenScrobbler
-      PROJECT: OpenScrobbler.xcodeproj
-      SCHEME: OpenScrobbler
+      APP_NAME: ListenScrobbler
+      PROJECT: ListenScrobbler.xcodeproj
+      SCHEME: ListenScrobbler
 
     steps:
       - name: Checkout
@@ -95,7 +95,7 @@ jobs:
           if match:
               body = match.group("body").strip()
           else:
-              body = f"OpenScrobbler {version} release."
+              body = f"ListenScrobbler {version} release."
 
           print(body)
           print()
@@ -119,11 +119,11 @@ jobs:
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release edit "$TAG" \
-              --title "OpenScrobbler $VERSION" \
+              --title "ListenScrobbler $VERSION" \
               --notes-file "$RUNNER_TEMP/release-notes.md"
             gh release upload "$TAG" "$ASSET_PATH" --clobber
           else
             gh release create "$TAG" "$ASSET_PATH" \
-              --title "OpenScrobbler $VERSION" \
+              --title "ListenScrobbler $VERSION" \
               --notes-file "$RUNNER_TEMP/release-notes.md"
           fi
