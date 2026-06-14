@@ -88,6 +88,8 @@ xcodebuild build \
   CODE_SIGNING_ALLOWED=NO
 ```
 
+For account setup and everyday usage, see [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
+
 Build, install, and launch on a paired iPhone:
 
 ```bash

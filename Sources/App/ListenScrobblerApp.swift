@@ -39,6 +39,21 @@ struct ListenScrobblerApp: App {
                 }
                 .keyboardShortcut("m", modifiers: [.command, .option])
             }
+
+            CommandGroup(replacing: .help) {
+                Button("ListenScrobbler Help") {
+                    openExternalURL(AppLinks.userGuide)
+                }
+                .keyboardShortcut("?", modifiers: [.command])
+
+                Button("ListenBrainz Token Page") {
+                    openExternalURL(AppLinks.listenBrainzToken)
+                }
+
+                Button("Report an Issue") {
+                    openExternalURL(AppLinks.issues)
+                }
+            }
         }
 
         MenuBarExtra {
@@ -99,6 +114,10 @@ struct ListenScrobblerApp: App {
         NSApp.terminate(nil)
     }
 
+    private func openExternalURL(_ url: URL) {
+        NSWorkspace.shared.open(url)
+    }
+
     private func handleInitialWindowPresentation() {
         guard !handledInitialWindowPresentation else { return }
         handledInitialWindowPresentation = true
@@ -114,6 +133,12 @@ struct ListenScrobblerApp: App {
                 .orderOut(nil)
         }
     }
+}
+
+private enum AppLinks {
+    static let userGuide = URL(string: "https://github.com/kubrick06010/ListenScrobbler/blob/main/docs/USER_GUIDE.md")!
+    static let listenBrainzToken = URL(string: "https://listenbrainz.org/profile/")!
+    static let issues = URL(string: "https://github.com/kubrick06010/ListenScrobbler/issues")!
 }
 
 private struct MenuBarStatusIcon: View {
