@@ -113,6 +113,68 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(client.recommendationRefreshes.map(\.offset), [0])
     }
 
+    func testWidgetSnapshotCapturesConnectionListenPinAndRecommendation() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        client.recentListens = [
+            ListenBrainzListen(
+                id: "listen-1",
+                trackName: "Sketch for Summer",
+                artistName: "The Durutti Column",
+                releaseName: "The Return of the Durutti Column",
+                listenedAt: Date(timeIntervalSince1970: 1_700_000_000),
+                recordingMBID: nil,
+                recordingMSID: nil,
+                artistMBID: nil,
+                releaseMBID: nil,
+                imageURL: nil
+            )
+        ]
+        client.currentPin = ListenBrainzPinnedRecording(
+            id: 42,
+            recordingMbid: nil,
+            recordingMsid: nil,
+            trackName: "Otis",
+            artistName: "Durutti",
+            blurb: "Pinned from ListenBrainz",
+            createdAt: nil,
+            pinnedUntil: nil,
+            userName: "open-user"
+        )
+        client.recommendations = [
+            ListenBrainzRecommendedRecording(
+                id: "rec-1",
+                recordingMbid: "mbid-1",
+                title: "Pack Yr Romantic Mind",
+                artistName: "Stereolab",
+                releaseName: "Transient Random-Noise Bursts",
+                score: 0.98
+            )
+        ]
+        let snapshotDefaults = UserDefaults(suiteName: "OpenScrobblerTests-Widget-\(UUID().uuidString)")!
+        let snapshotStore = MobileWidgetSnapshotStore(defaults: snapshotDefaults)
+        let store = MobileListeningStore(
+            settingsStore: settingsStore,
+            listenBrainz: client,
+            widgetSnapshotStore: snapshotStore
+        )
+
+        await store.refresh()
+        await store.refreshRecommendations()
+
+        let snapshot = store.widgetSnapshot(updatedAt: Date(timeIntervalSince1970: 1_700_000_111))
+        XCTAssertEqual(snapshot.username, "open-user")
+        XCTAssertEqual(snapshot.connectionStatus, "open-user on ListenBrainz")
+        XCTAssertEqual(snapshot.recentListen?.trackName, "Sketch for Summer")
+        XCTAssertEqual(snapshot.currentPin?.trackName, "Otis")
+        XCTAssertEqual(snapshot.recommendation?.title, "Pack Yr Romantic Mind")
+
+        let savedSnapshot = snapshotStore.load()
+        XCTAssertEqual(savedSnapshot.recentListen?.trackName, "Sketch for Summer")
+        XCTAssertEqual(savedSnapshot.currentPin?.artistName, "Durutti")
+        XCTAssertEqual(savedSnapshot.recommendation?.artistName, "Stereolab")
+    }
+
     func testRefreshSocialPublishesMobileSocialSnapshot() async {
         let settingsStore = makeSettingsStore(username: "open-user", token: "token")
         let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)

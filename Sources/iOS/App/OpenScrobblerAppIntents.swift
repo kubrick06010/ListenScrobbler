@@ -1,6 +1,7 @@
 import AppIntents
 import Foundation
 import OpenScrobblerCore
+import WidgetKit
 
 enum OpenScrobblerDestination: String, AppEnum {
     case home
@@ -107,6 +108,17 @@ struct RefreshListenBrainzIntent: AppIntent {
             MobileAppIntentRouter.shared.request(.refreshListenBrainz)
         }
         return .result()
+    }
+}
+
+struct RefreshOpenScrobblerWidgetsIntent: AppIntent {
+    static let title: LocalizedStringResource = "Refresh OpenScrobbler Widgets"
+    static let description = IntentDescription("Reload OpenScrobbler widgets with the latest saved ListenBrainz snapshot.")
+    static let openAppWhenRun = false
+
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result(dialog: "OpenScrobbler widgets are refreshing.")
     }
 }
 
@@ -308,6 +320,16 @@ struct OpenScrobblerAppShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Refresh",
             systemImageName: "arrow.clockwise"
+        )
+
+        AppShortcut(
+            intent: RefreshOpenScrobblerWidgetsIntent(),
+            phrases: [
+                "Refresh OpenScrobbler widgets with \(.applicationName)",
+                "Update OpenScrobbler widgets with \(.applicationName)"
+            ],
+            shortTitle: "Refresh Widgets",
+            systemImageName: "rectangle.3.group"
         )
 
         AppShortcut(

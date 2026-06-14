@@ -46,8 +46,8 @@ Definition of done:
   or because they need a widget/extension or provider OAuth track.
 
 Current status: beta parity core is implemented. The next parity gaps are
-widgets, current-Music intent, recommendation actions (pin/share/playlists),
-provider imports, and TestFlight release packaging.
+current-Music intent, recommendation actions (pin/share/playlists), provider
+imports, and TestFlight release packaging.
 
 ## Phase 1: Guided Account Setup
 
@@ -90,11 +90,18 @@ Status: implemented.
 
   Status: first pass implemented for open destination, open manual scrobble,
   refresh ListenBrainz, direct manual scrobble submission, and repeat recent
-  listen. Current Music app and widget refresh remain.
+  listen. Widget refresh is implemented. Current Music app remains.
 - Widgets:
   - Connected account/status widget.
   - Recent listen widget.
   - Current pin or recommendation widget.
+
+  Status: first pass implemented as a WidgetKit extension backed by the mobile
+  ListenBrainz snapshot. The app writes connection, latest listen, current pin,
+  first recommendation, pending count, and update time; Shortcuts can request a
+  widget timeline refresh. Remaining widget work: deeper timeline policy,
+  App Group provisioning verification on physical devices, and richer widget
+  tap routing once URL/deep-link routing is formalized.
 - Recommendations:
   - Load recommended recordings from the shared ListenBrainz recommendation
     client.

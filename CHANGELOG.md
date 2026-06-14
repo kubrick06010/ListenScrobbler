@@ -27,6 +27,9 @@
   album, duration, listened-at, and OpenScrobbler source metadata.
 - iOS repeat recent listen App Intent for Shortcuts, reusing the latest
   ListenBrainz listen with an explicit duration fallback and source metadata.
+- iOS WidgetKit extension with status, recent listen, and discovery widgets
+  backed by the mobile ListenBrainz snapshot.
+- iOS widget refresh App Intent for Shortcuts.
 - Shared iOS intent routing so system actions can drive tab selection and
   manual-scrobble presentation without duplicating view logic.
 - iOS beta diagnostics export from Account with app/build version, device/OS

@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		00D3FD32365C01B978F260A8 /* similarity-openapi.json in Resources */ = {isa = PBXBuildFile; fileRef = 4D32A9E4FE0697AEA70D0FA5 /* similarity-openapi.json */; };
+		04FDEDBE709A478BDE2CB4D1 /* OpenScrobblerWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A993F954C215871CF7852171 /* OpenScrobblerWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		071827DDAE1D86FA41104C2C /* MobileListeningStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A1E1773BF61B1398FF59DE /* MobileListeningStore.swift */; };
 		086E0F9FC388682B356DC284 /* ShareComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB125A722F9D614C74BB0163 /* ShareComposerView.swift */; };
 		090D7CD25F5394BFF3DE1E50 /* ScrobbleQueueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B4BEF0A1C8F7B573372444 /* ScrobbleQueueStore.swift */; };
 		0B96DBB4774BD2816949534A /* MobileHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D83BA08D7C896B2D6979662 /* MobileHomeView.swift */; };
 		0BBCE411288DFE93503E9E14 /* ListenBrainzSetupGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73FB71C2F0104581EDC7537 /* ListenBrainzSetupGuideTests.swift */; };
 		0DDD21A5A50E5DC9DB7D21CC /* MoodPaletteEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA73E2EE23E95E82C345B34A /* MoodPaletteEngine.swift */; };
+		0EB1A9A2569D319346055205 /* OpenScrobblerCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D25F93CE46FAE2344FF1C84E /* OpenScrobblerCore.framework */; };
 		10112D727B1AB7B05EB45610 /* MobileLibraryScrobbleDiffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64C97B5035AFE0C1F2AD080 /* MobileLibraryScrobbleDiffer.swift */; };
 		1BD25D57864122BC3EF0EE50 /* artist-map-openapi.json in Resources */ = {isa = PBXBuildFile; fileRef = DF283F9CB9E9060C8AF52F12 /* artist-map-openapi.json */; };
 		1FE9E90A930BE2CAD78AB9C7 /* OpenScrobblerCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D25F93CE46FAE2344FF1C84E /* OpenScrobblerCore.framework */; };
@@ -26,10 +28,12 @@
 		2C1248B074B815544AACA4BD /* ListenBrainzService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3454FC6E9EC86078F7179BDF /* ListenBrainzService.swift */; };
 		31C4043BC352F08C41EBA901 /* CompatibilityAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948CD321C9C69762A3F9ED43 /* CompatibilityAPIErrorTests.swift */; };
 		31D531EF887E0B35603F4468 /* AppVisualComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4159B3E1643EF38A56E126 /* AppVisualComponents.swift */; };
+		31F4B2175757A01373195398 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8EF926F1CC88201E7F8BBFCC /* Assets.xcassets */; };
 		3585575C7D463E86934A2B63 /* VaultComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382D55FD3E85641D0878E685 /* VaultComponents.swift */; };
 		397AB45ED758ECF7279FA88A /* VaultModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADAFD64BAE67C5E40286378 /* VaultModels.swift */; };
 		3A96694F0B4E72A2B433FCE7 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197F1D4622961233B897360E /* AccountView.swift */; };
 		3AED2763B14755D2B2DF7B4D /* MobileDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD14BC64DC87892E433AF5C /* MobileDiagnosticsView.swift */; };
+		3B927473D143910F709C1D8D /* MobileWidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5DF2E12DA87628CB3AA032 /* MobileWidgetSnapshot.swift */; };
 		44588E84C071620CD2820D90 /* ProxySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F743410C80AF526D938086 /* ProxySettings.swift */; };
 		4DCB72C02ED644195CA1B635 /* BottomTabShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2C5F0F5C8B370E472053EC /* BottomTabShell.swift */; };
 		50EF1085477D5827F768415A /* OpenScrobblerAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B350A810809D4904B6417E0B /* OpenScrobblerAppIntents.swift */; };
@@ -71,6 +75,7 @@
 		B1F6DB572B6BFA26FCA40AA6 /* OpenScrobblerCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D25F93CE46FAE2344FF1C84E /* OpenScrobblerCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B240A3747EACFD7F541BE352 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5254D9C6FEAA307DB10BD0F /* SettingsView.swift */; };
 		B2B4CF541D9BC375634C3CAA /* ListenBrainzSocialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560872C020BC6150FBAFF9AD /* ListenBrainzSocialView.swift */; };
+		B6839470307BFC1E4A7A31DE /* OpenScrobblerWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69114E96D90919E13419AB7 /* OpenScrobblerWidgets.swift */; };
 		BA81B801E5DAFAC10B993A61 /* MobileManualScrobbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511E8A69385F7C9C651D02F7 /* MobileManualScrobbleView.swift */; };
 		BBFC20EB3FDC3A648CCB9818 /* ObsessionComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB377BA36AF07C74654F5EB /* ObsessionComposerView.swift */; };
 		BDDA062D637618ABB5EDD9DF /* AppKitRepresentables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4E6EF80D87F63FC8EA3A8D /* AppKitRepresentables.swift */; };
@@ -96,6 +101,7 @@
 		F182CDDB93A165C5A2D933A5 /* MobilePendingScrobbleStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3410DD8C1F538660155733F /* MobilePendingScrobbleStoreTests.swift */; };
 		F2E27B82EE840DE92DD76F8C /* AppPanelStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0928BDF9453C6E1898F552E /* AppPanelStyle.swift */; };
 		F33C7C053E803C5017457790 /* ScrobbleServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14D2423BD080FC9AD2BB6512 /* ScrobbleServiceTests.swift */; };
+		F677919EECB162D2EA37CA6E /* MobileWidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5DF2E12DA87628CB3AA032 /* MobileWidgetSnapshot.swift */; };
 		FA72E3FFCB98A75F767AE215 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8EF926F1CC88201E7F8BBFCC /* Assets.xcassets */; };
 		FC7B52AB29F670F4327BAD09 /* OpenScrobblerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE0AEEF6ABC15940E86B434 /* OpenScrobblerApp.swift */; };
 /* End PBXBuildFile section */
@@ -115,6 +121,20 @@
 			remoteGlobalIDString = C95E0AFDA537111F309AD3E5;
 			remoteInfo = OpenScrobbler;
 		};
+		7E52D934D35A49F5BAC56643 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 32BA788BC896BECD873610EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 230A3E87A87B2A6560FB6EDE;
+			remoteInfo = OpenScrobblerCore;
+		};
+		B02B9244BC4C35B203FE245D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 32BA788BC896BECD873610EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 890517730F78767F05D96F6A;
+			remoteInfo = OpenScrobblerWidgets;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -129,13 +149,24 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9184E3150F082AB7B3DDF8AC /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				04FDEDBE709A478BDE2CB4D1 /* OpenScrobblerWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		019652665952FE7E03D22353 /* SharedVaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedVaultView.swift; sourceTree = "<group>"; };
 		04191CCBC6AF468AF05E706D /* similar-users-openapi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "similar-users-openapi.json"; sourceTree = "<group>"; };
 		08B5188BE540330855E7B0C5 /* ChartEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartEntry.swift; sourceTree = "<group>"; };
-		0A3DA58A5E92842CFEA78200 /* OpenScrobbler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenScrobbler.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A3DA58A5E92842CFEA78200 /* OpenScrobbleriOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OpenScrobbleriOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F380BBAA04419C228B7FAEF /* PlayerNormalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerNormalizationTests.swift; sourceTree = "<group>"; };
 		12BB1848A201EE91BF05551B /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
 		14D2423BD080FC9AD2BB6512 /* ScrobbleServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleServiceTests.swift; sourceTree = "<group>"; };
@@ -159,7 +190,9 @@
 		511E8A69385F7C9C651D02F7 /* MobileManualScrobbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileManualScrobbleView.swift; sourceTree = "<group>"; };
 		560872C020BC6150FBAFF9AD /* ListenBrainzSocialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenBrainzSocialView.swift; sourceTree = "<group>"; };
 		56E766D6FC8095B2F1117475 /* PlayerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerMonitor.swift; sourceTree = "<group>"; };
+		5B5DF2E12DA87628CB3AA032 /* MobileWidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileWidgetSnapshot.swift; sourceTree = "<group>"; };
 		5C3E9275CEE9C6181524C78B /* QueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueView.swift; sourceTree = "<group>"; };
+		5CAD6C456DA052928AFD635B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5D8FC9B8EE7E34E03387603B /* ScrobbleDetailPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleDetailPanel.swift; sourceTree = "<group>"; };
 		61D298EF2676C23806DD2D8B /* SocialLegacyViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLegacyViews.swift; sourceTree = "<group>"; };
 		628BBADF573FD3DA58EA8E49 /* ObsessionsVaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsessionsVaultView.swift; sourceTree = "<group>"; };
@@ -185,12 +218,14 @@
 		A0D864BD3638091AB7220B73 /* MusicLibraryScrobbleScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicLibraryScrobbleScanner.swift; sourceTree = "<group>"; };
 		A470520752891B8657AFC57E /* MobileAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileAccountView.swift; sourceTree = "<group>"; };
 		A6FFCCDBEC3A659436E97066 /* InteractiveSeparationGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveSeparationGraphView.swift; sourceTree = "<group>"; };
+		A993F954C215871CF7852171 /* OpenScrobblerWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = OpenScrobblerWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA73E2EE23E95E82C345B34A /* MoodPaletteEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodPaletteEngine.swift; sourceTree = "<group>"; };
 		B0928BDF9453C6E1898F552E /* AppPanelStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPanelStyle.swift; sourceTree = "<group>"; };
 		B2A1E1773BF61B1398FF59DE /* MobileListeningStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileListeningStore.swift; sourceTree = "<group>"; };
 		B3410DD8C1F538660155733F /* MobilePendingScrobbleStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilePendingScrobbleStoreTests.swift; sourceTree = "<group>"; };
 		B350A810809D4904B6417E0B /* OpenScrobblerAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenScrobblerAppIntents.swift; sourceTree = "<group>"; };
 		B65518F8A43DA34E771DBDBE /* ScrobblesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobblesView.swift; sourceTree = "<group>"; };
+		B69114E96D90919E13419AB7 /* OpenScrobblerWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenScrobblerWidgets.swift; sourceTree = "<group>"; };
 		BADAFD64BAE67C5E40286378 /* VaultModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultModels.swift; sourceTree = "<group>"; };
 		BBA9DFA1F2EF90C007557645 /* InspectorResizeHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorResizeHandle.swift; sourceTree = "<group>"; };
 		BDE0AEEF6ABC15940E86B434 /* OpenScrobblerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenScrobblerApp.swift; sourceTree = "<group>"; };
@@ -227,6 +262,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FD7F993B7160E33680364C5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0EB1A9A2569D319346055205 /* OpenScrobblerCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -237,6 +280,7 @@
 				49813BBD62555505AD0CF6BE /* Core */,
 				E1C42B1FF24CB2B867FE375E /* Domain */,
 				326EDAA9E0DE45EFE8062E55 /* iOS */,
+				F6981A7D7A8A594841B9EEB1 /* iOSWidgets */,
 				248BD2C2A27AB5360C783AAC /* Services */,
 				C3406F3F72D625C6AB064081 /* UI */,
 			);
@@ -306,8 +350,9 @@
 			children = (
 				E1D920C82E39DB24395597CE /* OpenScrobbler.app */,
 				D25F93CE46FAE2344FF1C84E /* OpenScrobblerCore.framework */,
-				0A3DA58A5E92842CFEA78200 /* OpenScrobbler.app */,
+				0A3DA58A5E92842CFEA78200 /* OpenScrobbleriOS.app */,
 				E43B4D6B5C4C8C315CE903C5 /* OpenScrobblerTests.xctest */,
+				A993F954C215871CF7852171 /* OpenScrobblerWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -444,6 +489,7 @@
 				E64C97B5035AFE0C1F2AD080 /* MobileLibraryScrobbleDiffer.swift */,
 				B2A1E1773BF61B1398FF59DE /* MobileListeningStore.swift */,
 				28EB14F389731DE905826413 /* MobilePendingScrobbleStore.swift */,
+				5B5DF2E12DA87628CB3AA032 /* MobileWidgetSnapshot.swift */,
 			);
 			path = Mobile;
 			sourceTree = "<group>";
@@ -528,6 +574,15 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		F6981A7D7A8A594841B9EEB1 /* iOSWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				5CAD6C456DA052928AFD635B /* Info.plist */,
+				B69114E96D90919E13419AB7 /* OpenScrobblerWidgets.swift */,
+			);
+			path = iOSWidgets;
+			sourceTree = "<group>";
+		};
 		F6BBE1C6ADC8FC08107D8702 /* Explore */ = {
 			isa = PBXGroup;
 			children = (
@@ -556,6 +611,26 @@
 			productReference = D25F93CE46FAE2344FF1C84E /* OpenScrobblerCore.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		890517730F78767F05D96F6A /* OpenScrobblerWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 798C51B856E86280091704C1 /* Build configuration list for PBXNativeTarget "OpenScrobblerWidgets" */;
+			buildPhases = (
+				9139C40BD29B1D04D1C5A8B7 /* Sources */,
+				75B962561AEA5F965AD1AA94 /* Resources */,
+				FD7F993B7160E33680364C5E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7E936CB2A0DE0272F6822F40 /* PBXTargetDependency */,
+			);
+			name = OpenScrobblerWidgets;
+			packageProductDependencies = (
+			);
+			productName = OpenScrobblerWidgets;
+			productReference = A993F954C215871CF7852171 /* OpenScrobblerWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C95E0AFDA537111F309AD3E5 /* OpenScrobbler */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C767BC001A4753E36C086966 /* Build configuration list for PBXNativeTarget "OpenScrobbler" */;
@@ -581,18 +656,20 @@
 				CA22260BB5A8A95AFAD89555 /* Sources */,
 				DABE1688AD1B1D306A460F82 /* Resources */,
 				1A37D54B5005C435BF9CCFD3 /* Frameworks */,
+				9184E3150F082AB7B3DDF8AC /* Embed Foundation Extensions */,
 				1970CAA6D42E86B66E31D927 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				A9D691360AD1E1FE86251D78 /* PBXTargetDependency */,
+				4DC986375760A98BD7785653 /* PBXTargetDependency */,
 			);
 			name = OpenScrobbleriOS;
 			packageProductDependencies = (
 			);
 			productName = OpenScrobbleriOS;
-			productReference = 0A3DA58A5E92842CFEA78200 /* OpenScrobbler.app */;
+			productReference = 0A3DA58A5E92842CFEA78200 /* OpenScrobbleriOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F15E975845D41F287D81AE0E /* OpenScrobblerTests */ = {
@@ -622,6 +699,8 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = F3F1199166E874D34969D2FC /* Build configuration list for PBXProject "OpenScrobbler" */;
 			developmentRegion = en;
@@ -640,6 +719,7 @@
 				C95E0AFDA537111F309AD3E5 /* OpenScrobbler */,
 				230A3E87A87B2A6560FB6EDE /* OpenScrobblerCore */,
 				F15E975845D41F287D81AE0E /* OpenScrobblerTests */,
+				890517730F78767F05D96F6A /* OpenScrobblerWidgets */,
 				DF5860F77F7D637041868BF9 /* OpenScrobbleriOS */,
 			);
 		};
@@ -665,6 +745,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		75B962561AEA5F965AD1AA94 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				31F4B2175757A01373195398 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DABE1688AD1B1D306A460F82 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -676,6 +764,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		9139C40BD29B1D04D1C5A8B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6839470307BFC1E4A7A31DE /* OpenScrobblerWidgets.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9EF3D0B0361B8693CFCA575B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -705,6 +801,7 @@
 				10112D727B1AB7B05EB45610 /* MobileLibraryScrobbleDiffer.swift in Sources */,
 				071827DDAE1D86FA41104C2C /* MobileListeningStore.swift in Sources */,
 				5757E42C12A51F3F6DB03B30 /* MobilePendingScrobbleStore.swift in Sources */,
+				3B927473D143910F709C1D8D /* MobileWidgetSnapshot.swift in Sources */,
 				0DDD21A5A50E5DC9DB7D21CC /* MoodPaletteEngine.swift in Sources */,
 				A318D5E6B832D430C28D8967 /* MusicBrainzService.swift in Sources */,
 				A087CA18923A9C906A80D932 /* NowPlayingView.swift in Sources */,
@@ -782,6 +879,7 @@
 				C08727EB469EBEAE0C156965 /* MobileLibraryScrobbleDiffer.swift in Sources */,
 				AB9A3F135D878DE7F60E5A07 /* MobileListeningStore.swift in Sources */,
 				6A134AC2143ED80782ABBA7B /* MobilePendingScrobbleStore.swift in Sources */,
+				F677919EECB162D2EA37CA6E /* MobileWidgetSnapshot.swift in Sources */,
 				62E7ACC6FCDE7D224E27ACE2 /* Track.swift in Sources */,
 				DB854E7B549C90DBC9D2D7FF /* VaultModels.swift in Sources */,
 			);
@@ -790,6 +888,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4DC986375760A98BD7785653 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 890517730F78767F05D96F6A /* OpenScrobblerWidgets */;
+			targetProxy = B02B9244BC4C35B203FE245D /* PBXContainerItemProxy */;
+		};
+		7E936CB2A0DE0272F6822F40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 230A3E87A87B2A6560FB6EDE /* OpenScrobblerCore */;
+			targetProxy = 7E52D934D35A49F5BAC56643 /* PBXContainerItemProxy */;
+		};
 		A9D691360AD1E1FE86251D78 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 230A3E87A87B2A6560FB6EDE /* OpenScrobblerCore */;
@@ -873,6 +981,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Sources/iOSWidgets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenScrobbler;
 				INFOPLIST_KEY_CFBundleIconFile = AppIcon.icns;
 				INFOPLIST_KEY_CFBundleName = OpenScrobbler;
@@ -917,13 +1026,42 @@
 			};
 			name = Debug;
 		};
+		9021C864F79AEA8980149CC5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = Config/OpenScrobblerWidgets.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/iOSWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenScrobbler;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2026";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openscrobbler.app.ios.widgets;
+				PRODUCT_MODULE_NAME = OpenScrobblerWidgets;
+				PRODUCT_NAME = OpenScrobblerWidgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		919CE3550BAA5A991B2E68CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/OpenScrobbleriOS.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G6W28ZD4P3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenScrobbler;
 				INFOPLIST_KEY_CFBundleName = OpenScrobbler;
@@ -951,9 +1089,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/OpenScrobbleriOS.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G6W28ZD4P3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenScrobbler;
 				INFOPLIST_KEY_CFBundleName = OpenScrobbler;
@@ -995,11 +1133,41 @@
 			};
 			name = Debug;
 		};
+		F19DC897BEF4D635960C504C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = Config/OpenScrobblerWidgets.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/iOSWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenScrobbler;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) 2026";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.openscrobbler.app.ios.widgets;
+				PRODUCT_MODULE_NAME = OpenScrobblerWidgets;
+				PRODUCT_NAME = OpenScrobblerWidgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		F3347C7FD3A8DA2EBE3F14CF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Sources/iOSWidgets/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenScrobbler;
 				INFOPLIST_KEY_CFBundleIconFile = AppIcon.icns;
 				INFOPLIST_KEY_CFBundleName = OpenScrobbler;
@@ -1128,6 +1296,15 @@
 			buildConfigurations = (
 				CADA3704F83CA861C05810BC /* Debug */,
 				FAB7E1D2E6F7352AD442C3F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		798C51B856E86280091704C1 /* Build configuration list for PBXNativeTarget "OpenScrobblerWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9021C864F79AEA8980149CC5 /* Debug */,
+				F19DC897BEF4D635960C504C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

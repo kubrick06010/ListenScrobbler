@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1430"
-   version = "1.3">
+   wasCreatedForAppExtension = "YES"
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      runPostActionsOnFailure = "NO">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -14,8 +16,22 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "890517730F78767F05D96F6A"
+               BuildableName = "OpenScrobblerWidgets.appex"
+               BlueprintName = "OpenScrobblerWidgets"
+               ReferencedContainer = "container:OpenScrobbler.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "DF5860F77F7D637041868BF9"
-               BuildableName = "OpenScrobbler.app"
+               BuildableName = "OpenScrobbleriOS.app"
                BlueprintName = "OpenScrobbleriOS"
                ReferencedContainer = "container:OpenScrobbler.xcodeproj">
             </BuildableReference>
@@ -26,13 +42,14 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF5860F77F7D637041868BF9"
-            BuildableName = "OpenScrobbler.app"
-            BlueprintName = "OpenScrobbleriOS"
+            BlueprintIdentifier = "890517730F78767F05D96F6A"
+            BuildableName = "OpenScrobblerWidgets.appex"
+            BlueprintName = "OpenScrobblerWidgets"
             ReferencedContainer = "container:OpenScrobbler.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -41,21 +58,22 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
+      allowLocationSimulation = "YES"
+      launchAutomaticallySubstyle = "2">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF5860F77F7D637041868BF9"
-            BuildableName = "OpenScrobbler.app"
-            BlueprintName = "OpenScrobbleriOS"
+            BlueprintIdentifier = "890517730F78767F05D96F6A"
+            BuildableName = "OpenScrobblerWidgets.appex"
+            BlueprintName = "OpenScrobblerWidgets"
             ReferencedContainer = "container:OpenScrobbler.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -70,9 +88,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF5860F77F7D637041868BF9"
-            BuildableName = "OpenScrobbler.app"
-            BlueprintName = "OpenScrobbleriOS"
+            BlueprintIdentifier = "890517730F78767F05D96F6A"
+            BuildableName = "OpenScrobblerWidgets.appex"
+            BlueprintName = "OpenScrobblerWidgets"
             ReferencedContainer = "container:OpenScrobbler.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

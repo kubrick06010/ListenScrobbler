@@ -210,6 +210,7 @@ public final class MobileListeningStore: ObservableObject {
 
     private let settingsStore: ListenBrainzSettingsStore
     private let listenBrainz: MobileListenBrainzClient
+    private let widgetSnapshotStore: MobileWidgetSnapshotStore
     private let logger = Logger(subsystem: "org.openscrobbler.app.ios", category: "listenbrainz")
 
     public convenience init() {
@@ -222,10 +223,12 @@ public final class MobileListeningStore: ObservableObject {
 
     init(
         settingsStore: ListenBrainzSettingsStore,
-        listenBrainz: MobileListenBrainzClient
+        listenBrainz: MobileListenBrainzClient,
+        widgetSnapshotStore: MobileWidgetSnapshotStore = MobileWidgetSnapshotStore()
     ) {
         self.settingsStore = settingsStore
         self.listenBrainz = listenBrainz
+        self.widgetSnapshotStore = widgetSnapshotStore
         let settings = settingsStore.load()
         if let username = Self.nonBlank(settings.username), settingsStore.hasStoredToken() {
             self.connectionState = .connected(username: username)
@@ -234,6 +237,7 @@ public final class MobileListeningStore: ObservableObject {
             self.connectionState = .disconnected
             logger.info("Mobile listening store initialized disconnected")
         }
+        persistWidgetSnapshot()
     }
 
     public var configuredUsername: String {
@@ -299,6 +303,7 @@ public final class MobileListeningStore: ObservableObject {
         } catch {
             logger.error("ListenBrainz connect failed: \(error.localizedDescription, privacy: .public)")
             connectionState = .failed(error.localizedDescription)
+            persistWidgetSnapshot()
         }
     }
 
@@ -314,10 +319,15 @@ public final class MobileListeningStore: ObservableObject {
         socialSnapshot = nil
         socialStatus = "Connect ListenBrainz to load social activity"
         connectionState = .disconnected
+        widgetSnapshotStore.clear()
+        persistWidgetSnapshot()
     }
 
     public func refresh() async {
-        guard case let .connected(username) = connectionState else { return }
+        guard case let .connected(username) = connectionState else {
+            persistWidgetSnapshot()
+            return
+        }
 
         logger.info("ListenBrainz refresh started for user \(username, privacy: .public)")
         isRefreshing = true
@@ -329,10 +339,12 @@ public final class MobileListeningStore: ObservableObject {
 
             recentListens = try await listens.map(MobileListenSummary.init(listen:))
             currentPin = try await pin.map(MobilePinnedRecording.init(pin:))
+            persistWidgetSnapshot()
             logger.info("ListenBrainz refresh succeeded with \(self.recentListens.count, privacy: .public) recent listens; pin present: \(self.currentPin != nil, privacy: .public)")
         } catch {
             logger.error("ListenBrainz refresh failed: \(error.localizedDescription, privacy: .public)")
             connectionState = .failed(error.localizedDescription)
+            persistWidgetSnapshot()
         }
     }
 
@@ -385,10 +397,12 @@ public final class MobileListeningStore: ObservableObject {
             recommendationsStatus = recommendedRecordings.isEmpty
                 ? "No recommendations returned"
                 : "Loaded \(recommendedRecordings.count) recommendations"
+            persistWidgetSnapshot()
             logger.info("ListenBrainz mobile recommendations refresh succeeded with \(self.recommendedRecordings.count, privacy: .public) recordings")
         } catch {
             logger.error("ListenBrainz mobile recommendations refresh failed: \(error.localizedDescription, privacy: .public)")
             recommendationsStatus = "Failed to load recommendations: \(error.localizedDescription)"
+            persistWidgetSnapshot()
         }
     }
 
@@ -459,12 +473,56 @@ public final class MobileListeningStore: ObservableObject {
             sourceMetadata: candidate.sourceMetadata.map(TrackSourceMetadata.init(mobile:))
         )
         try await listenBrainz.submitListen(track)
+        persistWidgetSnapshot()
         logger.info("Mobile scrobble submit succeeded from source \(candidate.source, privacy: .public)")
+    }
+
+    public func widgetSnapshot(updatedAt: Date = .now) -> MobileWidgetSnapshot {
+        let username: String?
+        switch connectionState {
+        case let .connected(resolvedUsername):
+            username = resolvedUsername
+        default:
+            username = Self.nonBlank(settingsStore.load().username)
+        }
+
+        return MobileWidgetSnapshot(
+            connectionStatus: connectionState.statusText,
+            username: username,
+            recentListen: recentListens.first.map {
+                MobileWidgetListen(
+                    trackName: $0.trackName,
+                    artistName: $0.artistName,
+                    releaseName: $0.releaseName,
+                    listenedAt: $0.listenedAt
+                )
+            },
+            currentPin: currentPin.map {
+                MobileWidgetPin(
+                    trackName: $0.trackName,
+                    artistName: $0.artistName,
+                    blurb: $0.blurb
+                )
+            },
+            recommendation: recommendedRecordings.first.map {
+                MobileWidgetRecommendation(
+                    title: $0.title,
+                    artistName: $0.artistName,
+                    releaseName: $0.releaseName
+                )
+            },
+            pendingCount: MobilePendingScrobbleStore().load().count,
+            updatedAt: updatedAt
+        )
     }
 
     private static func nonBlank(_ value: String?) -> String? {
         let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed?.isEmpty == false ? trimmed : nil
+    }
+
+    private func persistWidgetSnapshot() {
+        widgetSnapshotStore.save(widgetSnapshot())
     }
 
     private func approximateStartDate(listenedAt: Date, duration: TimeInterval) -> Date {

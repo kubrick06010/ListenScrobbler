@@ -1,5 +1,6 @@
 import OpenScrobblerCore
 import SwiftUI
+import WidgetKit
 
 struct MobileDiscoverView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
@@ -41,6 +42,7 @@ struct MobileDiscoverView: View {
                 Button {
                     Task {
                         await listeningStore.refreshRecommendations()
+                        WidgetCenter.shared.reloadAllTimelines()
                     }
                 } label: {
                     if listeningStore.isRefreshingRecommendations {
@@ -72,6 +74,7 @@ struct MobileDiscoverView: View {
                 Button {
                     Task {
                         await listeningStore.refreshSocial()
+                        WidgetCenter.shared.reloadAllTimelines()
                     }
                 } label: {
                     if listeningStore.isRefreshingSocial {
@@ -149,6 +152,7 @@ struct MobileDiscoverView: View {
     private func refreshDiscovery() async {
         await listeningStore.refreshRecommendations()
         await listeningStore.refreshSocial()
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
 

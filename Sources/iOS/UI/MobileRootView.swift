@@ -1,5 +1,6 @@
 import OpenScrobblerCore
 import SwiftUI
+import WidgetKit
 
 struct MobileRootView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
@@ -45,6 +46,7 @@ struct MobileRootView: View {
         }
         .task {
             await listeningStore.refresh()
+            WidgetCenter.shared.reloadAllTimelines()
         }
         .sheet(item: $manualScrobbleDraft) { draft in
             MobileManualScrobbleView(draft: draft)
@@ -66,6 +68,7 @@ struct MobileRootView: View {
             selectedTab = .home
             Task {
                 await listeningStore.refresh()
+                WidgetCenter.shared.reloadAllTimelines()
             }
         }
         appIntentRouter.clear()

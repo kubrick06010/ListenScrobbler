@@ -67,6 +67,16 @@ xcodebuild build \
   CODE_SIGNING_ALLOWED=NO
 ```
 
+Build, install, and launch on a paired iPhone:
+
+```bash
+DEVELOPMENT_TEAM=YOURTEAMID ./tools/ios_device_validation.sh
+```
+
+The iOS app and WidgetKit extension share their latest ListenBrainz snapshot
+through the App Group `group.org.openscrobbler.app`, so physical-device signing
+must enable that capability for both bundle identifiers.
+
 Run tests:
 
 ```bash

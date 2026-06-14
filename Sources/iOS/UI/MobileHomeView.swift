@@ -1,5 +1,6 @@
 import OpenScrobblerCore
 import SwiftUI
+import WidgetKit
 
 struct MobileHomeView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
@@ -52,6 +53,7 @@ struct MobileHomeView: View {
                 .onChange(of: statsRange) { _, newValue in
                     Task {
                         await listeningStore.refreshStats(range: newValue)
+                        WidgetCenter.shared.reloadAllTimelines()
                     }
                 }
 
@@ -77,9 +79,11 @@ struct MobileHomeView: View {
         .refreshable {
             await listeningStore.refresh()
             await listeningStore.refreshStats(range: statsRange)
+            WidgetCenter.shared.reloadAllTimelines()
         }
         .task {
             await listeningStore.refreshStats(range: statsRange)
+            WidgetCenter.shared.reloadAllTimelines()
         }
     }
 }
