@@ -5,8 +5,10 @@ import WidgetKit
 struct MobileRootView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
     @EnvironmentObject private var appIntentRouter: MobileAppIntentRouter
+    @AppStorage("onboarding.lastFMModern.completed") private var didCompleteLastFMModernOnboarding = false
     @State private var selectedTab: MobileTab = .home
     @State private var manualScrobbleDraft: MobileManualScrobbleDraft?
+    @State private var isLastFMModernOnboardingPresented = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -37,7 +39,9 @@ struct MobileRootView: View {
             .tag(MobileTab.discover)
 
             NavigationStack {
-                MobileAccountView()
+                MobileAccountView {
+                    isLastFMModernOnboardingPresented = true
+                }
             }
             .tabItem {
                 Label("Account", systemImage: "person.crop.circle")
@@ -47,14 +51,29 @@ struct MobileRootView: View {
         .task {
             await listeningStore.refresh()
             WidgetCenter.shared.reloadAllTimelines()
+            presentOnboardingIfNeeded()
         }
         .sheet(item: $manualScrobbleDraft) { draft in
             MobileManualScrobbleView(draft: draft)
                 .environmentObject(listeningStore)
         }
+        .sheet(isPresented: $isLastFMModernOnboardingPresented) {
+            MobileLastFMModernOnboardingView {
+                didCompleteLastFMModernOnboarding = true
+                isLastFMModernOnboardingPresented = false
+            }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        }
         .onReceive(appIntentRouter.$pendingRoute.compactMap { $0 }) { route in
             handle(route)
         }
+    }
+
+    private func presentOnboardingIfNeeded() {
+        guard !didCompleteLastFMModernOnboarding else { return }
+        guard case .disconnected = listeningStore.connectionState else { return }
+        isLastFMModernOnboardingPresented = true
     }
 
     private func handle(_ route: MobileAppRoute) {

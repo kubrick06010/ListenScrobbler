@@ -4,6 +4,7 @@ import SwiftUI
 struct MobileAccountView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
     @EnvironmentObject private var musicLibraryScanner: MusicLibraryScrobbleScanner
+    let showOnboarding: () -> Void
     @State private var token = ""
     @State private var isPendingQueuePresented = false
     @State private var diagnosticsSnapshot: MobileDiagnosticsSnapshot?
@@ -11,7 +12,10 @@ struct MobileAccountView: View {
     var body: some View {
         Form {
             Section {
-                MobileListenBrainzSetupGuide(connectionState: listeningStore.connectionState)
+                MobileListenBrainzSetupGuide(
+                    connectionState: listeningStore.connectionState,
+                    showOnboarding: showOnboarding
+                )
             }
 
             Section("ListenBrainz") {
@@ -185,6 +189,7 @@ private struct MobilePendingQueueView: View {
 
 private struct MobileListenBrainzSetupGuide: View {
     let connectionState: MobileListeningStore.ConnectionState
+    let showOnboarding: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -209,6 +214,12 @@ private struct MobileListenBrainzSetupGuide: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
+                Button {
+                    showOnboarding()
+                } label: {
+                    Label("Open Last.fm Modern Onboarding", systemImage: "sparkles")
+                }
+
                 Link(destination: ListenBrainzSetupGuide.musicBrainzSignupURL) {
                     Label("Create Account", systemImage: "person.crop.circle.badge.plus")
                 }
@@ -252,6 +263,215 @@ private struct MobileListenBrainzSetupGuide: View {
         default:
             return .secondary
         }
+    }
+}
+
+struct MobileLastFMModernOnboardingView: View {
+    let complete: () -> Void
+    @Environment(\.openURL) private var openURL
+    @State private var selectedPage = 0
+
+    var body: some View {
+        NavigationStack {
+            TabView(selection: $selectedPage) {
+                introPage
+                    .tag(0)
+
+                featuresPage
+                    .tag(1)
+
+                setupPage
+                    .tag(2)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .background(onboardingBackground.ignoresSafeArea())
+            .safeAreaInset(edge: .bottom) {
+                onboardingFooter
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        complete()
+                    }
+                }
+            }
+        }
+    }
+
+    private var introPage: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 22) {
+                LastFMModernBadge()
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(ListenBrainzSetupGuide.headline)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(ListenBrainzSetupGuide.summary)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                HStack(spacing: 10) {
+                    ForEach(["Scrobble", "Discover", "Export"], id: \.self) { label in
+                        Text(label)
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(.thinMaterial, in: Capsule())
+                    }
+                }
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var featuresPage: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("What carries forward")
+                    .font(.title.bold())
+
+                ForEach(ListenBrainzSetupGuide.onboardingFeatures) { feature in
+                    OnboardingFeatureRow(feature: feature)
+                }
+            }
+            .padding(24)
+        }
+    }
+
+    private var setupPage: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Connect in minutes")
+                    .font(.title.bold())
+
+                ForEach(ListenBrainzSetupGuide.steps) { step in
+                    MobileSetupStepRow(step: step)
+                        .padding(14)
+                        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+
+                VStack(spacing: 10) {
+                    ForEach(ListenBrainzSetupGuide.onboardingActions) { action in
+                        Button {
+                            openURL(action.url)
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: action.symbolName)
+                                    .frame(width: 24, height: 24)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(action.title)
+                                        .font(.subheadline.weight(.semibold))
+                                    Text(action.detail)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "arrow.up.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(12)
+                            .background(.background.opacity(0.72), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.top, 8)
+            }
+            .padding(24)
+        }
+    }
+
+    private var onboardingFooter: some View {
+        HStack(spacing: 12) {
+            Button {
+                complete()
+            } label: {
+                Label("Skip", systemImage: "xmark")
+            }
+            .buttonStyle(.bordered)
+
+            Button {
+                if selectedPage < 2 {
+                    withAnimation(.snappy) {
+                        selectedPage += 1
+                    }
+                } else {
+                    complete()
+                }
+            } label: {
+                Label(selectedPage < 2 ? "Continue" : "Start Scrobbling", systemImage: selectedPage < 2 ? "arrow.right" : "checkmark")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding(16)
+        .background(.bar)
+    }
+
+    private var onboardingBackground: some View {
+        LinearGradient(
+            colors: [
+                Color(red: 0.58, green: 0.02, blue: 0.04).opacity(0.24),
+                Color(.systemBackground),
+                Color(red: 0.08, green: 0.11, blue: 0.16).opacity(0.18)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+}
+
+private struct LastFMModernBadge: View {
+    var body: some View {
+        HStack(spacing: 10) {
+            Image("ListenPulse")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 48, height: 48)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(ListenBrainzSetupGuide.eyebrow)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
+                Text("OpenScrobbler")
+                    .font(.headline)
+            }
+        }
+        .padding(12)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+}
+
+private struct OnboardingFeatureRow: View {
+    let feature: ListenBrainzOnboardingFeature
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Image(systemName: feature.symbolName)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 38, height: 38)
+                .background(Color(red: 0.83, green: 0.06, blue: 0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(feature.title)
+                    .font(.headline)
+                Text(feature.detail)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(14)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 }
 

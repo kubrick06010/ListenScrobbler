@@ -104,6 +104,7 @@ struct ContentView: View {
     @AppStorage("experimental.vault.enabled") private var vaultEnabled = true
     @AppStorage("experimental.shared.enabled") private var sharedVaultEnabled = true
     @AppStorage("experimental.obsessions.enabled") private var obsessionsVaultEnabled = true
+    @AppStorage("onboarding.lastFMModern.completed") private var didCompleteLastFMModernOnboarding = false
     @StateObject private var sharedVaultStore = SharedMusicVaultStore()
     @StateObject private var obsessionVaultStore = ObsessionVaultStore()
     @State private var selectedTab: WorkspaceTab? = .dashboard
@@ -113,6 +114,7 @@ struct ContentView: View {
     @State private var socialGraphTarget: SocialGraphTarget?
     @State private var selectedProfileURL: URL?
     @State private var isDiagnosticsPresented = false
+    @State private var isLastFMModernOnboardingPresented = false
     @State private var shareDraft: ShareDraft?
     @State private var obsessionDraft: ObsessionDraft?
 
@@ -389,6 +391,7 @@ struct ContentView: View {
         }
         .onAppear {
             configureVaultStores()
+            presentOnboardingIfNeeded()
         }
         .onChange(of: scrobbleService.sessionUsername ?? "local") { _ in
             configureVaultStores()
@@ -403,6 +406,13 @@ struct ContentView: View {
             DiagnosticsView()
                 .environmentObject(scrobbleService)
                 .frame(minWidth: 680, minHeight: 520)
+        }
+        .sheet(isPresented: $isLastFMModernOnboardingPresented) {
+            MacLastFMModernOnboardingView {
+                didCompleteLastFMModernOnboarding = true
+                isLastFMModernOnboardingPresented = false
+            }
+            .frame(width: 760, height: 620)
         }
         .sheet(item: $shareDraft) { draft in
             ShareComposerView(store: sharedVaultStore, draft: draft) { _ in
@@ -451,6 +461,12 @@ struct ContentView: View {
         if let selectedTab, !availableTabs.contains(selectedTab) {
             self.selectedTab = .dashboard
         }
+    }
+
+    private func presentOnboardingIfNeeded() {
+        guard !didCompleteLastFMModernOnboarding else { return }
+        guard scrobbleService.listenBrainzUsername?.isEmpty != false else { return }
+        isLastFMModernOnboardingPresented = true
     }
 
     private var nowPlayingSubtitle: String {

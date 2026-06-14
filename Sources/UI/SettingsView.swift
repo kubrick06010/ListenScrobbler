@@ -43,6 +43,7 @@ struct SettingsView: View {
     @State private var listenBrainzEnabled = false
     @State private var listenBrainzSubmitNowPlaying = true
     @State private var listenBrainzSubmitListens = true
+    @State private var isLastFMModernOnboardingPresented = false
 
     var body: some View {
         NavigationSplitView {
@@ -81,6 +82,12 @@ struct SettingsView: View {
                 .padding(24)
             }
             .background(Color.clear)
+        }
+        .sheet(isPresented: $isLastFMModernOnboardingPresented) {
+            MacLastFMModernOnboardingView {
+                isLastFMModernOnboardingPresented = false
+            }
+            .frame(width: 760, height: 620)
         }
         .task {
             launchAtLoginController.refreshStatus()
@@ -214,7 +221,10 @@ struct SettingsView: View {
             ListenBrainzAccountSetupPanel(
                 connectionSummary: scrobbleService.listenBrainzStatus,
                 connectedUsername: scrobbleService.listenBrainzUsername,
-                hasError: scrobbleService.listenBrainzLastError != nil
+                hasError: scrobbleService.listenBrainzLastError != nil,
+                showOnboarding: {
+                    isLastFMModernOnboardingPresented = true
+                }
             )
 
             GroupBox("Connection") {
