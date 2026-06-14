@@ -46,6 +46,73 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(client.pinRefreshUsernames, ["open-user"])
     }
 
+    func testRefreshStatsPublishesMobileStatsSummary() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        client.statsSnapshot = ListenBrainzStatsSnapshot(
+            username: "open-user",
+            range: .month,
+            totalListenCount: 1234,
+            listeningActivity: [],
+            topArtists: [
+                ListenBrainzArtistStat(id: "artist-1", name: "Stereolab", listenCount: 42, mbid: nil)
+            ],
+            topReleases: [
+                ListenBrainzReleaseStat(id: "release-1", name: "Dots and Loops", artistName: "Stereolab", listenCount: 21, mbid: nil)
+            ],
+            topRecordings: [
+                ListenBrainzRecordingStat(
+                    id: "recording-1",
+                    trackName: "French Disko",
+                    artistName: "Stereolab",
+                    releaseName: "Jenny Ondioline",
+                    listenCount: 9,
+                    mbid: nil
+                )
+            ],
+            recentListens: [],
+            fetchedAt: Date(timeIntervalSince1970: 1_700_000_000)
+        )
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+
+        await store.refreshStats(range: .month)
+
+        XCTAssertEqual(store.statsSnapshot?.username, "open-user")
+        XCTAssertEqual(store.statsSnapshot?.range, .month)
+        XCTAssertEqual(store.statsSnapshot?.totalListenCount, 1234)
+        XCTAssertEqual(store.statsSnapshot?.topArtists.map(\.name), ["Stereolab"])
+        XCTAssertEqual(store.statsSnapshot?.topReleases.map(\.name), ["Dots and Loops"])
+        XCTAssertEqual(store.statsSnapshot?.topRecordings.map(\.trackName), ["French Disko"])
+        XCTAssertEqual(store.statsStatus, "Loaded month stats")
+        XCTAssertEqual(client.statsRefreshes.map(\.username), ["open-user"])
+        XCTAssertEqual(client.statsRefreshes.map(\.range), [.month])
+    }
+
+    func testRefreshRecommendationsPublishesMobileRecommendations() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        client.recommendations = [
+            ListenBrainzRecommendedRecording(
+                id: "rec-1",
+                recordingMbid: "mbid-1",
+                title: "Pack Yr Romantic Mind",
+                artistName: "Stereolab",
+                releaseName: "Transient Random-Noise Bursts",
+                score: 0.98
+            )
+        ]
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+
+        await store.refreshRecommendations()
+
+        XCTAssertEqual(store.recommendedRecordings.map(\.title), ["Pack Yr Romantic Mind"])
+        XCTAssertEqual(store.recommendedRecordings.map(\.recordingMBID), ["mbid-1"])
+        XCTAssertEqual(store.recommendationsStatus, "Loaded 1 recommendations")
+        XCTAssertEqual(client.recommendationRefreshes.map(\.username), ["open-user"])
+        XCTAssertEqual(client.recommendationRefreshes.map(\.count), [12])
+        XCTAssertEqual(client.recommendationRefreshes.map(\.offset), [0])
+    }
+
     func testConnectWithInvalidTokenShowsValidationMessage() async {
         let settingsStore = makeSettingsStore()
         let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
@@ -237,8 +304,12 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
     var submittedTracks: [Track] = []
     var updatedSettings: [ListenBrainzSettings] = []
     var updatedTokens: [String?] = []
+    var statsSnapshot: ListenBrainzStatsSnapshot?
+    var recommendations: [ListenBrainzRecommendedRecording] = []
     var recentListenRefreshUsernames: [String] = []
     var pinRefreshUsernames: [String] = []
+    var statsRefreshes: [(username: String, range: ListenBrainzStatsRange)] = []
+    var recommendationRefreshes: [(username: String, count: Int, offset: Int)] = []
     var didClear = false
 
     init(settingsStore: ListenBrainzSettingsStore) {
@@ -271,6 +342,29 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
     func fetchCurrentPin(username: String) async throws -> ListenBrainzPinnedRecording? {
         pinRefreshUsernames.append(username)
         return currentPin
+    }
+
+    func fetchStatsSnapshot(username: String, range: ListenBrainzStatsRange, count: Int) async throws -> ListenBrainzStatsSnapshot {
+        statsRefreshes.append((username: username, range: range))
+        if let statsSnapshot {
+            return statsSnapshot
+        }
+        return ListenBrainzStatsSnapshot(
+            username: username,
+            range: range,
+            totalListenCount: nil,
+            listeningActivity: [],
+            topArtists: [],
+            topReleases: [],
+            topRecordings: [],
+            recentListens: [],
+            fetchedAt: Date(timeIntervalSince1970: 1_700_000_000)
+        )
+    }
+
+    func fetchRecommendedRecordings(username: String, count: Int, offset: Int) async throws -> [ListenBrainzRecommendedRecording] {
+        recommendationRefreshes.append((username: username, count: count, offset: offset))
+        return recommendations
     }
 
     func submitListen(_ track: Track) async throws {

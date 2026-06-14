@@ -3,6 +3,7 @@ import SwiftUI
 
 struct MobileHomeView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
+    @State private var statsRange: MobileStatsRange = .week
 
     var body: some View {
         List {
@@ -40,16 +41,26 @@ struct MobileHomeView: View {
                 }
             }
 
-            Section("iOS Foundation") {
-                Label("ListenBrainz-first account and archive", systemImage: "checkmark.seal")
-                Label("Shared core client, no duplicated API layer", systemImage: "arrow.triangle.2.circlepath")
-                Label("Music library delta scanning for iOS plays", systemImage: "music.note.list")
-            }
+            Section("Stats") {
+                Picker("Range", selection: $statsRange) {
+                    ForEach(MobileStatsRange.allCases) { range in
+                        Text(range.title)
+                            .tag(range)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .onChange(of: statsRange) { _, newValue in
+                    Task {
+                        await listeningStore.refreshStats(range: newValue)
+                    }
+                }
 
-            Section("Last.fm Lessons") {
-                Label("Keep Now Playing reachable from every stack", systemImage: "play.circle")
-                Label("Use compact track, artist, and album detail routes", systemImage: "rectangle.stack")
-                Label("Blend recommendations, search, and radio into discovery", systemImage: "sparkles")
+                if let snapshot = listeningStore.statsSnapshot {
+                    MobileStatsSummaryView(snapshot: snapshot)
+                } else {
+                    Label(listeningStore.statsStatus, systemImage: "chart.bar")
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .navigationTitle("Home")
@@ -65,6 +76,107 @@ struct MobileHomeView: View {
         }
         .refreshable {
             await listeningStore.refresh()
+            await listeningStore.refreshStats(range: statsRange)
+        }
+        .task {
+            await listeningStore.refreshStats(range: statsRange)
+        }
+    }
+}
+
+private struct MobileStatsSummaryView: View {
+    let snapshot: MobileStatsSnapshot
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Label(snapshot.range.title, systemImage: "chart.bar.xaxis")
+                    .font(.headline)
+
+                Spacer()
+
+                if let totalListenCount = snapshot.totalListenCount {
+                    Text("\(totalListenCount.formatted()) listens")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            if !snapshot.topArtists.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Top Artists")
+                        .font(.subheadline.weight(.semibold))
+                    ForEach(snapshot.topArtists.prefix(5)) { artist in
+                        MobileStatRow(
+                            title: artist.name,
+                            subtitle: nil,
+                            value: artist.listenCount
+                        )
+                    }
+                }
+            }
+
+            if !snapshot.topReleases.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Top Releases")
+                        .font(.subheadline.weight(.semibold))
+                    ForEach(snapshot.topReleases.prefix(5)) { release in
+                        MobileStatRow(
+                            title: release.name,
+                            subtitle: release.artistName,
+                            value: release.listenCount
+                        )
+                    }
+                }
+            }
+
+            if !snapshot.topRecordings.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Top Tracks")
+                        .font(.subheadline.weight(.semibold))
+                    ForEach(snapshot.topRecordings.prefix(5)) { recording in
+                        MobileStatRow(
+                            title: recording.trackName,
+                            subtitle: recording.artistName,
+                            value: recording.listenCount
+                        )
+                    }
+                }
+            }
+
+            Text("Updated \(snapshot.fetchedAt.formatted(date: .omitted, time: .shortened))")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+private struct MobileStatRow: View {
+    let title: String
+    let subtitle: String?
+    let value: Int
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline)
+                    .lineLimit(1)
+                if let subtitle, !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer(minLength: 8)
+
+            Text(value.formatted())
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
         }
     }
 }

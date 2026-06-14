@@ -135,7 +135,7 @@
 		019652665952FE7E03D22353 /* SharedVaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedVaultView.swift; sourceTree = "<group>"; };
 		04191CCBC6AF468AF05E706D /* similar-users-openapi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "similar-users-openapi.json"; sourceTree = "<group>"; };
 		08B5188BE540330855E7B0C5 /* ChartEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartEntry.swift; sourceTree = "<group>"; };
-		0A3DA58A5E92842CFEA78200 /* OpenScrobbleriOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OpenScrobbleriOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A3DA58A5E92842CFEA78200 /* OpenScrobbler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenScrobbler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F380BBAA04419C228B7FAEF /* PlayerNormalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerNormalizationTests.swift; sourceTree = "<group>"; };
 		12BB1848A201EE91BF05551B /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
 		14D2423BD080FC9AD2BB6512 /* ScrobbleServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleServiceTests.swift; sourceTree = "<group>"; };
@@ -306,7 +306,7 @@
 			children = (
 				E1D920C82E39DB24395597CE /* OpenScrobbler.app */,
 				D25F93CE46FAE2344FF1C84E /* OpenScrobblerCore.framework */,
-				0A3DA58A5E92842CFEA78200 /* OpenScrobbleriOS.app */,
+				0A3DA58A5E92842CFEA78200 /* OpenScrobbler.app */,
 				E43B4D6B5C4C8C315CE903C5 /* OpenScrobblerTests.xctest */,
 			);
 			name = Products;
@@ -592,7 +592,7 @@
 			packageProductDependencies = (
 			);
 			productName = OpenScrobbleriOS;
-			productReference = 0A3DA58A5E92842CFEA78200 /* OpenScrobbleriOS.app */;
+			productReference = 0A3DA58A5E92842CFEA78200 /* OpenScrobbler.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F15E975845D41F287D81AE0E /* OpenScrobblerTests */ = {
@@ -622,8 +622,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = F3F1199166E874D34969D2FC /* Build configuration list for PBXProject "OpenScrobbler" */;
 			developmentRegion = en;
@@ -925,6 +923,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G6W28ZD4P3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenScrobbler;
 				INFOPLIST_KEY_CFBundleName = OpenScrobbler;
@@ -954,6 +953,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G6W28ZD4P3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenScrobbler;
 				INFOPLIST_KEY_CFBundleName = OpenScrobbler;

@@ -8,6 +8,8 @@ protocol MobileListenBrainzClient {
     func validate() async throws -> ListenBrainzValidation
     func fetchRecentListens(username: String, count: Int) async throws -> [ListenBrainzListen]
     func fetchCurrentPin(username: String) async throws -> ListenBrainzPinnedRecording?
+    func fetchStatsSnapshot(username: String, range: ListenBrainzStatsRange, count: Int) async throws -> ListenBrainzStatsSnapshot
+    func fetchRecommendedRecordings(username: String, count: Int, offset: Int) async throws -> [ListenBrainzRecommendedRecording]
     func submitListen(_ track: Track) async throws
 }
 
@@ -27,6 +29,64 @@ public struct MobilePinnedRecording: Identifiable, Equatable {
     public let trackName: String
     public let artistName: String
     public let blurb: String?
+}
+
+public enum MobileStatsRange: String, CaseIterable, Identifiable {
+    case week
+    case month
+    case year
+    case allTime
+
+    public var id: String { rawValue }
+
+    public var title: String {
+        switch self {
+        case .week: return "Week"
+        case .month: return "Month"
+        case .year: return "Year"
+        case .allTime: return "All Time"
+        }
+    }
+}
+
+public struct MobileArtistStat: Identifiable, Equatable {
+    public let id: String
+    public let name: String
+    public let listenCount: Int
+}
+
+public struct MobileRecordingStat: Identifiable, Equatable {
+    public let id: String
+    public let trackName: String
+    public let artistName: String
+    public let releaseName: String?
+    public let listenCount: Int
+}
+
+public struct MobileReleaseStat: Identifiable, Equatable {
+    public let id: String
+    public let name: String
+    public let artistName: String
+    public let listenCount: Int
+}
+
+public struct MobileStatsSnapshot: Equatable {
+    public let username: String
+    public let range: MobileStatsRange
+    public let totalListenCount: Int?
+    public let topArtists: [MobileArtistStat]
+    public let topReleases: [MobileReleaseStat]
+    public let topRecordings: [MobileRecordingStat]
+    public let fetchedAt: Date
+}
+
+public struct MobileRecommendedRecording: Identifiable, Equatable {
+    public let id: String
+    public let recordingMBID: String
+    public let title: String
+    public let artistName: String?
+    public let releaseName: String?
+    public let score: Double
 }
 
 public struct MobileScrobbleSourceMetadata: Codable, Equatable {
@@ -110,7 +170,13 @@ public final class MobileListeningStore: ObservableObject {
     @Published public private(set) var connectionState: ConnectionState
     @Published public private(set) var recentListens: [MobileListenSummary] = []
     @Published public private(set) var currentPin: MobilePinnedRecording?
+    @Published public private(set) var statsSnapshot: MobileStatsSnapshot?
+    @Published public private(set) var statsStatus = "Connect ListenBrainz to load stats"
+    @Published public private(set) var recommendedRecordings: [MobileRecommendedRecording] = []
+    @Published public private(set) var recommendationsStatus = "Connect ListenBrainz to load recommendations"
     @Published public private(set) var isRefreshing = false
+    @Published public private(set) var isRefreshingStats = false
+    @Published public private(set) var isRefreshingRecommendations = false
 
     private let settingsStore: ListenBrainzSettingsStore
     private let listenBrainz: MobileListenBrainzClient
@@ -197,6 +263,8 @@ public final class MobileListeningStore: ObservableObject {
             connectionState = .connected(username: username)
             logger.info("ListenBrainz connect succeeded for user \(username, privacy: .public)")
             await refresh()
+            await refreshStats()
+            await refreshRecommendations()
         } catch {
             logger.error("ListenBrainz connect failed: \(error.localizedDescription, privacy: .public)")
             connectionState = .failed(error.localizedDescription)
@@ -208,6 +276,10 @@ public final class MobileListeningStore: ObservableObject {
         listenBrainz.clear()
         recentListens = []
         currentPin = nil
+        statsSnapshot = nil
+        statsStatus = "Connect ListenBrainz to load stats"
+        recommendedRecordings = []
+        recommendationsStatus = "Connect ListenBrainz to load recommendations"
         connectionState = .disconnected
     }
 
@@ -228,6 +300,62 @@ public final class MobileListeningStore: ObservableObject {
         } catch {
             logger.error("ListenBrainz refresh failed: \(error.localizedDescription, privacy: .public)")
             connectionState = .failed(error.localizedDescription)
+        }
+    }
+
+    public func refreshStats(range: MobileStatsRange = .week) async {
+        guard case let .connected(username) = connectionState else {
+            statsStatus = "Connect ListenBrainz to load stats"
+            statsSnapshot = nil
+            return
+        }
+
+        logger.info("ListenBrainz mobile stats refresh started for user \(username, privacy: .public)")
+        isRefreshingStats = true
+        statsStatus = "Loading \(range.title.lowercased()) stats"
+        defer { isRefreshingStats = false }
+
+        do {
+            let snapshot = try await listenBrainz.fetchStatsSnapshot(
+                username: username,
+                range: ListenBrainzStatsRange(mobile: range),
+                count: 8
+            )
+            statsSnapshot = MobileStatsSnapshot(snapshot: snapshot, range: range)
+            statsStatus = "Loaded \(range.title.lowercased()) stats"
+            logger.info("ListenBrainz mobile stats refresh succeeded with \(self.statsSnapshot?.topArtists.count ?? 0, privacy: .public) artists")
+        } catch {
+            logger.error("ListenBrainz mobile stats refresh failed: \(error.localizedDescription, privacy: .public)")
+            statsStatus = "Failed to load stats: \(error.localizedDescription)"
+        }
+    }
+
+    public func refreshRecommendations() async {
+        guard case let .connected(username) = connectionState else {
+            recommendationsStatus = "Connect ListenBrainz to load recommendations"
+            recommendedRecordings = []
+            return
+        }
+
+        logger.info("ListenBrainz mobile recommendations refresh started for user \(username, privacy: .public)")
+        isRefreshingRecommendations = true
+        recommendationsStatus = "Loading recommendations"
+        defer { isRefreshingRecommendations = false }
+
+        do {
+            let recommendations = try await listenBrainz.fetchRecommendedRecordings(
+                username: username,
+                count: 12,
+                offset: 0
+            )
+            recommendedRecordings = recommendations.map(MobileRecommendedRecording.init(recommendation:))
+            recommendationsStatus = recommendedRecordings.isEmpty
+                ? "No recommendations returned"
+                : "Loaded \(recommendedRecordings.count) recommendations"
+            logger.info("ListenBrainz mobile recommendations refresh succeeded with \(self.recommendedRecordings.count, privacy: .public) recordings")
+        } catch {
+            logger.error("ListenBrainz mobile recommendations refresh failed: \(error.localizedDescription, privacy: .public)")
+            recommendationsStatus = "Failed to load recommendations: \(error.localizedDescription)"
         }
     }
 
@@ -274,6 +402,21 @@ public enum MobileListeningError: LocalizedError, Equatable {
     }
 }
 
+private extension ListenBrainzStatsRange {
+    init(mobile range: MobileStatsRange) {
+        switch range {
+        case .week:
+            self = .week
+        case .month:
+            self = .month
+        case .year:
+            self = .year
+        case .allTime:
+            self = .allTime
+        }
+    }
+}
+
 private extension MobileListenSummary {
     init(listen: ListenBrainzListen) {
         self.init(
@@ -294,6 +437,62 @@ private extension MobilePinnedRecording {
             trackName: pin.trackName,
             artistName: pin.artistName,
             blurb: pin.blurb
+        )
+    }
+}
+
+private extension MobileStatsSnapshot {
+    init(snapshot: ListenBrainzStatsSnapshot, range: MobileStatsRange) {
+        self.init(
+            username: snapshot.username,
+            range: range,
+            totalListenCount: snapshot.totalListenCount,
+            topArtists: snapshot.topArtists.map(MobileArtistStat.init(stat:)),
+            topReleases: snapshot.topReleases.map(MobileReleaseStat.init(stat:)),
+            topRecordings: snapshot.topRecordings.map(MobileRecordingStat.init(stat:)),
+            fetchedAt: snapshot.fetchedAt
+        )
+    }
+}
+
+private extension MobileArtistStat {
+    init(stat: ListenBrainzArtistStat) {
+        self.init(id: stat.id, name: stat.name, listenCount: stat.listenCount)
+    }
+}
+
+private extension MobileReleaseStat {
+    init(stat: ListenBrainzReleaseStat) {
+        self.init(
+            id: stat.id,
+            name: stat.name,
+            artistName: stat.artistName,
+            listenCount: stat.listenCount
+        )
+    }
+}
+
+private extension MobileRecordingStat {
+    init(stat: ListenBrainzRecordingStat) {
+        self.init(
+            id: stat.id,
+            trackName: stat.trackName,
+            artistName: stat.artistName,
+            releaseName: stat.releaseName,
+            listenCount: stat.listenCount
+        )
+    }
+}
+
+private extension MobileRecommendedRecording {
+    init(recommendation: ListenBrainzRecommendedRecording) {
+        self.init(
+            id: recommendation.id,
+            recordingMBID: recommendation.recordingMbid,
+            title: recommendation.title,
+            artistName: recommendation.artistName,
+            releaseName: recommendation.releaseName,
+            score: recommendation.score
         )
     }
 }

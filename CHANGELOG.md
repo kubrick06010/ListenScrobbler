@@ -28,18 +28,26 @@
 - iOS beta diagnostics export from Account with app/build version, device/OS
   context, ListenBrainz state, Music library scan summary, pending retries, last
   error, and source metadata for queued items.
+- iOS ListenBrainz stats on Home with week/month/year/all-time ranges, top
+  artists, top releases, top tracks, total listens, and independent stats
+  refresh state.
+- iOS Discover recommendations backed by the shared ListenBrainz
+  recommendation client, with independent loading status and refresh controls.
 
 ### Changed
 
 - Bumped macOS to version `1.1.0` build `6`.
 - Set the first iOS release target to version `1.0.0` build `1`.
-- Documented the current physical-device signing blocker and beta gate.
+- Documented the physical-device validation path and remaining beta gates.
 
 ### Verified
 
 - `xcodebuild test -project OpenScrobbler.xcodeproj -scheme OpenScrobbler -destination 'platform=macOS'`
 - `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO`
 - `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' -derivedDataPath tmp/ios-simulator-verify CODE_SIGNING_ALLOWED=NO`
+- `xcodebuild build -project OpenScrobbler.xcodeproj -scheme OpenScrobbleriOS -destination 'platform=iOS,id=00008120-0004388834C3601E' -derivedDataPath tmp/ios-device-derived CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates`
+- `xcrun devicectl device install app --device A04FE658-891B-575D-A47B-26424DACB600 tmp/ios-device-derived/Build/Products/Debug-iphoneos/OpenScrobbler.app`
+- `xcrun devicectl device process launch --device A04FE658-891B-575D-A47B-26424DACB600 --terminate-existing org.openscrobbler.app.ios`
 - `bash -n tools/ios_device_validation.sh`
 - `git diff --check`
 

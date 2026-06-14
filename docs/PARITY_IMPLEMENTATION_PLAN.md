@@ -42,6 +42,16 @@ Status: implemented.
 
 ## Phase 2: iOS Competitive Parity
 
+- Stats:
+  - Show a compact ListenBrainz mobile stats panel with selectable week, month,
+    year, and all-time ranges.
+  - Surface total listens, top artists, top releases, and top tracks from the
+    existing core ListenBrainz stats client.
+  - Keep stats refresh separate from connection state so stats failures do not
+    disconnect the account.
+
+  Status: implemented on iOS Home.
+
 - App Intents:
   - Open dashboard/listens/account/discover.
   - Open manual listen from Shortcuts with optional track, artist, and album
@@ -62,6 +72,14 @@ Status: implemented.
   - Connected account/status widget.
   - Recent listen widget.
   - Current pin or recommendation widget.
+- Recommendations:
+  - Load recommended recordings from the shared ListenBrainz recommendation
+    client.
+  - Show real recommendations in iOS Discover with independent refresh state.
+  - Keep sharing, pinning, and playlist creation for a later pass once the
+    mobile action surfaces are stable.
+
+  Status: first pass implemented on iOS Discover.
 - Local history:
   - Promote pending retries into a provider-neutral import queue.
   - Add submitted/duplicate/rejected/failed states.
@@ -100,8 +118,8 @@ Status: implemented.
 
 - iOS Simulator build passes.
 - macOS unit test suite passes.
-- Physical device install and first-run validation pass once provisioning is
-  fixed.
+- Physical device build, install, and launch pass on the paired iPhone with the
+  `org.openscrobbler.app.ios` bundle.
 - Account setup screenshots are captured for macOS compact width and iPhone
   small/Pro widths.
 - Release notes mention iOS as beta until physical device and TestFlight gates
