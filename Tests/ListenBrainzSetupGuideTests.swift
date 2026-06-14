@@ -2,7 +2,7 @@ import XCTest
 @testable import OpenScrobbler
 
 final class ListenBrainzSetupGuideTests: XCTestCase {
-    func testSetupGuideKeepsLastFMStyleAccountFlow() {
+    func testSetupGuideKeepsModernAccountFlow() {
         XCTAssertEqual(
             ListenBrainzSetupGuide.steps.map(\.id),
             ["account", "token", "sources", "verify"]
@@ -17,11 +17,11 @@ final class ListenBrainzSetupGuideTests: XCTestCase {
         XCTAssertEqual(ListenBrainzSetupGuide.tokenURL.host, "listenbrainz.org")
         XCTAssertEqual(ListenBrainzSetupGuide.importersURL.host, "listenbrainz.org")
         XCTAssertEqual(ListenBrainzSetupGuide.musicBrainzSignupURL.host, "musicbrainz.org")
-        XCTAssertEqual(ListenBrainzSetupGuide.lastFMImportURL.host, "listenbrainz.org")
+        XCTAssertEqual(ListenBrainzSetupGuide.importersURL.host, "listenbrainz.org")
     }
 
-    func testOnboardingKeepsLastFMModernStoryAndActions() {
-        XCTAssertEqual(ListenBrainzSetupGuide.eyebrow, "Last.fm Modern")
+    func testOnboardingKeepsOpenMusicStoryAndActions() {
+        XCTAssertEqual(ListenBrainzSetupGuide.eyebrow, "Open Music Setup")
         XCTAssertFalse(ListenBrainzSetupGuide.headline.isEmpty)
         XCTAssertFalse(ListenBrainzSetupGuide.summary.isEmpty)
         XCTAssertEqual(

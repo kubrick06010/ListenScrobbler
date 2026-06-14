@@ -217,7 +217,7 @@ private struct MobileListenBrainzSetupGuide: View {
                 Button {
                     showOnboarding()
                 } label: {
-                    Label("Open Last.fm Modern Onboarding", systemImage: "sparkles")
+                    Label("Open Onboarding", systemImage: "sparkles")
                 }
 
                 Link(destination: ListenBrainzSetupGuide.musicBrainzSignupURL) {
@@ -266,7 +266,7 @@ private struct MobileListenBrainzSetupGuide: View {
     }
 }
 
-struct MobileLastFMModernOnboardingView: View {
+struct MobileOpenMusicOnboardingView: View {
     let complete: () -> Void
     @Environment(\.openURL) private var openURL
     @State private var selectedPage = 0
@@ -301,7 +301,7 @@ struct MobileLastFMModernOnboardingView: View {
     private var introPage: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
-                LastFMModernBadge()
+                OpenMusicOnboardingBadge()
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text(ListenBrainzSetupGuide.headline)
@@ -428,7 +428,7 @@ struct MobileLastFMModernOnboardingView: View {
     }
 }
 
-private struct LastFMModernBadge: View {
+private struct OpenMusicOnboardingBadge: View {
     var body: some View {
         HStack(spacing: 10) {
             Image("ListenPulse")

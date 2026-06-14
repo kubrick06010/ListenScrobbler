@@ -49,9 +49,8 @@ public enum ListenBrainzSetupGuide {
     public static let musicBrainzSignupURL = URL(string: "https://musicbrainz.org/register")!
     public static let tokenURL = URL(string: "https://listenbrainz.org/profile/")!
     public static let importersURL = URL(string: "https://listenbrainz.org/settings/music-services/")!
-    public static let lastFMImportURL = URL(string: "https://listenbrainz.org/settings/music-services/details/lastfm/")!
 
-    public static let eyebrow = "Last.fm Modern"
+    public static let eyebrow = "Open Music Setup"
     public static let headline = "Scrobbling, rebuilt around open music data."
     public static let summary = "OpenScrobbler keeps the fast account setup and familiar listening timeline of classic scrobblers, then connects it to ListenBrainz, MusicBrainz metadata, recommendations, social discovery, and portable exports."
 
@@ -120,10 +119,10 @@ public enum ListenBrainzSetupGuide {
         ),
         ListenBrainzOnboardingAction(
             id: "import",
-            title: "Import Last.fm History",
-            detail: "Bring over existing scrobbles on the web.",
+            title: "Connect Music Services",
+            detail: "Configure web imports and connected listening sources.",
             symbolName: "arrow.down.doc",
-            url: lastFMImportURL
+            url: importersURL
         )
     ]
 }

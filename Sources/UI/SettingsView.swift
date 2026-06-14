@@ -43,7 +43,7 @@ struct SettingsView: View {
     @State private var listenBrainzEnabled = false
     @State private var listenBrainzSubmitNowPlaying = true
     @State private var listenBrainzSubmitListens = true
-    @State private var isLastFMModernOnboardingPresented = false
+    @State private var isOpenMusicOnboardingPresented = false
 
     var body: some View {
         NavigationSplitView {
@@ -83,9 +83,9 @@ struct SettingsView: View {
             }
             .background(Color.clear)
         }
-        .sheet(isPresented: $isLastFMModernOnboardingPresented) {
-            MacLastFMModernOnboardingView {
-                isLastFMModernOnboardingPresented = false
+        .sheet(isPresented: $isOpenMusicOnboardingPresented) {
+            MacOpenMusicOnboardingView {
+                isOpenMusicOnboardingPresented = false
             }
             .frame(width: 760, height: 620)
         }
@@ -223,7 +223,7 @@ struct SettingsView: View {
                 connectedUsername: scrobbleService.listenBrainzUsername,
                 hasError: scrobbleService.listenBrainzLastError != nil,
                 showOnboarding: {
-                    isLastFMModernOnboardingPresented = true
+                    isOpenMusicOnboardingPresented = true
                 }
             )
 

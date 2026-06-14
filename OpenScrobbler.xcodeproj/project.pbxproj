@@ -65,6 +65,7 @@
 		9DCB9406A57851ED34D16410 /* MobileListeningStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 771604AAC81CFF62D09ED05E /* MobileListeningStoreTests.swift */; };
 		A087CA18923A9C906A80D932 /* NowPlayingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751A93F1F2B3A4A9D7B86D65 /* NowPlayingView.swift */; };
 		A318D5E6B832D430C28D8967 /* MusicBrainzService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6E57E3CA79357ECEF8E7EB /* MusicBrainzService.swift */; };
+		A42D14C7D53143E0A11B8A09 /* MacOpenMusicOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42D14C6D53143E0A11B8A09 /* MacOpenMusicOnboardingView.swift */; };
 		A4DF6EF58DD0A738C5DB38E7 /* ScrobbleQueueStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FABE65A8448C31172B8EA3B /* ScrobbleQueueStoreTests.swift */; };
 		A6908840937FD5747C075574 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E88C84B72BF5CDE99DBB325 /* Track.swift */; };
 		A89981FA6F31C1286C25BF24 /* VaultHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBCB3507B380031E1E6B17C /* VaultHelpers.swift */; };
@@ -216,6 +217,7 @@
 		948CD321C9C69762A3F9ED43 /* CompatibilityAPIErrorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatibilityAPIErrorTests.swift; sourceTree = "<group>"; };
 		A0D17CC6E6769732AF5ADC9E /* ListenBrainzServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenBrainzServiceTests.swift; sourceTree = "<group>"; };
 		A0D864BD3638091AB7220B73 /* MusicLibraryScrobbleScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicLibraryScrobbleScanner.swift; sourceTree = "<group>"; };
+		A42D14C6D53143E0A11B8A09 /* MacOpenMusicOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOpenMusicOnboardingView.swift; sourceTree = "<group>"; };
 		A470520752891B8657AFC57E /* MobileAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileAccountView.swift; sourceTree = "<group>"; };
 		A6FFCCDBEC3A659436E97066 /* InteractiveSeparationGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveSeparationGraphView.swift; sourceTree = "<group>"; };
 		A993F954C215871CF7852171 /* OpenScrobblerWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = OpenScrobblerWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -465,6 +467,7 @@
 			isa = PBXGroup;
 			children = (
 				64522A5F740C6E1BDFF8DDB9 /* ContentView.swift */,
+				A42D14C6D53143E0A11B8A09 /* MacOpenMusicOnboardingView.swift */,
 				751A93F1F2B3A4A9D7B86D65 /* NowPlayingView.swift */,
 				F5254D9C6FEAA307DB10BD0F /* SettingsView.swift */,
 				D1E6EA9C8CDD07EB4BDFE408 /* Account */,
@@ -797,6 +800,7 @@
 				E3D42B4BA2D4A307059228C3 /* ListenBrainzSetupGuide.swift in Sources */,
 				B2B4CF541D9BC375634C3CAA /* ListenBrainzSocialView.swift in Sources */,
 				2128627253A19C576BFA2172 /* ListeningClockView.swift in Sources */,
+				A42D14C7D53143E0A11B8A09 /* MacOpenMusicOnboardingView.swift in Sources */,
 				DA7C4F140213DF4EFBA16F6E /* MobileLibraryScanEngine.swift in Sources */,
 				10112D727B1AB7B05EB45610 /* MobileLibraryScrobbleDiffer.swift in Sources */,
 				071827DDAE1D86FA41104C2C /* MobileListeningStore.swift in Sources */,

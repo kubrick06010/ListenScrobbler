@@ -5,10 +5,10 @@ import WidgetKit
 struct MobileRootView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
     @EnvironmentObject private var appIntentRouter: MobileAppIntentRouter
-    @AppStorage("onboarding.lastFMModern.completed") private var didCompleteLastFMModernOnboarding = false
+    @AppStorage("onboarding.openMusic.completed") private var didCompleteOpenMusicOnboarding = false
     @State private var selectedTab: MobileTab = .home
     @State private var manualScrobbleDraft: MobileManualScrobbleDraft?
-    @State private var isLastFMModernOnboardingPresented = false
+    @State private var isOpenMusicOnboardingPresented = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -40,7 +40,7 @@ struct MobileRootView: View {
 
             NavigationStack {
                 MobileAccountView {
-                    isLastFMModernOnboardingPresented = true
+                    isOpenMusicOnboardingPresented = true
                 }
             }
             .tabItem {
@@ -57,10 +57,10 @@ struct MobileRootView: View {
             MobileManualScrobbleView(draft: draft)
                 .environmentObject(listeningStore)
         }
-        .sheet(isPresented: $isLastFMModernOnboardingPresented) {
-            MobileLastFMModernOnboardingView {
-                didCompleteLastFMModernOnboarding = true
-                isLastFMModernOnboardingPresented = false
+        .sheet(isPresented: $isOpenMusicOnboardingPresented) {
+            MobileOpenMusicOnboardingView {
+                didCompleteOpenMusicOnboarding = true
+                isOpenMusicOnboardingPresented = false
             }
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
@@ -71,9 +71,9 @@ struct MobileRootView: View {
     }
 
     private func presentOnboardingIfNeeded() {
-        guard !didCompleteLastFMModernOnboarding else { return }
+        guard !didCompleteOpenMusicOnboarding else { return }
         guard case .disconnected = listeningStore.connectionState else { return }
-        isLastFMModernOnboardingPresented = true
+        isOpenMusicOnboardingPresented = true
     }
 
     private func handle(_ route: MobileAppRoute) {

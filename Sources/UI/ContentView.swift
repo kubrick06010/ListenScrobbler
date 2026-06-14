@@ -104,7 +104,7 @@ struct ContentView: View {
     @AppStorage("experimental.vault.enabled") private var vaultEnabled = true
     @AppStorage("experimental.shared.enabled") private var sharedVaultEnabled = true
     @AppStorage("experimental.obsessions.enabled") private var obsessionsVaultEnabled = true
-    @AppStorage("onboarding.lastFMModern.completed") private var didCompleteLastFMModernOnboarding = false
+    @AppStorage("onboarding.openMusic.completed") private var didCompleteOpenMusicOnboarding = false
     @StateObject private var sharedVaultStore = SharedMusicVaultStore()
     @StateObject private var obsessionVaultStore = ObsessionVaultStore()
     @State private var selectedTab: WorkspaceTab? = .dashboard
@@ -114,7 +114,7 @@ struct ContentView: View {
     @State private var socialGraphTarget: SocialGraphTarget?
     @State private var selectedProfileURL: URL?
     @State private var isDiagnosticsPresented = false
-    @State private var isLastFMModernOnboardingPresented = false
+    @State private var isOpenMusicOnboardingPresented = false
     @State private var shareDraft: ShareDraft?
     @State private var obsessionDraft: ObsessionDraft?
 
@@ -407,10 +407,10 @@ struct ContentView: View {
                 .environmentObject(scrobbleService)
                 .frame(minWidth: 680, minHeight: 520)
         }
-        .sheet(isPresented: $isLastFMModernOnboardingPresented) {
-            MacLastFMModernOnboardingView {
-                didCompleteLastFMModernOnboarding = true
-                isLastFMModernOnboardingPresented = false
+        .sheet(isPresented: $isOpenMusicOnboardingPresented) {
+            MacOpenMusicOnboardingView {
+                didCompleteOpenMusicOnboarding = true
+                isOpenMusicOnboardingPresented = false
             }
             .frame(width: 760, height: 620)
         }
@@ -464,9 +464,9 @@ struct ContentView: View {
     }
 
     private func presentOnboardingIfNeeded() {
-        guard !didCompleteLastFMModernOnboarding else { return }
+        guard !didCompleteOpenMusicOnboarding else { return }
         guard scrobbleService.listenBrainzUsername?.isEmpty != false else { return }
-        isLastFMModernOnboardingPresented = true
+        isOpenMusicOnboardingPresented = true
     }
 
     private var nowPlayingSubtitle: String {
