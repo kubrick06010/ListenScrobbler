@@ -14,11 +14,46 @@ public struct ListenBrainzSetupStep: Identifiable, Equatable {
     }
 }
 
+public struct ListenBrainzOnboardingFeature: Identifiable, Equatable {
+    public let id: String
+    public let title: String
+    public let detail: String
+    public let symbolName: String
+
+    public init(id: String, title: String, detail: String, symbolName: String) {
+        self.id = id
+        self.title = title
+        self.detail = detail
+        self.symbolName = symbolName
+    }
+}
+
+public struct ListenBrainzOnboardingAction: Identifiable, Equatable {
+    public let id: String
+    public let title: String
+    public let detail: String
+    public let symbolName: String
+    public let url: URL
+
+    public init(id: String, title: String, detail: String, symbolName: String, url: URL) {
+        self.id = id
+        self.title = title
+        self.detail = detail
+        self.symbolName = symbolName
+        self.url = url
+    }
+}
+
 public enum ListenBrainzSetupGuide {
     public static let listenBrainzURL = URL(string: "https://listenbrainz.org/")!
     public static let musicBrainzSignupURL = URL(string: "https://musicbrainz.org/register")!
     public static let tokenURL = URL(string: "https://listenbrainz.org/profile/")!
     public static let importersURL = URL(string: "https://listenbrainz.org/settings/music-services/")!
+    public static let lastFMImportURL = URL(string: "https://listenbrainz.org/settings/music-services/details/lastfm/")!
+
+    public static let eyebrow = "Last.fm Modern"
+    public static let headline = "Scrobbling, rebuilt around open music data."
+    public static let summary = "OpenScrobbler keeps the fast account setup and familiar listening timeline of classic scrobblers, then connects it to ListenBrainz, MusicBrainz metadata, recommendations, social discovery, and portable exports."
 
     public static let steps: [ListenBrainzSetupStep] = [
         ListenBrainzSetupStep(
@@ -44,6 +79,51 @@ public enum ListenBrainzSetupGuide {
             title: "Validate and scan",
             detail: "Validate the token, review the connected username, then run a library scan or submit a manual listen to confirm the pipeline.",
             symbolName: "checkmark.seal"
+        )
+    ]
+
+    public static let onboardingFeatures: [ListenBrainzOnboardingFeature] = [
+        ListenBrainzOnboardingFeature(
+            id: "timeline",
+            title: "A familiar listening timeline",
+            detail: "Recent listens, now playing state, manual submissions, and library scans stay quick to reach.",
+            symbolName: "music.note.list"
+        ),
+        ListenBrainzOnboardingFeature(
+            id: "identity",
+            title: "Your account stays portable",
+            detail: "MusicBrainz sign-in and ListenBrainz tokens avoid password storage while keeping your listening identity open.",
+            symbolName: "person.crop.circle.badge.checkmark"
+        ),
+        ListenBrainzOnboardingFeature(
+            id: "discovery",
+            title: "Discovery without a locked graph",
+            detail: "Charts, pins, followers, similar users, and recommendations use open identifiers you can take elsewhere.",
+            symbolName: "sparkle.magnifyingglass"
+        )
+    ]
+
+    public static let onboardingActions: [ListenBrainzOnboardingAction] = [
+        ListenBrainzOnboardingAction(
+            id: "create",
+            title: "Create MusicBrainz Account",
+            detail: "Use it to sign in to ListenBrainz.",
+            symbolName: "person.crop.circle.badge.plus",
+            url: musicBrainzSignupURL
+        ),
+        ListenBrainzOnboardingAction(
+            id: "token",
+            title: "Copy ListenBrainz Token",
+            detail: "Paste the token in OpenScrobbler.",
+            symbolName: "key",
+            url: tokenURL
+        ),
+        ListenBrainzOnboardingAction(
+            id: "import",
+            title: "Import Last.fm History",
+            detail: "Bring over existing scrobbles on the web.",
+            symbolName: "arrow.down.doc",
+            url: lastFMImportURL
         )
     ]
 }
