@@ -80,6 +80,14 @@ Status: implemented.
     mobile action surfaces are stable.
 
   Status: first pass implemented on iOS Discover.
+- Social feed:
+  - Load followers, following, and similar users from ListenBrainz.
+  - Aggregate recent listens from those neighboring users into a compact mobile
+    feed.
+  - Keep follow/unfollow, compatibility comparison, and graph exploration for a
+    later pass.
+
+  Status: first pass implemented on iOS Discover.
 - Local history:
   - Promote pending retries into a provider-neutral import queue.
   - Add submitted/duplicate/rejected/failed states.

@@ -113,6 +113,49 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(client.recommendationRefreshes.map(\.offset), [0])
     }
 
+    func testRefreshSocialPublishesMobileSocialSnapshot() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        client.followers = ["zephyr", "alice"]
+        client.following = ["bob", "alice"]
+        client.similarUsers = [
+            ListenBrainzSimilarUser(id: "carol", userName: "carol", similarityScore: 0.72)
+        ]
+        client.socialListens = [
+            ListenBrainzSocialListen(
+                id: "bob|listen-1",
+                userName: "bob",
+                listen: ListenBrainzListen(
+                    id: "listen-1",
+                    trackName: "Outdoor Miner",
+                    artistName: "Wire",
+                    releaseName: "Chairs Missing",
+                    listenedAt: Date(timeIntervalSince1970: 1_700_000_100),
+                    recordingMBID: nil,
+                    recordingMSID: nil,
+                    artistMBID: nil,
+                    releaseMBID: nil,
+                    imageURL: nil
+                )
+            )
+        ]
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+
+        await store.refreshSocial()
+
+        XCTAssertEqual(store.socialSnapshot?.followers, ["alice", "zephyr"])
+        XCTAssertEqual(store.socialSnapshot?.following, ["alice", "bob"])
+        XCTAssertEqual(store.socialSnapshot?.similarUsers.map(\.userName), ["carol"])
+        XCTAssertEqual(store.socialSnapshot?.neighborListens.map(\.trackName), ["Outdoor Miner"])
+        XCTAssertEqual(store.socialStatus, "Loaded 2 followers, 2 following, and 1 neighbor listens")
+        XCTAssertEqual(client.followerRefreshes, ["open-user"])
+        XCTAssertEqual(client.followingRefreshes, ["open-user"])
+        XCTAssertEqual(client.similarUserRefreshes.map(\.username), ["open-user"])
+        XCTAssertEqual(client.similarUserRefreshes.map(\.count), [8])
+        XCTAssertEqual(client.socialListenRefreshes.first?.usernames, ["alice", "bob", "zephyr", "carol"])
+        XCTAssertEqual(client.socialListenRefreshes.first?.countPerUser, 2)
+    }
+
     func testConnectWithInvalidTokenShowsValidationMessage() async {
         let settingsStore = makeSettingsStore()
         let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
@@ -306,10 +349,18 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
     var updatedTokens: [String?] = []
     var statsSnapshot: ListenBrainzStatsSnapshot?
     var recommendations: [ListenBrainzRecommendedRecording] = []
+    var followers: [String] = []
+    var following: [String] = []
+    var similarUsers: [ListenBrainzSimilarUser] = []
+    var socialListens: [ListenBrainzSocialListen] = []
     var recentListenRefreshUsernames: [String] = []
     var pinRefreshUsernames: [String] = []
     var statsRefreshes: [(username: String, range: ListenBrainzStatsRange)] = []
     var recommendationRefreshes: [(username: String, count: Int, offset: Int)] = []
+    var followerRefreshes: [String] = []
+    var followingRefreshes: [String] = []
+    var similarUserRefreshes: [(username: String, count: Int)] = []
+    var socialListenRefreshes: [(usernames: [String], countPerUser: Int)] = []
     var didClear = false
 
     init(settingsStore: ListenBrainzSettingsStore) {
@@ -365,6 +416,26 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
     func fetchRecommendedRecordings(username: String, count: Int, offset: Int) async throws -> [ListenBrainzRecommendedRecording] {
         recommendationRefreshes.append((username: username, count: count, offset: offset))
         return recommendations
+    }
+
+    func fetchFollowers(username: String) async throws -> [String] {
+        followerRefreshes.append(username)
+        return followers
+    }
+
+    func fetchFollowing(username: String) async throws -> [String] {
+        followingRefreshes.append(username)
+        return following
+    }
+
+    func fetchSimilarUsers(username: String, count: Int) async throws -> [ListenBrainzSimilarUser] {
+        similarUserRefreshes.append((username: username, count: count))
+        return Array(similarUsers.prefix(count))
+    }
+
+    func fetchSocialListenActivity(usernames: [String], countPerUser: Int) async throws -> [ListenBrainzSocialListen] {
+        socialListenRefreshes.append((usernames: usernames, countPerUser: countPerUser))
+        return socialListens
     }
 
     func submitListen(_ track: Track) async throws {

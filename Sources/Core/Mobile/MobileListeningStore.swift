@@ -10,6 +10,10 @@ protocol MobileListenBrainzClient {
     func fetchCurrentPin(username: String) async throws -> ListenBrainzPinnedRecording?
     func fetchStatsSnapshot(username: String, range: ListenBrainzStatsRange, count: Int) async throws -> ListenBrainzStatsSnapshot
     func fetchRecommendedRecordings(username: String, count: Int, offset: Int) async throws -> [ListenBrainzRecommendedRecording]
+    func fetchFollowers(username: String) async throws -> [String]
+    func fetchFollowing(username: String) async throws -> [String]
+    func fetchSimilarUsers(username: String, count: Int) async throws -> [ListenBrainzSimilarUser]
+    func fetchSocialListenActivity(usernames: [String], countPerUser: Int) async throws -> [ListenBrainzSocialListen]
     func submitListen(_ track: Track) async throws
 }
 
@@ -87,6 +91,29 @@ public struct MobileRecommendedRecording: Identifiable, Equatable {
     public let artistName: String?
     public let releaseName: String?
     public let score: Double
+}
+
+public struct MobileSimilarUser: Identifiable, Equatable {
+    public let id: String
+    public let userName: String
+    public let similarityScore: Double
+}
+
+public struct MobileSocialListen: Identifiable, Equatable {
+    public let id: String
+    public let userName: String
+    public let trackName: String
+    public let artistName: String
+    public let releaseName: String?
+    public let listenedAt: Date?
+}
+
+public struct MobileSocialSnapshot: Equatable {
+    public let followers: [String]
+    public let following: [String]
+    public let similarUsers: [MobileSimilarUser]
+    public let neighborListens: [MobileSocialListen]
+    public let fetchedAt: Date
 }
 
 public struct MobileScrobbleSourceMetadata: Codable, Equatable {
@@ -174,9 +201,12 @@ public final class MobileListeningStore: ObservableObject {
     @Published public private(set) var statsStatus = "Connect ListenBrainz to load stats"
     @Published public private(set) var recommendedRecordings: [MobileRecommendedRecording] = []
     @Published public private(set) var recommendationsStatus = "Connect ListenBrainz to load recommendations"
+    @Published public private(set) var socialSnapshot: MobileSocialSnapshot?
+    @Published public private(set) var socialStatus = "Connect ListenBrainz to load social activity"
     @Published public private(set) var isRefreshing = false
     @Published public private(set) var isRefreshingStats = false
     @Published public private(set) var isRefreshingRecommendations = false
+    @Published public private(set) var isRefreshingSocial = false
 
     private let settingsStore: ListenBrainzSettingsStore
     private let listenBrainz: MobileListenBrainzClient
@@ -265,6 +295,7 @@ public final class MobileListeningStore: ObservableObject {
             await refresh()
             await refreshStats()
             await refreshRecommendations()
+            await refreshSocial()
         } catch {
             logger.error("ListenBrainz connect failed: \(error.localizedDescription, privacy: .public)")
             connectionState = .failed(error.localizedDescription)
@@ -280,6 +311,8 @@ public final class MobileListeningStore: ObservableObject {
         statsStatus = "Connect ListenBrainz to load stats"
         recommendedRecordings = []
         recommendationsStatus = "Connect ListenBrainz to load recommendations"
+        socialSnapshot = nil
+        socialStatus = "Connect ListenBrainz to load social activity"
         connectionState = .disconnected
     }
 
@@ -359,6 +392,55 @@ public final class MobileListeningStore: ObservableObject {
         }
     }
 
+    public func refreshSocial() async {
+        guard case let .connected(username) = connectionState else {
+            socialStatus = "Connect ListenBrainz to load social activity"
+            socialSnapshot = nil
+            return
+        }
+
+        logger.info("ListenBrainz mobile social refresh started for user \(username, privacy: .public)")
+        isRefreshingSocial = true
+        socialStatus = "Loading social activity"
+        defer { isRefreshingSocial = false }
+
+        do {
+            async let followers = listenBrainz.fetchFollowers(username: username)
+            async let following = listenBrainz.fetchFollowing(username: username)
+            async let similarUsers = listenBrainz.fetchSimilarUsers(username: username, count: 8)
+
+            let resolvedFollowers = try await followers.sorted {
+                $0.localizedCaseInsensitiveCompare($1) == .orderedAscending
+            }
+            let resolvedFollowing = try await following.sorted {
+                $0.localizedCaseInsensitiveCompare($1) == .orderedAscending
+            }
+            let resolvedSimilarUsers = try await similarUsers
+            let neighbors = Self.socialNeighbors(
+                followers: resolvedFollowers,
+                following: resolvedFollowing,
+                similarUsers: resolvedSimilarUsers
+            )
+            let listens = try await listenBrainz.fetchSocialListenActivity(
+                usernames: neighbors,
+                countPerUser: 2
+            )
+
+            socialSnapshot = MobileSocialSnapshot(
+                followers: resolvedFollowers,
+                following: resolvedFollowing,
+                similarUsers: resolvedSimilarUsers.map(MobileSimilarUser.init(user:)),
+                neighborListens: listens.map(MobileSocialListen.init(listen:)),
+                fetchedAt: .now
+            )
+            socialStatus = "Loaded \(resolvedFollowers.count) followers, \(resolvedFollowing.count) following, and \(listens.count) neighbor listens"
+            logger.info("ListenBrainz mobile social refresh succeeded with \(listens.count, privacy: .public) neighbor listens")
+        } catch {
+            logger.error("ListenBrainz mobile social refresh failed: \(error.localizedDescription, privacy: .public)")
+            socialStatus = "Failed to load social activity: \(error.localizedDescription)"
+        }
+    }
+
     public func submitScrobble(_ candidate: MobileScrobbleCandidate) async throws {
         guard case .connected = connectionState else {
             logger.warning("Mobile scrobble rejected because ListenBrainz is disconnected")
@@ -388,6 +470,18 @@ public final class MobileListeningStore: ObservableObject {
     private func approximateStartDate(listenedAt: Date, duration: TimeInterval) -> Date {
         guard duration > 0 else { return listenedAt }
         return listenedAt.addingTimeInterval(-min(duration, 4 * 60))
+    }
+
+    private static func socialNeighbors(
+        followers: [String],
+        following: [String],
+        similarUsers: [ListenBrainzSimilarUser]
+    ) -> [String] {
+        var seenUsers = Set<String>()
+        return (following + followers + similarUsers.map(\.userName))
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .filter { seenUsers.insert($0.lowercased()).inserted }
     }
 }
 
@@ -493,6 +587,29 @@ private extension MobileRecommendedRecording {
             artistName: recommendation.artistName,
             releaseName: recommendation.releaseName,
             score: recommendation.score
+        )
+    }
+}
+
+private extension MobileSimilarUser {
+    init(user: ListenBrainzSimilarUser) {
+        self.init(
+            id: user.id,
+            userName: user.userName,
+            similarityScore: user.similarityScore
+        )
+    }
+}
+
+private extension MobileSocialListen {
+    init(listen: ListenBrainzSocialListen) {
+        self.init(
+            id: listen.id,
+            userName: listen.userName,
+            trackName: listen.listen.trackName,
+            artistName: listen.listen.artistName,
+            releaseName: listen.listen.releaseName,
+            listenedAt: listen.listen.listenedAt
         )
     }
 }

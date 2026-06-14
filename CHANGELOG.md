@@ -33,6 +33,8 @@
   refresh state.
 - iOS Discover recommendations backed by the shared ListenBrainz
   recommendation client, with independent loading status and refresh controls.
+- iOS Discover social feed backed by ListenBrainz followers, following, similar
+  users, and neighbor recent listens.
 
 ### Changed
 
