@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Documented ListenBrainz listen deletion in the user guide and integration
+  notes, including the `recording_msid` requirement and ListenBrainz's
+  asynchronous cleanup behavior.
+
 ## 1.1.0 - 2026-06-13
 
 ### Added

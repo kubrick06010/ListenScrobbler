@@ -46,6 +46,7 @@ Already present in the app:
 - token validation and username resolution
 - native JSON submission for `playing_now` and completed listens
 - recent listens, top artists, top releases, top recordings, and total listen counts
+- ListenBrainz listen deletion for listens with timestamp and `recording_msid`
 - followers, following, and recommendation flows
 - playlist and pin support
 - love/unlove support for the current track through recording feedback
@@ -128,6 +129,33 @@ Mapping from app `Track`:
 - `track.sourceApp` -> `additional_info.media_player` when useful
 
 When sending `playing_now`, ListenScrobbler requests `return_msid=true`. ListenBrainz can return a `recording_msid` for the now-playing listen, which the app keeps with the current track and reuses for feedback when no MusicBrainz recording MBID is available.
+
+### delete listen
+
+ListenScrobbler uses ListenBrainz's native delete-listen endpoint when a recent
+listen has enough identity to be removed:
+
+```json
+{
+  "listened_at": 1779164400,
+  "recording_msid": "d23f4719-9212-49f0-ad08-ddbfbfc50d6f"
+}
+```
+
+Deletion identity requirements:
+
+1. `listened_at` must be present.
+2. `recording_msid` must be present and non-empty.
+
+The app preserves `recording_msid` when converting ListenBrainz listens into
+local recent-listen models. macOS exposes deletion from recent listens and chart
+recent-activity rows; iOS exposes deletion with a destructive swipe action on
+recent listens.
+
+After the ListenBrainz request succeeds, ListenScrobbler removes the row locally
+so the interface reflects the user's action immediately. ListenBrainz processes
+listen deletions asynchronously, so aggregate counts and remote history may lag
+until server cleanup runs.
 
 ## Feedback Model
 
@@ -219,6 +247,7 @@ The ListenBrainz test suite should cover:
 - invalid token behavior
 - request decoding for charts, social, playlists, pins, artist map, and radio
 - feedback submission with MBID and MSID identities
+- listen deletion request shape and local removal after successful API response
 - `playing_now` `return_msid` decoding
 - compatibility and similar users payloads
 - partial and sparse payloads

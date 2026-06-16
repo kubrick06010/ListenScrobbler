@@ -36,6 +36,18 @@ After connecting:
 On iOS, the first Music library scan creates a baseline and does not submit old
 history. Later scans submit new plays detected from local play-count changes.
 
+## Delete ListenBrainz Listens
+
+ListenScrobbler can delete ListenBrainz listens that include both a listen time
+and a ListenBrainz `recording_msid`.
+
+- On macOS, use the delete action from recent listens or recent activity rows.
+- On iOS, swipe a recent listen and choose Delete.
+
+ListenBrainz schedules listen deletions for cleanup, so the row disappears from
+ListenScrobbler after the request succeeds, but ListenBrainz counts and history
+may take time to update server-side.
+
 ## Import Older Listening History
 
 Use ListenBrainz's Add Data page for supported web imports and historical data:
@@ -51,6 +63,8 @@ manual, now-playing, completed, or local Music library listens.
   page and make sure there are no spaces before or after it.
 - If listens do not appear, confirm Submit completed listens is enabled.
 - If now-playing updates do not appear, confirm Send now playing is enabled.
+- If a delete action is unavailable, refresh recent listens. The listen must
+  include a timestamp and `recording_msid` before ListenBrainz can delete it.
 - If iOS Music library scans do not submit anything on the first run, that is
   expected: the first scan is a baseline.
 
