@@ -40,10 +40,41 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(settingsStore.load().username, "open-user")
         XCTAssertTrue(store.hasStoredToken)
         XCTAssertEqual(store.recentListens.map(\.trackName), ["Sketch for Summer"])
+        XCTAssertEqual(store.recentListens.first?.recordingMSID, "msid-1")
         XCTAssertEqual(store.currentPin?.trackName, "Otis")
         XCTAssertEqual(client.updatedTokens, ["token", "token"])
         XCTAssertEqual(client.recentListenRefreshUsernames, ["open-user"])
         XCTAssertEqual(client.pinRefreshUsernames, ["open-user"])
+    }
+
+    func testDeleteListenPostsToListenBrainzAndRemovesRecentListen() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        let listenedAt = Date(timeIntervalSince1970: 1_781_635_646)
+        client.recentListens = [
+            ListenBrainzListen(
+                id: "listen-1",
+                trackName: "Come Home",
+                artistName: "Croatian Amor & Varg²™",
+                releaseName: nil,
+                listenedAt: listenedAt,
+                recordingMBID: "recording-1",
+                recordingMSID: "msid-come-home",
+                artistMBID: nil,
+                releaseMBID: nil,
+                imageURL: nil
+            )
+        ]
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+
+        await store.refresh()
+        let listen = try! XCTUnwrap(store.recentListens.first)
+        let didDelete = await store.deleteListen(listen)
+
+        XCTAssertTrue(didDelete)
+        XCTAssertTrue(store.recentListens.isEmpty)
+        XCTAssertEqual(client.deletedListens.first?.listenedAt, listenedAt)
+        XCTAssertEqual(client.deletedListens.first?.recordingMsid, "msid-come-home")
     }
 
     func testRefreshStatsPublishesMobileStatsSummary() async {
@@ -423,6 +454,7 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
     var followingRefreshes: [String] = []
     var similarUserRefreshes: [(username: String, count: Int)] = []
     var socialListenRefreshes: [(usernames: [String], countPerUser: Int)] = []
+    var deletedListens: [(listenedAt: Date, recordingMsid: String)] = []
     var didClear = false
 
     init(settingsStore: ListenBrainzSettingsStore) {
@@ -455,6 +487,10 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
     func fetchCurrentPin(username: String) async throws -> ListenBrainzPinnedRecording? {
         pinRefreshUsernames.append(username)
         return currentPin
+    }
+
+    func deleteListen(listenedAt: Date, recordingMsid: String) async throws {
+        deletedListens.append((listenedAt: listenedAt, recordingMsid: recordingMsid))
     }
 
     func fetchStatsSnapshot(username: String, range: ListenBrainzStatsRange, count: Int) async throws -> ListenBrainzStatsSnapshot {

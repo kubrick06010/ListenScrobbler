@@ -47,7 +47,10 @@ struct ScrobblesView: View {
                                 loved: item.loved,
                                 playedAt: item.playedAt,
                                 nowPlaying: item.nowPlaying,
+                                recordingMBID: item.recordingMbid,
+                                recordingMSID: item.recordingMsid,
                                 sourceScrobbleID: item.id,
+                                onDelete: { Task { _ = await scrobbleService.deleteListenBrainzListen(item) } },
                                 onOpen: { onOpenDetail(item) },
                                 onShare: onShare
                             )
@@ -86,8 +89,10 @@ struct ListenActionRow: View {
     var artistMBID: String?
     var releaseMBID: String?
     var sourceScrobbleID: String?
+    let onDelete: () -> Void
     let onOpen: () -> Void
     let onShare: (ShareDraft) -> Void
+    @State private var isConfirmingDelete = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -153,6 +158,14 @@ struct ListenActionRow: View {
                 }
                 .help("Archive share")
 
+                Button(role: .destructive) {
+                    isConfirmingDelete = true
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .help(canDeleteListen ? "Delete from ListenBrainz" : "ListenBrainz deletion needs a listen timestamp and recording MSID")
+                .disabled(!canDeleteListen)
+
                 Text(nowPlaying ? "Now" : (playedAt?.formatted(date: .omitted, time: .shortened) ?? "-"))
                     .font(.custom("Avenir Next Regular", size: 11))
                     .foregroundStyle(.secondary)
@@ -165,6 +178,12 @@ struct ListenActionRow: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
         .background(nowPlaying ? Color.yellow.opacity(0.25) : Color.clear, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .confirmationDialog("Delete this ListenBrainz listen?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("Delete Listen", role: .destructive, action: onDelete)
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("ListenBrainz schedules deletions, so counts may update after the next hourly cleanup.")
+        }
     }
 
     private var isPinned: Bool {
@@ -174,6 +193,10 @@ struct ListenActionRow: View {
             recordingMbid: recordingMBID,
             recordingMsid: recordingMSID
         )
+    }
+
+    private var canDeleteListen: Bool {
+        scrobbleService.listenBrainzEnabled && playedAt != nil && recordingMSID?.nilIfBlank != nil
     }
 
     private var shareDraft: ShareDraft {

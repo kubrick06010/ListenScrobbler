@@ -700,17 +700,36 @@ final class ScrobbleService: ObservableObject {
         }
 
         listenBrainzPinsStatus = "Loading pins..."
+        var failures: [String] = []
+
         do {
-            async let current = listenBrainz.fetchCurrentPin(username: username)
-            async let history = listenBrainz.fetchPins(username: username, count: 12)
-            async let following = listenBrainz.fetchFollowingPins(username: username, count: 12)
-            listenBrainzCurrentPin = try await current
-            listenBrainzPinnedHistory = try await history
-            listenBrainzFollowingPins = try await following
-            listenBrainzPinsStatus = "Loaded pins and following activity"
+            listenBrainzCurrentPin = try await listenBrainz.fetchCurrentPin(username: username)
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzPinsStatus = "Failed to load pins"
+            listenBrainzCurrentPin = nil
+            failures.append("current pin")
+        }
+
+        do {
+            listenBrainzPinnedHistory = try await listenBrainz.fetchPins(username: username, count: 12)
+        } catch {
+            handleListenBrainz(error: error)
+            listenBrainzPinnedHistory = []
+            failures.append("pin history")
+        }
+
+        do {
+            listenBrainzFollowingPins = try await listenBrainz.fetchFollowingPins(username: username, count: 12)
+        } catch {
+            handleListenBrainz(error: error)
+            listenBrainzFollowingPins = []
+            failures.append("following pins")
+        }
+
+        if failures.isEmpty {
+            listenBrainzPinsStatus = "Loaded \(listenBrainzPinnedHistory.count) pins and \(listenBrainzFollowingPins.count) following pins"
+        } else {
+            listenBrainzPinsStatus = "Loaded \(listenBrainzPinnedHistory.count) pins; failed: \(failures.joined(separator: ", "))"
         }
     }
 
@@ -959,6 +978,32 @@ final class ScrobbleService: ObservableObject {
         } catch {
             handleListenBrainz(error: error)
             listenBrainzPinsStatus = "Could not delete \(displayTitle)"
+            return false
+        }
+    }
+
+    func deleteListenBrainzListen(_ scrobble: CompatibilityRecentScrobble) async -> Bool {
+        let displayTitle = scrobble.track.nilIfBlank ?? "listen"
+        refreshListenBrainzState()
+        guard listenBrainzEnabled else {
+            scrobblesStatus = "Connect ListenBrainz to delete listens"
+            return false
+        }
+        guard let listenedAt = scrobble.playedAt,
+              let recordingMsid = scrobble.recordingMsid?.nilIfBlank else {
+            scrobblesStatus = "Cannot delete \(displayTitle): missing ListenBrainz listen identity"
+            return false
+        }
+
+        scrobblesStatus = "Deleting \(displayTitle)..."
+        do {
+            try await listenBrainz.deleteListen(listenedAt: listenedAt, recordingMsid: recordingMsid)
+            latestScrobbles.removeAll { $0.id == scrobble.id }
+            scrobblesStatus = "Queued deletion for \(displayTitle)"
+            return true
+        } catch {
+            handleListenBrainz(error: error)
+            scrobblesStatus = "Could not delete \(displayTitle)"
             return false
         }
     }
@@ -1295,7 +1340,9 @@ final class ScrobbleService: ObservableObject {
             url: nil,
             loved: false,
             playedAt: nil,
-            nowPlaying: false
+            nowPlaying: false,
+            recordingMbid: nil,
+            recordingMsid: nil
         )
         await inspect(scrobble: item)
     }
@@ -1496,7 +1543,9 @@ final class ScrobbleService: ObservableObject {
                     url: item.url,
                     loved: true,
                     playedAt: item.playedAt,
-                    nowPlaying: item.nowPlaying
+                    nowPlaying: item.nowPlaying,
+                    recordingMbid: item.recordingMbid,
+                    recordingMsid: item.recordingMsid
                 )
             }
         } catch {
@@ -1624,7 +1673,9 @@ final class ScrobbleService: ObservableObject {
             url: item.url,
             loved: loved,
             playedAt: item.playedAt,
-            nowPlaying: item.nowPlaying
+            nowPlaying: item.nowPlaying,
+            recordingMbid: item.recordingMbid,
+            recordingMsid: item.recordingMsid
         )
     }
 
@@ -3114,7 +3165,9 @@ private extension CompatibilityRecentScrobble {
             url: listen.recordingMBID.map { "https://listenbrainz.org/player/?recording_mbids=\($0)" },
             loved: false,
             playedAt: listen.listenedAt,
-            nowPlaying: false
+            nowPlaying: false,
+            recordingMbid: listen.recordingMBID,
+            recordingMsid: listen.recordingMSID
         )
     }
 }

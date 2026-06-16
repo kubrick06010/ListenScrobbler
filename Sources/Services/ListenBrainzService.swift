@@ -1057,6 +1057,20 @@ final class ListenBrainzService {
         )
     }
 
+    func deleteListen(listenedAt: Date, recordingMsid: String) async throws {
+        let trimmedMsid = recordingMsid.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedMsid.isEmpty else {
+            throw ListenBrainzError.api(message: "Missing recording MSID for ListenBrainz listen deletion.")
+        }
+        try await postAuthorized(
+            pathComponents: ["1", "delete-listen"],
+            body: ListenBrainzDeleteListenRequest(
+                listenedAt: Int(listenedAt.timeIntervalSince1970),
+                recordingMsid: trimmedMsid
+            )
+        )
+    }
+
     func fetchPlaylists(username: String, count: Int = 20) async throws -> [ListenBrainzPlaylistSummary] {
         try await fetchPlaylistSummaries(pathComponents: ["1", "user", username, "playlists"], count: count)
     }
@@ -1981,6 +1995,16 @@ private struct ListenBrainzAdditionalInfo: Encodable {
 }
 
 private struct EmptyRequestBody: Encodable {}
+
+private struct ListenBrainzDeleteListenRequest: Encodable {
+    let listenedAt: Int
+    let recordingMsid: String
+
+    enum CodingKeys: String, CodingKey {
+        case listenedAt = "listened_at"
+        case recordingMsid = "recording_msid"
+    }
+}
 
 private struct ListenBrainzRecordingMetadataRequest: Encodable {
     let recordingMBIDs: [String]

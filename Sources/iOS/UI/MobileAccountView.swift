@@ -305,7 +305,7 @@ struct MobileOpenMusicOnboardingView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text(ListenBrainzSetupGuide.headline)
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .font(.largeTitle.weight(.bold))
                         .lineLimit(nil)
                         .fixedSize(horizontal: false, vertical: true)
 
@@ -325,7 +325,7 @@ struct MobileOpenMusicOnboardingView: View {
                     }
                 }
             }
-            .padding(24)
+            .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
@@ -340,7 +340,7 @@ struct MobileOpenMusicOnboardingView: View {
                     OnboardingFeatureRow(feature: feature)
                 }
             }
-            .padding(24)
+            .padding(20)
         }
     }
 
@@ -384,7 +384,7 @@ struct MobileOpenMusicOnboardingView: View {
                 }
                 .padding(.top, 8)
             }
-            .padding(24)
+            .padding(20)
         }
     }
 

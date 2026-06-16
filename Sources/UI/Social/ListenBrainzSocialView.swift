@@ -583,7 +583,7 @@ struct ListenBrainzSocialView: View {
                     .font(.custom("Avenir Next Regular", size: 12))
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(pins.prefix(6)) { pin in
+                ForEach(pins) { pin in
                     pinCard(pin)
                 }
             }

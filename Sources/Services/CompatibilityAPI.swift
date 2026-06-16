@@ -191,6 +191,8 @@ struct CompatibilityRecentScrobble: Equatable, Identifiable {
     let loved: Bool
     let playedAt: Date?
     let nowPlaying: Bool
+    let recordingMbid: String?
+    let recordingMsid: String?
 }
 
 struct CompatibilityFriendListening: Equatable, Identifiable {
@@ -689,7 +691,9 @@ final class CompatibilityAPIClient: CompatibilityAPI {
                 url: url,
                 loved: loved,
                 playedAt: playedAt,
-                nowPlaying: nowPlaying
+                nowPlaying: nowPlaying,
+                recordingMbid: nil,
+                recordingMsid: nil
             )
         }
     }
@@ -2001,7 +2005,9 @@ final class CompatibilityAPIStub: CompatibilityAPI {
                 url: nil,
                 loved: false,
                 playedAt: Date().addingTimeInterval(TimeInterval(-index * 240)),
-                nowPlaying: index == 0
+                nowPlaying: index == 0,
+                recordingMbid: nil,
+                recordingMsid: nil
             )
         }
     }

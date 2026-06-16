@@ -220,7 +220,7 @@ final class ScrobbleServiceTests: XCTestCase {
             )!
 
             XCTAssertEqual(request.url?.path, "/1/user/tester/listens")
-            return (response, Data(#"{"payload":{"listens":[{"listened_at":1700000100,"track_metadata":{"artist_name":"Soda Stereo","track_name":"Zoom","release_name":"Sueño Stereo","additional_info":{"recording_mbid":"recording-1","artist_mbids":["artist-1"],"release_mbid":"release-1"}}}]}}"#.utf8))
+            return (response, Data(#"{"payload":{"listens":[{"listened_at":1700000100,"track_metadata":{"artist_name":"Soda Stereo","track_name":"Zoom","release_name":"Sueño Stereo","additional_info":{"recording_mbid":"recording-1","recording_msid":"msid-1","artist_mbids":["artist-1"],"release_mbid":"release-1"}}}]}}"#.utf8))
         })
         let service = ScrobbleService(
             api: api,
@@ -239,6 +239,55 @@ final class ScrobbleServiceTests: XCTestCase {
         XCTAssertEqual(service.latestScrobbles.first?.artist, "Soda Stereo")
         XCTAssertEqual(service.latestScrobbles.first?.album, "Sueño Stereo")
         XCTAssertEqual(service.latestScrobbles.first?.url, "https://listenbrainz.org/player/?recording_mbids=recording-1")
+        XCTAssertEqual(service.latestScrobbles.first?.recordingMbid, "recording-1")
+        XCTAssertEqual(service.latestScrobbles.first?.recordingMsid, "msid-1")
+        withExtendedLifetime(service) {}
+    }
+
+    @MainActor
+    func testDeleteListenBrainzListenPostsDeleteAndRemovesLocalRow() async throws {
+        let api = MockAPI()
+        api.isAuthenticated = false
+        let monitor = TestMonitor()
+        var deleteBodies: [[String: Any]] = []
+        let listenBrainz = configuredListenBrainzService(urlSession: makeMockedSession { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch (request.httpMethod, request.url?.path) {
+            case ("GET", "/1/user/tester/listens"):
+                return (response, Data(#"{"payload":{"listens":[{"listened_at":1781635646,"track_metadata":{"artist_name":"Croatian Amor & Varg²™","track_name":"Come Home","additional_info":{"recording_mbid":"recording-1","recording_msid":"msid-come-home"}}}]}}"#.utf8))
+            case ("POST", "/1/delete-listen"):
+                let body = try XCTUnwrap(request.httpBodyData)
+                let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+                deleteBodies.append(json)
+                return (response, Data(#"{"status":"ok"}"#.utf8))
+            default:
+                XCTFail("Unexpected ListenBrainz request \(request.httpMethod ?? "") \(request.url?.path ?? "")")
+                return (response, Data(#"{}"#.utf8))
+            }
+        })
+        let service = ScrobbleService(
+            api: api,
+            listenBrainz: listenBrainz,
+            monitor: monitor,
+            sessionStore: InMemorySessionStore(),
+            queueStore: InMemoryQueueStore()
+        )
+
+        await service.refreshScrobbles()
+        let scrobble = try XCTUnwrap(service.latestScrobbles.first)
+        let didDelete = await service.deleteListenBrainzListen(scrobble)
+
+        XCTAssertTrue(didDelete)
+        XCTAssertTrue(service.latestScrobbles.isEmpty)
+        XCTAssertEqual(deleteBodies.first?["listened_at"] as? Int, 1_781_635_646)
+        XCTAssertEqual(deleteBodies.first?["recording_msid"] as? String, "msid-come-home")
+        XCTAssertEqual(service.scrobblesStatus, "Queued deletion for Come Home")
         withExtendedLifetime(service) {}
     }
 
@@ -297,6 +346,54 @@ final class ScrobbleServiceTests: XCTestCase {
             "ListenBrainz only allows one active pin, so unpin must happen before the new pin is posted."
         )
         XCTAssertEqual(service.listenBrainzCurrentPin?.recordingMbid, "bochum-mbid", "The UI should now reflect the new remote pin.")
+    }
+
+    @MainActor
+    func testRefreshPinsKeepsHistoryWhenFollowingPinsFail() async {
+        let api = MockAPI()
+        let monitor = TestMonitor()
+        let listenBrainz = configuredListenBrainzService(urlSession: makeMockedSession { request in
+            let ok = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+            let serverError = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 500,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch (request.httpMethod, request.url?.path) {
+            case ("GET", "/1/user/tester/listens"):
+                return (ok, Data(#"{"payload":{"listens":[]}}"#.utf8))
+            case ("GET", "/1/tester/pins/current"):
+                return (ok, Data(#"{"pinned_recording":{"row_id":6859,"recording_mbid":"come-home","track_metadata":{"artist_name":"Croatian Amor & Varg²™","track_name":"Come Home"}}}"#.utf8))
+            case ("GET", "/1/tester/pins"):
+                return (ok, Data(#"{"pinned_recordings":[{"row_id":6859,"recording_mbid":"come-home","track_metadata":{"artist_name":"Croatian Amor & Varg²™","track_name":"Come Home"}},{"row_id":6855,"recording_mbid":"surfacing","track_metadata":{"artist_name":"Pye Corner Audio","track_name":"Surfacing"}}]}"#.utf8))
+            case ("GET", "/1/tester/pins/following"):
+                return (serverError, Data(#"{"error":"temporary failure"}"#.utf8))
+            default:
+                XCTFail("Unexpected ListenBrainz request \(request.httpMethod ?? "") \(request.url?.path ?? "")")
+                return (ok, Data(#"{}"#.utf8))
+            }
+        })
+        let service = ScrobbleService(
+            api: api,
+            listenBrainz: listenBrainz,
+            monitor: monitor,
+            sessionStore: InMemorySessionStore(),
+            queueStore: InMemoryQueueStore()
+        )
+
+        await service.refreshListenBrainzPins()
+
+        XCTAssertEqual(service.listenBrainzCurrentPin?.trackName, "Come Home")
+        XCTAssertEqual(service.listenBrainzPinnedHistory.map(\.trackName), ["Come Home", "Surfacing"])
+        XCTAssertTrue(service.listenBrainzFollowingPins.isEmpty)
+        XCTAssertEqual(service.listenBrainzPinsStatus, "Loaded 2 pins; failed: following pins")
     }
 
     @MainActor
@@ -705,7 +802,9 @@ private final class MockAPI: CompatibilityAPI {
             url: nil,
             loved: false,
             playedAt: .now,
-            nowPlaying: false
+            nowPlaying: false,
+            recordingMbid: nil,
+            recordingMsid: nil
         )]
     }
 

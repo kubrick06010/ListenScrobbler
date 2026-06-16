@@ -238,6 +238,25 @@ struct ChartsView: View {
                                 recordingMSID: listen.recordingMSID,
                                 artistMBID: listen.artistMBID,
                                 releaseMBID: listen.releaseMBID,
+                                onDelete: {
+                                    Task {
+                                        _ = await scrobbleService.deleteListenBrainzListen(
+                                            CompatibilityRecentScrobble(
+                                                id: "listenbrainz-\(listen.id)",
+                                                track: listen.trackName,
+                                                artist: listen.artistName,
+                                                album: listen.releaseName,
+                                                imageURL: listen.imageURL,
+                                                url: listen.recordingMBID.map { "https://listenbrainz.org/player/?recording_mbids=\($0)" },
+                                                loved: false,
+                                                playedAt: listen.listenedAt,
+                                                nowPlaying: false,
+                                                recordingMbid: listen.recordingMBID,
+                                                recordingMsid: listen.recordingMSID
+                                            )
+                                        )
+                                    }
+                                },
                                 onOpen: { onOpenTrack(listen.trackName, listen.artistName) },
                                 onShare: onShareListen
                             )

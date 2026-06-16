@@ -160,6 +160,28 @@ def generate_symbols() -> None:
 
 def generate_macos_menu_bar_icon() -> None:
     folder = ASSETS / "MenuBarScrobbler.imageset"
+    # The macOS menu bar mark is a hand-tuned 18px/36px template bitmap. The
+    # upstream ListenBrainz monochrome logo rasterizes into the older filled
+    # hex mark at menu-bar sizes, so preserve the checked-in tuned assets when
+    # regenerating the broader icon set.
+    existing = [
+        folder / "menu_bar_scrobbler.png",
+        folder / "menu_bar_scrobbler@2x.png",
+    ]
+    if all(path.exists() for path in existing):
+        write_json(
+            folder / "Contents.json",
+            {
+                "images": [
+                    {"idiom": "mac", "scale": "1x", "filename": "menu_bar_scrobbler.png"},
+                    {"idiom": "mac", "scale": "2x", "filename": "menu_bar_scrobbler@2x.png"},
+                ],
+                "info": {"author": "xcode", "version": 1},
+                "properties": {"template-rendering-intent": "template"},
+            },
+        )
+        return
+
     images = []
     for scale, pixels in [("1x", 18), ("2x", 36)]:
         filename = f"menu_bar_scrobbler@{scale}.png".replace("@1x", "")

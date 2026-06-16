@@ -648,6 +648,25 @@ final class ListenBrainzServiceTests: XCTestCase {
         try await service.deletePin(rowID: 42)
     }
 
+    func testDeletingAListenPostsTimestampAndRecordingMSIDToListenBrainz() async throws {
+        let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.url?.absoluteString, "https://api.listenbrainz.org/1/delete-listen")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Token token")
+            let body = try XCTUnwrap(request.httpBodyData)
+            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            XCTAssertEqual(json["listened_at"] as? Int, 1_781_635_646)
+            XCTAssertEqual(json["recording_msid"] as? String, "msid-come-home")
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, Data(#"{"status":"ok"}"#.utf8))
+        }
+
+        try await service.deleteListen(
+            listenedAt: Date(timeIntervalSince1970: 1_781_635_646),
+            recordingMsid: "msid-come-home"
+        )
+    }
+
     func testFetchPlaylistsParsesSummariesAndRecommendationLists() async throws {
         let service = makeService(tokenStore: TestListenBrainzTokenStore(token: "token")) { request in
             let response = HTTPURLResponse(

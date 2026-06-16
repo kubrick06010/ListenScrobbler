@@ -543,7 +543,9 @@ struct ContentView: View {
             url: nil,
             loved: false,
             playedAt: nil,
-            nowPlaying: false
+            nowPlaying: false,
+            recordingMbid: nil,
+            recordingMsid: nil
         )
         withAnimation(.easeInOut(duration: 0.22)) {
             deepLinkTarget = DeepLinkTarget(
@@ -567,7 +569,9 @@ struct ContentView: View {
             url: nil,
             loved: false,
             playedAt: nil,
-            nowPlaying: false
+            nowPlaying: false,
+            recordingMbid: nil,
+            recordingMsid: nil
         )
         withAnimation(.easeInOut(duration: 0.22)) {
             deepLinkTarget = DeepLinkTarget(id: item.id, scrobble: item, kind: .album)

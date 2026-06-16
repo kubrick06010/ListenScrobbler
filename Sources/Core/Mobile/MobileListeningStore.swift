@@ -8,6 +8,7 @@ protocol MobileListenBrainzClient {
     func validate() async throws -> ListenBrainzValidation
     func fetchRecentListens(username: String, count: Int) async throws -> [ListenBrainzListen]
     func fetchCurrentPin(username: String) async throws -> ListenBrainzPinnedRecording?
+    func deleteListen(listenedAt: Date, recordingMsid: String) async throws
     func fetchStatsSnapshot(username: String, range: ListenBrainzStatsRange, count: Int) async throws -> ListenBrainzStatsSnapshot
     func fetchRecommendedRecordings(username: String, count: Int, offset: Int) async throws -> [ListenBrainzRecommendedRecording]
     func fetchFollowers(username: String) async throws -> [String]
@@ -26,6 +27,7 @@ public struct MobileListenSummary: Identifiable, Equatable {
     public let releaseName: String?
     public let listenedAt: Date?
     public let imageURL: String?
+    public let recordingMSID: String?
 }
 
 public struct MobilePinnedRecording: Identifiable, Equatable {
@@ -348,6 +350,25 @@ public final class MobileListeningStore: ObservableObject {
         }
     }
 
+    public func deleteListen(_ listen: MobileListenSummary) async -> Bool {
+        guard let listenedAt = listen.listenedAt,
+              let recordingMSID = Self.nonBlank(listen.recordingMSID) else {
+            logger.error("ListenBrainz listen delete skipped because identity is missing")
+            return false
+        }
+
+        logger.info("ListenBrainz listen delete requested for \(listen.trackName, privacy: .public)")
+        do {
+            try await listenBrainz.deleteListen(listenedAt: listenedAt, recordingMsid: recordingMSID)
+            recentListens.removeAll { $0.id == listen.id }
+            persistWidgetSnapshot()
+            return true
+        } catch {
+            logger.error("ListenBrainz listen delete failed: \(error.localizedDescription, privacy: .public)")
+            return false
+        }
+    }
+
     public func refreshStats(range: MobileStatsRange = .week) async {
         guard case let .connected(username) = connectionState else {
             statsStatus = "Connect ListenBrainz to load stats"
@@ -577,7 +598,8 @@ private extension MobileListenSummary {
             artistName: listen.artistName,
             releaseName: listen.releaseName,
             listenedAt: listen.listenedAt,
-            imageURL: listen.imageURL
+            imageURL: listen.imageURL,
+            recordingMSID: listen.recordingMSID
         )
     }
 }

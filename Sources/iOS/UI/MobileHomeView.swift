@@ -58,10 +58,48 @@ struct MobileHomeView: View {
                 }
 
                 if let snapshot = listeningStore.statsSnapshot {
-                    MobileStatsSummaryView(snapshot: snapshot)
+                    MobileStatsOverviewRow(snapshot: snapshot)
                 } else {
                     Label(listeningStore.statsStatus, systemImage: "chart.bar")
                         .foregroundStyle(.secondary)
+                }
+            }
+
+            if let snapshot = listeningStore.statsSnapshot {
+                if !snapshot.topArtists.isEmpty {
+                    Section("Top Artists") {
+                        ForEach(snapshot.topArtists.prefix(8)) { artist in
+                            MobileStatRow(
+                                title: artist.name,
+                                subtitle: nil,
+                                value: artist.listenCount
+                            )
+                        }
+                    }
+                }
+
+                if !snapshot.topReleases.isEmpty {
+                    Section("Top Releases") {
+                        ForEach(snapshot.topReleases.prefix(8)) { release in
+                            MobileStatRow(
+                                title: release.name,
+                                subtitle: release.artistName,
+                                value: release.listenCount
+                            )
+                        }
+                    }
+                }
+
+                if !snapshot.topRecordings.isEmpty {
+                    Section("Top Tracks") {
+                        ForEach(snapshot.topRecordings.prefix(8)) { recording in
+                            MobileStatRow(
+                                title: recording.trackName,
+                                subtitle: recording.artistName,
+                                value: recording.listenCount
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -88,11 +126,11 @@ struct MobileHomeView: View {
     }
 }
 
-private struct MobileStatsSummaryView: View {
+private struct MobileStatsOverviewRow: View {
     let snapshot: MobileStatsSnapshot
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label(snapshot.range.title, systemImage: "chart.bar.xaxis")
                     .font(.headline)
@@ -103,48 +141,6 @@ private struct MobileStatsSummaryView: View {
                     Text("\(totalListenCount.formatted()) listens")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
-                }
-            }
-
-            if !snapshot.topArtists.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Top Artists")
-                        .font(.subheadline.weight(.semibold))
-                    ForEach(snapshot.topArtists.prefix(5)) { artist in
-                        MobileStatRow(
-                            title: artist.name,
-                            subtitle: nil,
-                            value: artist.listenCount
-                        )
-                    }
-                }
-            }
-
-            if !snapshot.topReleases.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Top Releases")
-                        .font(.subheadline.weight(.semibold))
-                    ForEach(snapshot.topReleases.prefix(5)) { release in
-                        MobileStatRow(
-                            title: release.name,
-                            subtitle: release.artistName,
-                            value: release.listenCount
-                        )
-                    }
-                }
-            }
-
-            if !snapshot.topRecordings.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Top Tracks")
-                        .font(.subheadline.weight(.semibold))
-                    ForEach(snapshot.topRecordings.prefix(5)) { recording in
-                        MobileStatRow(
-                            title: recording.trackName,
-                            subtitle: recording.artistName,
-                            value: recording.listenCount
-                        )
-                    }
                 }
             }
 

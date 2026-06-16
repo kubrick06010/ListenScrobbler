@@ -1,11 +1,39 @@
 import Combine
 import Foundation
 
-enum MobileTab: String, CaseIterable, Hashable {
+enum MobileTab: String, CaseIterable, Hashable, Identifiable {
     case home
     case listens
     case discover
     case account
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .home:
+            return "Home"
+        case .listens:
+            return "Listens"
+        case .discover:
+            return "Discover"
+        case .account:
+            return "Account"
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .home:
+            return "music.note.house"
+        case .listens:
+            return "music.note.list"
+        case .discover:
+            return "sparkle.magnifyingglass"
+        case .account:
+            return "person.crop.circle"
+        }
+    }
 }
 
 struct MobileManualScrobbleDraft: Identifiable, Equatable {

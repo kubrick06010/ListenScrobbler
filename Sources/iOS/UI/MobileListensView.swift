@@ -4,6 +4,7 @@ import SwiftUI
 struct MobileListensView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
     let openManualScrobble: () -> Void
+    @State private var listenPendingDeletion: MobileListenSummary?
 
     var body: some View {
         List {
@@ -27,6 +28,14 @@ struct MobileListensView: View {
                         }
                     }
                     .padding(.vertical, 4)
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            listenPendingDeletion = listen
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .disabled(!canDelete(listen))
+                    }
                 }
             }
         }
@@ -51,5 +60,30 @@ struct MobileListensView: View {
         .refreshable {
             await listeningStore.refresh()
         }
+        .confirmationDialog(
+            "Delete this ListenBrainz listen?",
+            isPresented: Binding(
+                get: { listenPendingDeletion != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        listenPendingDeletion = nil
+                    }
+                }
+            ),
+            titleVisibility: .visible
+        ) {
+            if let listen = listenPendingDeletion {
+                Button("Delete Listen", role: .destructive) {
+                    Task { _ = await listeningStore.deleteListen(listen) }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("ListenBrainz schedules deletions, so counts may update after the next hourly cleanup.")
+        }
+    }
+
+    private func canDelete(_ listen: MobileListenSummary) -> Bool {
+        listen.listenedAt != nil && listen.recordingMSID?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
     }
 }
