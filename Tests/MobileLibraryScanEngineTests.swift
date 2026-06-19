@@ -116,7 +116,10 @@ final class MobileLibraryScanEngineTests: XCTestCase {
         XCTAssertEqual(result.summary.pending, 1)
         XCTAssertEqual(result.pending.first?.attempts, 2)
         XCTAssertEqual(result.pending.first?.lastError, TestSubmitError.offline.localizedDescription)
-        XCTAssertEqual(result.summary.message, "Submitted 0 pending plays. 1 still pending retry.")
+        XCTAssertEqual(
+            result.summary.message,
+            String.localizedStringWithFormat(String(localized: "Submitted %d pending plays. %d still pending retry."), 0, 1)
+        )
     }
 
     private func snapshot(

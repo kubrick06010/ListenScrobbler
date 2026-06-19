@@ -32,21 +32,30 @@ public struct MobileLibraryScanSummary: Equatable {
 
     public var message: String {
         if baselineCreated {
-            return "Baseline created. Future scans will submit new plays."
+            return String(localized: "Baseline created. Future scans will submit new plays.")
         }
         if retried > 0, detected == 0 {
             if retryFailed > 0 {
-                return "Submitted \(retrySubmitted) pending plays. \(pending) still pending retry."
+                return String.localizedStringWithFormat(
+                    String(localized: "Submitted %d pending plays. %d still pending retry."),
+                    retrySubmitted,
+                    pending
+                )
             }
-            return "Submitted \(retrySubmitted) pending plays."
+            return String.localizedStringWithFormat(String(localized: "Submitted %d pending plays."), retrySubmitted)
         }
         if detected == 0 {
-            return "No new Music library plays detected."
+            return String(localized: "No new Music library plays detected.")
         }
         if failed > 0 {
-            return "Submitted \(submitted) of \(detected) detected plays. \(pending) pending retry."
+            return String.localizedStringWithFormat(
+                String(localized: "Submitted %d of %d detected plays. %d pending retry."),
+                submitted,
+                detected,
+                pending
+            )
         }
-        return "Submitted \(submitted) new plays."
+        return String.localizedStringWithFormat(String(localized: "Submitted %d new plays."), submitted)
     }
 }
 

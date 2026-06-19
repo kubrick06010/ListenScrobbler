@@ -35,7 +35,11 @@ struct MobileDiscoverView: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(listeningStore.recommendedRecordings) { recommendation in
-                        MobileRecommendationRow(recommendation: recommendation)
+                        NavigationLink {
+                            MobileMusicDetailView(seed: recommendationSeed(recommendation))
+                        } label: {
+                            MobileRecommendationRow(recommendation: recommendation)
+                        }
                     }
                 }
 
@@ -63,7 +67,11 @@ struct MobileDiscoverView: View {
                             .foregroundStyle(.secondary)
                     } else {
                         ForEach(snapshot.neighborListens.prefix(8)) { listen in
-                            MobileSocialListenRow(listen: listen)
+                            NavigationLink {
+                                MobileMusicDetailView(seed: socialSeed(listen))
+                            } label: {
+                                MobileSocialListenRow(listen: listen)
+                            }
                         }
                     }
                 } else {
@@ -88,21 +96,13 @@ struct MobileDiscoverView: View {
 
             Section("Explore") {
                 NavigationLink {
-                    MobileDiscoveryPlaceholderView(
-                        title: "Search",
-                        symbol: "magnifyingglass",
-                        detail: "Available in a later build."
-                    )
+                    MobileDiscoverSearchView()
                 } label: {
                     Label("Search", systemImage: "magnifyingglass")
                 }
 
                 NavigationLink {
-                    MobileDiscoveryPlaceholderView(
-                        title: "Radio",
-                        symbol: "dot.radiowaves.left.and.right",
-                        detail: "Available in a later build."
-                    )
+                    MobileDiscoverRadioView()
                 } label: {
                     Label("Radio", systemImage: "dot.radiowaves.left.and.right")
                 }
@@ -153,6 +153,250 @@ struct MobileDiscoverView: View {
         await listeningStore.refreshRecommendations()
         await listeningStore.refreshSocial()
         WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    private func recommendationSeed(_ recommendation: MobileRecommendedRecording) -> MobileMusicDetailSeed {
+        MobileMusicDetailSeed(
+            kind: .track,
+            trackName: recommendation.title,
+            artistName: recommendation.artistName ?? String(localized: "Unknown artist"),
+            releaseName: recommendation.releaseName,
+            recordingMBID: recommendation.recordingMBID
+        )
+    }
+
+    private func socialSeed(_ listen: MobileSocialListen) -> MobileMusicDetailSeed {
+        MobileMusicDetailSeed(
+            kind: .track,
+            trackName: listen.trackName,
+            artistName: listen.artistName,
+            releaseName: listen.releaseName
+        )
+    }
+}
+
+private struct MobileDiscoverSearchView: View {
+    @EnvironmentObject private var listeningStore: MobileListeningStore
+    @State private var query = ""
+    @State private var scope: MobileDiscoverySearchScope = .tracks
+
+    var body: some View {
+        List {
+            Section {
+                Picker("Scope", selection: $scope) {
+                    ForEach(MobileDiscoverySearchScope.allCases) { scope in
+                        Label(scope.title, systemImage: scope.symbolName)
+                            .tag(scope)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                TextField("Search MusicBrainz", text: $query)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .submitLabel(.search)
+                    .onSubmit {
+                        Task { await search() }
+                    }
+
+                Button {
+                    Task { await search() }
+                } label: {
+                    if listeningStore.isSearching {
+                        Label("Searching", systemImage: "hourglass")
+                    } else {
+                        Label("Search", systemImage: "magnifyingglass")
+                    }
+                }
+                .disabled(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || listeningStore.isSearching)
+            }
+
+            Section("Results") {
+                if listeningStore.searchResults.isEmpty {
+                    Label(listeningStore.searchStatus, systemImage: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(listeningStore.searchResults) { result in
+                        NavigationLink {
+                            MobileMusicDetailView(seed: result.seed)
+                        } label: {
+                            MobileSearchResultRow(result: result)
+                        }
+                    }
+                }
+            }
+        }
+        .navigationTitle("Search")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    Task { await search() }
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                }
+                .disabled(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || listeningStore.isSearching)
+            }
+        }
+    }
+
+    private func search() async {
+        await listeningStore.searchDiscovery(query: query, scope: scope)
+    }
+}
+
+private struct MobileSearchResultRow: View {
+    let result: MobileDiscoverySearchResult
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Image(systemName: result.seed.kind.symbolName)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(result.title)
+                    .font(.headline)
+                    .lineLimit(2)
+                if let subtitle = result.subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                if let detail = result.detail {
+                    Text(detail)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                        .lineLimit(1)
+                }
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+private struct MobileDiscoverRadioView: View {
+    @EnvironmentObject private var listeningStore: MobileListeningStore
+
+    var body: some View {
+        List {
+            Section {
+                Label(listeningStore.radioStatus, systemImage: "dot.radiowaves.left.and.right")
+                    .foregroundStyle(.secondary)
+
+                Button {
+                    Task { await listeningStore.refreshRadio() }
+                } label: {
+                    if listeningStore.isRefreshingRadio {
+                        Label("Loading Radio", systemImage: "hourglass")
+                    } else {
+                        Label("Recommendation Radio", systemImage: "sparkles")
+                    }
+                }
+                .disabled(!canRefreshRadio)
+            }
+
+            Section("Artist Seeds") {
+                if listeningStore.radioSeeds.isEmpty {
+                    Label("Refresh stats or listens to seed artist radio", systemImage: "person.wave.2")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(listeningStore.radioSeeds.prefix(10)) { seed in
+                        Button {
+                            Task { await listeningStore.refreshRadio(seed: seed) }
+                        } label: {
+                            Label(seed.artistName, systemImage: seed.artistMBID == nil ? "person" : "person.wave.2")
+                        }
+                        .disabled(!canRefreshRadio)
+                    }
+                }
+            }
+
+            Section("Queue") {
+                if listeningStore.radioQueue.isEmpty {
+                    Label("No radio queue loaded", systemImage: "music.note.list")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(listeningStore.radioQueue) { item in
+                        NavigationLink {
+                            MobileMusicDetailView(seed: item.seed)
+                        } label: {
+                            MobileRadioQueueRow(item: item)
+                        }
+                    }
+                }
+            }
+
+            if !listeningStore.radioArtists.isEmpty {
+                Section("Related Artists") {
+                    ForEach(listeningStore.radioArtists) { artist in
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(artist.name)
+                                .font(.headline)
+                            Text(String.localizedStringWithFormat(String(localized: "%d listens in radio graph"), artist.totalListenCount))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Radio")
+        .refreshable {
+            await listeningStore.refreshRadio()
+        }
+        .task {
+            if listeningStore.statsSnapshot == nil {
+                await listeningStore.refreshStats()
+            }
+            if listeningStore.radioQueue.isEmpty {
+                await listeningStore.refreshRadio()
+            }
+        }
+    }
+
+    private var canRefreshRadio: Bool {
+        guard case .connected = listeningStore.connectionState else { return false }
+        return !listeningStore.isRefreshingRadio
+    }
+}
+
+private struct MobileRadioQueueRow: View {
+    let item: MobileRadioQueueItem
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Image(systemName: "dot.radiowaves.left.and.right")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color(red: 0.83, green: 0.06, blue: 0.09))
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.title)
+                    .font(.headline)
+                    .lineLimit(2)
+                if let artist = item.artistName {
+                    Text(artist)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                if let release = item.releaseName {
+                    Text(release)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer(minLength: 8)
+
+            Text(item.score, format: .number.precision(.fractionLength(2)))
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 4)
     }
 }
 
@@ -233,7 +477,7 @@ private struct MobileSocialMetric: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(value.formatted())
                 .font(.headline.monospacedDigit())
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -273,39 +517,5 @@ private struct MobileSocialListenRow: View {
             }
         }
         .padding(.vertical, 4)
-    }
-}
-
-private struct MobileDiscoveryPlaceholderView: View {
-    let title: String
-    let symbol: String
-    let detail: String
-
-    var body: some View {
-        VStack(spacing: 18) {
-            Image(symbolImageName)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 86, height: 86)
-                .accessibilityHidden(true)
-
-            ContentUnavailableView(
-                title,
-                systemImage: symbol,
-                description: Text(detail)
-            )
-        }
-        .navigationTitle(title)
-    }
-
-    private var symbolImageName: String {
-        switch title {
-        case "Recommendations":
-            return "OpenGraph"
-        case "Radio":
-            return "DiscoveryRadio"
-        default:
-            return "ListenPulse"
-        }
     }
 }

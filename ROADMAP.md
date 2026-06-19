@@ -61,6 +61,12 @@ Targets:
 
 - Expand playlist support.
 - Improve follow and public-user discovery flows.
+- Add ListenBrainz-style artist detail sheets on macOS and iOS, including
+  Wikipedia/Wikidata biography highlights when an artist identity can be
+  resolved through MusicBrainz.
+- Bring iOS recent-listen interactions to parity with macOS where possible:
+  swipe actions for delete, love/unlove, pin/unpin, and tap-through detail
+  routes for the recording, release, and artist.
 - Cache recent listens, stats, pins, and recommendations with clear refresh behavior.
 - Improve diagnostics for token, network, endpoint, and partial-data failures.
 - Continue using MBIDs where available and MSID fallback where needed.
@@ -84,6 +90,11 @@ Targets:
 
 - Public listening overlap.
 - Similar users and related artists.
+- Refine the iOS Discover Search entry point now that the placeholder is gone,
+  covering useful open-ecosystem searches for artists, recordings, and releases.
+- Refine the iOS Discover Radio entry point now that the placeholder is gone,
+  using ListenBrainz radio, recommendations, or affinity data to build playable
+  discovery queues where supported.
 - Recommendation-driven exploration.
 - Graph views that explain why a connection exists.
 - Local-first social analysis that still works when remote data is incomplete.
@@ -96,6 +107,8 @@ Targets:
 
 - Better filtering and tagging.
 - Versioned import/export formats.
+- Free listen/scrobble export from the iOS Account surface, reinforcing that
+  user-owned listening history is a core feature rather than a paid upgrade.
 - Playlist-compatible exports.
 - Optional flows from pins to obsessions and from vault items to playlists.
 
@@ -106,6 +119,11 @@ Make the app feel calmer, faster, and more discoverable.
 Targets:
 
 - Refine empty, loading, error, and partial-data states.
+- Add shared macOS/iOS localization infrastructure with `Localizable.xcstrings`,
+  starting with English and Spanish, and keep all visible product text ready to
+  follow the user's device language automatically.
+- Prepare a reviewed expansion path for additional locales after English and
+  Spanish, starting with French, German, Italian, and Portuguese.
 - Audit keyboard navigation and VoiceOver labels for primary controls.
 - Keep action icons consistent across dashboard, listens, charts, and vault contexts.
 - Continue splitting large cohesive views when new behavior would push them beyond their responsibility.
@@ -129,6 +147,8 @@ monitoring.
 Targets:
 
 - Finish physical-device validation for the current iOS scanner build.
+- Treat Apple Developer signing refresh and `tools/ios_device_validation.sh` as
+  the next release gate before tagging or shipping the iOS beta.
 - Keep Music library delta scanning and manual submission as the first reliable
   mobile scrobbling paths.
 - Add source metadata to ListenBrainz submissions before adding Spotify,

@@ -16,6 +16,8 @@ struct OpenMusicEntityDetails: Equatable {
     let imageURL: String?
     let artistImageURL: String?
     let artistSummary: String?
+    let artistSummaryURL: URL?
+    let artistSummaryLanguageCode: String?
     let disambiguation: String?
     let country: String?
     let type: String?
@@ -25,6 +27,24 @@ struct OpenMusicEntityDetails: Equatable {
     var hasResolvedMusicBrainzEntity: Bool {
         recordingMBID != nil || artistMBID != nil || releaseMBID != nil
     }
+}
+
+enum OpenMusicSearchKind: String, CaseIterable {
+    case recording
+    case artist
+    case release
+}
+
+struct OpenMusicSearchResult: Identifiable, Equatable {
+    let id: String
+    let kind: OpenMusicSearchKind
+    let title: String
+    let subtitle: String?
+    let detail: String?
+    let recordingMBID: String?
+    let artistMBID: String?
+    let releaseMBID: String?
+    let imageURL: String?
 }
 
 final class MusicBrainzService {
@@ -98,12 +118,46 @@ final class MusicBrainzService {
             imageURL: imageURL,
             artistImageURL: artistSupplement.imageURL,
             artistSummary: artistSupplement.summary,
+            artistSummaryURL: artistSupplement.summaryURL,
+            artistSummaryLanguageCode: artistSupplement.summaryLanguageCode,
             disambiguation: resolvedRecording?.disambiguation?.nilIfBlank ?? artistIdentity?.disambiguation?.nilIfBlank,
             country: artistIdentity?.country?.nilIfBlank,
             type: artistIdentity?.type?.nilIfBlank ?? resolvedRelease?.status?.nilIfBlank,
             tags: Array(tags.prefix(12)),
             links: links(recordingMBID: recordingMBID, artistMBID: artistMBID, releaseMBID: releaseMBID)
         )
+    }
+
+    func search(query: String, kind: OpenMusicSearchKind, limit: Int = 10) async throws -> [OpenMusicSearchResult] {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [] }
+
+        switch kind {
+        case .recording:
+            let response: RecordingSearchResponse = try await search(
+                entity: "recording",
+                query: trimmed,
+                includes: "artist-credits+releases+tags",
+                limit: limit
+            )
+            return response.recordings.map(recordingSearchResult)
+        case .artist:
+            let response: ArtistSearchResponse = try await search(
+                entity: "artist",
+                query: trimmed,
+                includes: "tags+url-rels",
+                limit: limit
+            )
+            return response.artists.map(artistSearchResult)
+        case .release:
+            let response: ReleaseSearchResponse = try await search(
+                entity: "release",
+                query: trimmed,
+                includes: "artist-credits+tags",
+                limit: limit
+            )
+            return response.releases.map(releaseSearchResult)
+        }
     }
 
     func fetchCoverArt(releaseMBID: String) async throws -> String? {
@@ -166,11 +220,11 @@ final class MusicBrainzService {
         for candidateTitle in recordingTitleCandidates(title) {
             let queries = recordingQueries(title: candidateTitle, artist: artist, release: release)
             for query in queries {
-                let response: RecordingSearchResponse = try await search(
-                    entity: "recording",
-                    query: query,
-                    includes: "artist-credits+releases+tags"
-                )
+        let response: RecordingSearchResponse = try await search(
+            entity: "recording",
+            query: query,
+            includes: "artist-credits+releases+tags"
+        )
                 if firstCandidate == nil {
                     firstCandidate = response.recordings.first
                 }
@@ -245,7 +299,7 @@ final class MusicBrainzService {
             ?? fallbackResponse.releases.first
     }
 
-    private func search<T: Decodable>(entity: String, query: String, includes: String) async throws -> T {
+    private func search<T: Decodable>(entity: String, query: String, includes: String, limit: Int = 5) async throws -> T {
         var components = URLComponents(
             url: baseURL.appendingPathComponent(entity),
             resolvingAgainstBaseURL: false
@@ -253,7 +307,7 @@ final class MusicBrainzService {
         components?.queryItems = [
             URLQueryItem(name: "query", value: query),
             URLQueryItem(name: "fmt", value: "json"),
-            URLQueryItem(name: "limit", value: "5"),
+            URLQueryItem(name: "limit", value: "\(max(1, min(limit, 25)))"),
             URLQueryItem(name: "inc", value: includes)
         ]
         guard let url = components?.url else { throw MusicBrainzError.invalidResponse }
@@ -270,6 +324,55 @@ final class MusicBrainzService {
             throw MusicBrainzError.api(message: "MusicBrainz returned HTTP \(http.statusCode).")
         }
         return try JSONDecoder().decode(T.self, from: data)
+    }
+
+    private func recordingSearchResult(_ recording: MusicBrainzRecording) -> OpenMusicSearchResult {
+        let artist = recording.artistCredit?.first?.artist
+        let release = recording.releases?.first
+        return OpenMusicSearchResult(
+            id: "recording-\(recording.id)",
+            kind: .recording,
+            title: recording.title,
+            subtitle: artist?.name.nilIfBlank,
+            detail: release?.title.nilIfBlank,
+            recordingMBID: recording.id,
+            artistMBID: artist?.id.nilIfBlank,
+            releaseMBID: release?.id.nilIfBlank,
+            imageURL: release?.id.nilIfBlank.map { "https://coverartarchive.org/release/\($0)/front-250" }
+        )
+    }
+
+    private func artistSearchResult(_ artist: MusicBrainzArtist) -> OpenMusicSearchResult {
+        let detail = [artist.type?.nilIfBlank, artist.country?.nilIfBlank]
+            .compactMap { $0 }
+            .joined(separator: " · ")
+            .nilIfBlank
+        return OpenMusicSearchResult(
+            id: "artist-\(artist.id)",
+            kind: .artist,
+            title: artist.name,
+            subtitle: artist.disambiguation?.nilIfBlank,
+            detail: detail,
+            recordingMBID: nil,
+            artistMBID: artist.id,
+            releaseMBID: nil,
+            imageURL: nil
+        )
+    }
+
+    private func releaseSearchResult(_ release: MusicBrainzRelease) -> OpenMusicSearchResult {
+        let artist = release.artistCredit?.first?.artist
+        return OpenMusicSearchResult(
+            id: "release-\(release.id)",
+            kind: .release,
+            title: release.title,
+            subtitle: artist?.name.nilIfBlank,
+            detail: release.status?.nilIfBlank,
+            recordingMBID: nil,
+            artistMBID: artist?.id.nilIfBlank,
+            releaseMBID: release.id,
+            imageURL: "https://coverartarchive.org/release/\(release.id)/front-250"
+        )
     }
 
     private func fetchJSON<T: Decodable>(url: URL) async throws -> T {
@@ -298,11 +401,14 @@ final class MusicBrainzService {
             return .empty
         }
 
-        async let summary = fetchWikipediaSummary(title: entity.englishWikipediaTitle)
+        let summaryTarget = entity.wikipediaSummaryTarget(preferredLanguageCodes: preferredWikipediaLanguageCodes())
+        async let summary = fetchWikipediaSummary(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode)
         let imageURL = entity.imageFileName.flatMap(commonsImageURL(fileName:))
         return MusicBrainzArtistSupplement(
             imageURL: imageURL,
-            summary: await summary?.nilIfBlank
+            summary: await summary?.nilIfBlank,
+            summaryURL: wikipediaURL(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode),
+            summaryLanguageCode: summaryTarget?.languageCode
         )
     }
 
@@ -313,21 +419,44 @@ final class MusicBrainzService {
             throw MusicBrainzError.invalidResponse
         }
         return WikidataEntitySummary(
-            englishWikipediaTitle: entity.sitelinks?["enwiki"]?.title,
+            wikipediaTitlesByLanguage: entity.wikipediaTitlesByLanguage,
             imageFileName: entity.claims?["P18"]?.first?.mainsnak.datavalue?.value
         )
     }
 
-    private func fetchWikipediaSummary(title: String?) async -> String? {
-        guard let title = title?.nilIfBlank else { return nil }
+    private func fetchWikipediaSummary(title: String?, languageCode: String?) async -> String? {
+        guard let title = title?.nilIfBlank,
+              let languageCode = languageCode?.nilIfBlank else { return nil }
         var allowed = CharacterSet.urlPathAllowed
         allowed.remove(charactersIn: "#?")
         guard let encoded = title.addingPercentEncoding(withAllowedCharacters: allowed),
-              let url = URL(string: "https://en.wikipedia.org/api/rest_v1/page/summary/\(encoded)") else {
+              let url = URL(string: "https://\(languageCode).wikipedia.org/api/rest_v1/page/summary/\(encoded)") else {
             return nil
         }
         let response: WikipediaSummaryResponse? = try? await fetchJSON(url: url)
         return response?.extract
+    }
+
+    private func wikipediaURL(title: String?, languageCode: String?) -> URL? {
+        guard let title = title?.nilIfBlank,
+              let languageCode = languageCode?.nilIfBlank else { return nil }
+        var allowed = CharacterSet.urlPathAllowed
+        allowed.remove(charactersIn: "#?")
+        guard let encoded = title.replacingOccurrences(of: " ", with: "_")
+            .addingPercentEncoding(withAllowedCharacters: allowed) else {
+            return nil
+        }
+        return URL(string: "https://\(languageCode).wikipedia.org/wiki/\(encoded)")
+    }
+
+    private func preferredWikipediaLanguageCodes() -> [String] {
+        let preferred = Locale.preferredLanguages.compactMap { language -> String? in
+            return Locale(identifier: language).language.languageCode?.identifier.nilIfBlank
+        }
+        return (preferred + ["en"])
+            .map { $0.lowercased() }
+            .filter { $0.range(of: #"^[a-z]{2,3}$"#, options: .regularExpression) != nil }
+            .uniqued()
     }
 
     private func commonsImageURL(fileName: String) -> String? {
@@ -570,6 +699,7 @@ private struct MusicBrainzRelease: Decodable {
     let id: String
     let title: String
     let status: String?
+    let artistCredit: [MusicBrainzArtistCredit]?
     let tags: [MusicBrainzTag]?
     let releaseGroup: MusicBrainzReleaseGroup?
     let coverArtArchive: MusicBrainzCoverArtArchive?
@@ -578,6 +708,7 @@ private struct MusicBrainzRelease: Decodable {
         case id
         case title
         case status
+        case artistCredit = "artist-credit"
         case tags
         case releaseGroup = "release-group"
         case coverArtArchive = "cover-art-archive"
@@ -619,13 +750,32 @@ private struct MusicBrainzRelationURL: Decodable {
 private struct MusicBrainzArtistSupplement {
     let imageURL: String?
     let summary: String?
+    let summaryURL: URL?
+    let summaryLanguageCode: String?
 
-    static let empty = MusicBrainzArtistSupplement(imageURL: nil, summary: nil)
+    static let empty = MusicBrainzArtistSupplement(
+        imageURL: nil,
+        summary: nil,
+        summaryURL: nil,
+        summaryLanguageCode: nil
+    )
 }
 
 private struct WikidataEntitySummary {
-    let englishWikipediaTitle: String?
+    let wikipediaTitlesByLanguage: [String: String]
     let imageFileName: String?
+
+    func wikipediaSummaryTarget(preferredLanguageCodes: [String]) -> (languageCode: String, title: String)? {
+        for languageCode in preferredLanguageCodes {
+            if let title = wikipediaTitlesByLanguage[languageCode]?.nilIfBlank {
+                return (languageCode, title)
+            }
+        }
+        if let title = wikipediaTitlesByLanguage["en"]?.nilIfBlank {
+            return ("en", title)
+        }
+        return nil
+    }
 }
 
 private struct WikidataEntityDataResponse: Decodable {
@@ -635,6 +785,20 @@ private struct WikidataEntityDataResponse: Decodable {
 private struct WikidataEntity: Decodable {
     let sitelinks: [String: WikidataSitelink]?
     let claims: [String: [WikidataClaim]]?
+
+    var wikipediaTitlesByLanguage: [String: String] {
+        guard let sitelinks else { return [:] }
+        return Dictionary(
+            uniqueKeysWithValues: sitelinks.compactMap { key, sitelink in
+                guard key.hasSuffix("wiki") else { return nil }
+                let languageCode = String(key.dropLast(4))
+                guard languageCode.range(of: #"^[a-z]{2,3}$"#, options: .regularExpression) != nil else {
+                    return nil
+                }
+                return (languageCode, sitelink.title)
+            }
+        )
+    }
 }
 
 private struct WikidataSitelink: Decodable {

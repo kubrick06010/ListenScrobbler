@@ -8,6 +8,7 @@ struct MobileAccountView: View {
     @State private var token = ""
     @State private var isPendingQueuePresented = false
     @State private var diagnosticsSnapshot: MobileDiagnosticsSnapshot?
+    @State private var listenExportSnapshot: MobileScrobbleExportSnapshot?
 
     var body: some View {
         Form {
@@ -115,6 +116,21 @@ struct MobileAccountView: View {
                     .foregroundStyle(.secondary)
             }
 
+            Section("Scrobble Export") {
+                LabeledContent("Loaded Listens", value: "\(listeningStore.recentListens.count)")
+                LabeledContent("Pending Retry", value: "\(musicLibraryScanner.pendingRetryCount)")
+
+                Button {
+                    musicLibraryScanner.refreshPendingScrobbles()
+                    listenExportSnapshot = MobileScrobbleExportSnapshot.make(
+                        listeningStore: listeningStore,
+                        pendingScrobbles: musicLibraryScanner.pendingScrobbles
+                    )
+                } label: {
+                    Label("Export Scrobbles", systemImage: "square.and.arrow.up")
+                }
+            }
+
             Section("Beta Diagnostics") {
                 LabeledContent("ListenBrainz", value: listeningStore.connectionState.statusText)
                 LabeledContent("Music Access", value: musicLibraryScanner.authorizationState.statusText)
@@ -148,6 +164,231 @@ struct MobileAccountView: View {
         }
         .sheet(item: $diagnosticsSnapshot) { snapshot in
             MobileDiagnosticsView(snapshot: snapshot)
+        }
+        .sheet(item: $listenExportSnapshot) { snapshot in
+            MobileScrobbleExportView(snapshot: snapshot)
+        }
+    }
+}
+
+private struct MobileScrobbleExportSnapshot: Identifiable {
+    let id = UUID()
+    let generatedAt: Date
+    let username: String
+    let listens: [MobileListenSummary]
+    let pendingScrobbles: [MobilePendingScrobble]
+
+    @MainActor
+    static func make(
+        listeningStore: MobileListeningStore,
+        pendingScrobbles: [MobilePendingScrobble]
+    ) -> MobileScrobbleExportSnapshot {
+        MobileScrobbleExportSnapshot(
+            generatedAt: Date(),
+            username: listeningStore.configuredUsername,
+            listens: listeningStore.recentListens,
+            pendingScrobbles: pendingScrobbles
+        )
+    }
+
+    var jsonText: String {
+        let payload = MobileScrobbleExportPayload(
+            generatedAt: generatedAt,
+            username: Self.nonBlank(username),
+            listens: listens.map(MobileScrobbleExportListen.init(listen:)),
+            pendingScrobbles: pendingScrobbles.map(MobileScrobbleExportPending.init(item:))
+        )
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
+        guard let data = try? encoder.encode(payload),
+              let text = String(data: data, encoding: .utf8) else {
+            return "{}"
+        }
+        return text
+    }
+
+    var csvText: String {
+        var rows = [
+            [
+                "kind",
+                "track",
+                "artist",
+                "release",
+                "listened_at",
+                "recording_mbid",
+                "recording_msid",
+                "artist_mbid",
+                "release_mbid",
+                "source",
+                "attempts",
+                "last_error"
+            ]
+        ]
+
+        rows.append(contentsOf: listens.map { listen in
+            [
+                "listen",
+                listen.trackName,
+                listen.artistName,
+                listen.releaseName ?? "",
+                listen.listenedAt.map(Self.isoDate) ?? "",
+                listen.recordingMBID ?? "",
+                listen.recordingMSID ?? "",
+                listen.artistMBID ?? "",
+                listen.releaseMBID ?? "",
+                "ListenBrainz",
+                "",
+                ""
+            ]
+        })
+
+        rows.append(contentsOf: pendingScrobbles.map { item in
+            [
+                "pending",
+                item.candidate.title,
+                item.candidate.artist,
+                item.candidate.album ?? "",
+                Self.isoDate(item.candidate.listenedAt),
+                "",
+                "",
+                "",
+                "",
+                item.candidate.source,
+                "\(item.attempts)",
+                item.lastError ?? ""
+            ]
+        })
+
+        return rows
+            .map { $0.map(Self.csvEscape).joined(separator: ",") }
+            .joined(separator: "\n")
+    }
+
+    private static func isoDate(_ date: Date) -> String {
+        ISO8601DateFormatter().string(from: date)
+    }
+
+    private static func csvEscape(_ value: String) -> String {
+        let escaped = value.replacingOccurrences(of: "\"", with: "\"\"")
+        return "\"\(escaped)\""
+    }
+
+    private static func nonBlank(_ value: String) -> String? {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+}
+
+private struct MobileScrobbleExportPayload: Codable {
+    let generatedAt: Date
+    let username: String?
+    let listens: [MobileScrobbleExportListen]
+    let pendingScrobbles: [MobileScrobbleExportPending]
+}
+
+private struct MobileScrobbleExportListen: Codable {
+    let trackName: String
+    let artistName: String
+    let releaseName: String?
+    let listenedAt: Date?
+    let recordingMBID: String?
+    let recordingMSID: String?
+    let artistMBID: String?
+    let releaseMBID: String?
+    let imageURL: String?
+
+    init(listen: MobileListenSummary) {
+        trackName = listen.trackName
+        artistName = listen.artistName
+        releaseName = listen.releaseName
+        listenedAt = listen.listenedAt
+        recordingMBID = listen.recordingMBID
+        recordingMSID = listen.recordingMSID
+        artistMBID = listen.artistMBID
+        releaseMBID = listen.releaseMBID
+        imageURL = listen.imageURL
+    }
+}
+
+private struct MobileScrobbleExportPending: Codable {
+    let title: String
+    let artist: String
+    let album: String?
+    let listenedAt: Date
+    let source: String
+    let attempts: Int
+    let lastError: String?
+
+    init(item: MobilePendingScrobble) {
+        title = item.candidate.title
+        artist = item.candidate.artist
+        album = item.candidate.album
+        listenedAt = item.candidate.listenedAt
+        source = item.candidate.source
+        attempts = item.attempts
+        lastError = item.lastError
+    }
+}
+
+private struct MobileScrobbleExportView: View {
+    @Environment(\.dismiss) private var dismiss
+    let snapshot: MobileScrobbleExportSnapshot
+    @State private var format: ExportFormat = .json
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                Picker("Format", selection: $format) {
+                    ForEach(ExportFormat.allCases) { format in
+                        Text(format.title).tag(format)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding()
+
+                ScrollView {
+                    Text(exportText)
+                        .font(.system(.caption, design: .monospaced))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .textSelection(.enabled)
+                        .padding()
+                }
+            }
+            .navigationTitle("Scrobble Export")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+
+                ToolbarItem(placement: .confirmationAction) {
+                    ShareLink(item: exportText) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                }
+            }
+        }
+    }
+
+    private var exportText: String {
+        switch format {
+        case .json:
+            return snapshot.jsonText
+        case .csv:
+            return snapshot.csvText
+        }
+    }
+
+    private enum ExportFormat: String, CaseIterable, Identifiable {
+        case json
+        case csv
+
+        var id: String { rawValue }
+
+        var title: String {
+            rawValue.uppercased()
         }
     }
 }
@@ -317,7 +558,7 @@ struct MobileOpenMusicOnboardingView: View {
 
                 HStack(spacing: 10) {
                     ForEach(["Scrobble", "Discover", "Export"], id: \.self) { label in
-                        Text(label)
+                        Text(LocalizedStringKey(label))
                             .font(.caption.weight(.semibold))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)

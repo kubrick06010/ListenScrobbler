@@ -27,14 +27,23 @@ ListenBrainz in `ListenScrobbler` should cover:
 - token-based account setup
 - `playing_now` and completed listen submission
 - durable queueing and per-backend diagnostics where applicable
+- free, portable listen/scrobble export from Account and local archive surfaces
 - recent listens and archive charts
+- recent-listen actions for delete, love/unlove, pin/unpin, and detail
+  navigation where the row has enough ListenBrainz or MusicBrainz identity
 - followers and following
 - similar users and compatibility
 - recommendations
+- iOS Discover search across open music identity and ListenBrainz user surfaces
+  where supported by available APIs
+- iOS Discover radio backed by ListenBrainz radio, recommendations, or affinity
+  data where available
 - pins
 - love/unlove recording feedback
 - playlists
 - artist geography
+- artist detail sheets with biography highlights sourced through
+  MusicBrainz-linked Wikidata/Wikipedia identities when available
 - radio and affinity-based discovery
 - metadata enrichment hooks that preserve MBIDs wherever possible
 
@@ -56,6 +65,14 @@ Already present in the app:
 Still incomplete:
 
 - compatibility view and overlap UX for comparing users
+- macOS/iOS artist biography sheets that match ListenBrainz's
+  open-metadata presentation pattern
+- iOS recent-listen parity for love/unlove, pin/unpin, and tap-through track,
+  release, and artist details
+- iOS Discover Search still uses a placeholder instead of real open-ecosystem
+  search results
+- iOS Discover Radio still uses a placeholder instead of real radio or
+  recommendation-backed discovery results
 - richer retry and rate-limit handling in the client core
 - OpenAPI-aligned fixtures for broader payload coverage
 - MusicBrainz enrichment and metadata quality surfacing
@@ -231,6 +248,9 @@ ListenBrainz playlists should not remain an isolated cloud feature inside the ap
 
 The medium-term direction is:
 
+- export user listening history for free from Account in an open, documented
+  format that can include ListenBrainz listens, local manual submissions, and
+  Music library scan results
 - export playlist-like content as JSPF-compatible artifacts
 - import public ListenBrainz playlists for local use
 - track unresolved MBIDs when local files cannot be matched
@@ -261,6 +281,9 @@ Fixtures should prefer payloads cross-checked against the ListenBrainz OpenAPI s
 
 1. Add compatibility UI and "artists in common" to `Social`.
 2. Refactor `ListenBrainzService` around a shared request pipeline with retry/backoff.
-3. Broaden OpenAPI-aligned fixtures and tests.
-4. Add JSPF export/import groundwork.
-5. Add MusicBrainz enrichment and provenance surfacing.
+3. Broaden OpenAPI-aligned fixtures and tests for mobile actions, Search, Radio,
+   export, and biography edge cases.
+4. Add shared macOS/iOS localization infrastructure with complete English and
+   Spanish string catalogs for visible app text.
+5. Add JSPF export/import groundwork.
+11. Add MusicBrainz enrichment and provenance surfacing.

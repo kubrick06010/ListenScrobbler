@@ -15,11 +15,11 @@ final class MusicLibraryScrobbleScanner: ObservableObject {
         var statusText: String {
             switch self {
             case .unknown:
-                return "Music library permission has not been requested."
+                return String(localized: "Music library permission has not been requested.")
             case .authorized:
-                return "Music library scanning is enabled."
+                return String(localized: "Music library scanning is enabled.")
             case .denied:
-                return "Music library access is unavailable."
+                return String(localized: "Music library access is unavailable.")
             }
         }
     }
@@ -62,7 +62,7 @@ final class MusicLibraryScrobbleScanner: ObservableObject {
         authorizationState = Self.authorizationState(from: status)
         guard status == .authorized else {
             logger.warning("Music library scan blocked by authorization status \(String(describing: status), privacy: .public)")
-            lastError = "Allow Media & Apple Music access in Settings to scan local plays."
+            lastError = String(localized: "Allow Media & Apple Music access in Settings to scan local plays.")
             return
         }
 

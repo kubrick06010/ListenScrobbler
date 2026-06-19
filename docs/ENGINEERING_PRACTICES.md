@@ -67,6 +67,13 @@ Use this layout for new or moved UI code:
 7. Run `xcodebuild -scheme ListenScrobbler -project ListenScrobbler.xcodeproj -configuration Debug build`.
 8. Run `xcodebuild -scheme ListenScrobbler -project ListenScrobbler.xcodeproj -configuration Debug test` when service logic, models, parsing, persistence, or important user flows change.
 
+## Branch Naming
+
+- Name development branches as `<Product>/<Objective>`.
+- Use the product or integration area as the first path component, and a short
+  kebab-case objective as the second component.
+- Example: `ListenBrainz/localization-foundation`.
+
 ## Review Checklist
 
 - Does the changed file still have one clear responsibility?
