@@ -317,7 +317,7 @@ struct MobileOpenMusicOnboardingView: View {
 
                 HStack(spacing: 10) {
                     ForEach(["Scrobble", "Discover", "Export"], id: \.self) { label in
-                        Text(label)
+                        Text(LocalizedStringKey(label))
                             .font(.caption.weight(.semibold))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)

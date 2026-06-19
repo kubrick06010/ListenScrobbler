@@ -114,7 +114,10 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(store.statsSnapshot?.topArtists.map(\.name), ["Stereolab"])
         XCTAssertEqual(store.statsSnapshot?.topReleases.map(\.name), ["Dots and Loops"])
         XCTAssertEqual(store.statsSnapshot?.topRecordings.map(\.trackName), ["French Disko"])
-        XCTAssertEqual(store.statsStatus, "Loaded month stats")
+        XCTAssertEqual(
+            store.statsStatus,
+            String.localizedStringWithFormat(String(localized: "Loaded %@ stats"), MobileStatsRange.month.title.lowercased())
+        )
         XCTAssertEqual(client.statsRefreshes.map(\.username), ["open-user"])
         XCTAssertEqual(client.statsRefreshes.map(\.range), [.month])
     }
@@ -138,7 +141,10 @@ final class MobileListeningStoreTests: XCTestCase {
 
         XCTAssertEqual(store.recommendedRecordings.map(\.title), ["Pack Yr Romantic Mind"])
         XCTAssertEqual(store.recommendedRecordings.map(\.recordingMBID), ["mbid-1"])
-        XCTAssertEqual(store.recommendationsStatus, "Loaded 1 recommendations")
+        XCTAssertEqual(
+            store.recommendationsStatus,
+            String.localizedStringWithFormat(String(localized: "%d recommendations loaded"), 1)
+        )
         XCTAssertEqual(client.recommendationRefreshes.map(\.username), ["open-user"])
         XCTAssertEqual(client.recommendationRefreshes.map(\.count), [12])
         XCTAssertEqual(client.recommendationRefreshes.map(\.offset), [0])
@@ -195,7 +201,10 @@ final class MobileListeningStoreTests: XCTestCase {
 
         let snapshot = store.widgetSnapshot(updatedAt: Date(timeIntervalSince1970: 1_700_000_111))
         XCTAssertEqual(snapshot.username, "open-user")
-        XCTAssertEqual(snapshot.connectionStatus, "open-user on ListenBrainz")
+        XCTAssertEqual(
+            snapshot.connectionStatus,
+            String.localizedStringWithFormat(String(localized: "%@ on ListenBrainz"), "open-user")
+        )
         XCTAssertEqual(snapshot.recentListen?.trackName, "Sketch for Summer")
         XCTAssertEqual(snapshot.currentPin?.trackName, "Otis")
         XCTAssertEqual(snapshot.recommendation?.title, "Pack Yr Romantic Mind")
@@ -240,7 +249,15 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(store.socialSnapshot?.following, ["alice", "bob"])
         XCTAssertEqual(store.socialSnapshot?.similarUsers.map(\.userName), ["carol"])
         XCTAssertEqual(store.socialSnapshot?.neighborListens.map(\.trackName), ["Outdoor Miner"])
-        XCTAssertEqual(store.socialStatus, "Loaded 2 followers, 2 following, and 1 neighbor listens")
+        XCTAssertEqual(
+            store.socialStatus,
+            String.localizedStringWithFormat(
+                String(localized: "%d followers, %d following, and %d neighbor listens loaded"),
+                2,
+                2,
+                1
+            )
+        )
         XCTAssertEqual(client.followerRefreshes, ["open-user"])
         XCTAssertEqual(client.followingRefreshes, ["open-user"])
         XCTAssertEqual(client.similarUserRefreshes.map(\.username), ["open-user"])

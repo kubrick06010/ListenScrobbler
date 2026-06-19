@@ -228,7 +228,7 @@ private struct WidgetHeader: View {
                 .frame(width: 24, height: 24)
                 .accessibilityHidden(true)
 
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
@@ -242,10 +242,10 @@ private struct EmptyWidgetState: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.headline)
                 .lineLimit(2)
-            Text(detail)
+            Text(LocalizedStringKey(detail))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(3)

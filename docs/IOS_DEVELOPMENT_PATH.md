@@ -63,6 +63,12 @@ ListenScrobbler's translation:
   adapters rather than macOS notification or AppleScript behavior.
 - Prefer detail routes that explain open identity: MusicBrainz IDs, ListenBrainz
   MSIDs, listener counts, tags, pins, and playlist/export actions.
+- Treat a tap on an iOS listen row as navigation into a track detail flow, with
+  linked recording, release, and artist screens rather than only inline row
+  expansion.
+- Keep row-level actions fast: delete remains a destructive swipe action, and
+  love/unlove plus pin/unpin should be available from swipe actions and the
+  detail screen when ListenBrainz identity is sufficient.
 - Reuse the existing queue and ListenBrainz client path before adding playback
   integrations.
 
@@ -146,10 +152,32 @@ xcodebuild test \
 
 ## Next Slices
 
+- Refresh Apple Developer credentials in Xcode and rerun
+  `tools/ios_device_validation.sh` as the next release gate for the current
+  iOS build.
 - Move more Foundation-only services into `ListenScrobblerCore` behind focused
   public facades.
 - Add device-level trace evidence for the current scanner build after installing
   it on a physical iPhone.
+- Add artist detail sheets that match ListenBrainz's open-metadata pattern:
+  compact artist identity, ListenBrainz context, MusicBrainz links, and
+  Wikipedia/Wikidata biography highlights when available.
+- Add iOS listen-row swipe actions for love/unlove and pin/unpin alongside
+  delete, with disabled or explanatory states when a row lacks MBID/MSID
+  identity.
+- Add iOS track detail navigation from recent listens, including recording
+  metadata, release context, artist drill-in, ListenBrainz actions, and external
+  MusicBrainz/ListenBrainz links.
+- Add a free Account export action for user listening history, covering recent
+  ListenBrainz listens and locally known scrobbles in an open, portable format.
+- Replace the iOS Discover Search "later build" placeholder with a working
+  search flow for artists, recordings/releases, and ListenBrainz users where
+  the underlying open APIs support it.
+- Replace the iOS Discover Radio "later build" placeholder with a working
+  radio/discovery flow backed by ListenBrainz radio prompts, recommendations,
+  or affinity data where available.
+- Localize visible iOS strings through shared string catalogs, starting with
+  English and Spanish, so the app follows the device language automatically.
 - Promote the pending queue from beta diagnostics to a fuller offline queue
   screen shared by manual submission and library scanning.
 - Replace remaining placeholder copy with beta-ready user-facing states.

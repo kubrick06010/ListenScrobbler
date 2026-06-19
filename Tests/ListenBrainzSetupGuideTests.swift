@@ -22,7 +22,7 @@ final class ListenBrainzSetupGuideTests: XCTestCase {
     }
 
     func testOnboardingKeepsOpenMusicStoryAndActions() {
-        XCTAssertEqual(ListenBrainzSetupGuide.eyebrow, "Open Music Setup")
+        XCTAssertEqual(ListenBrainzSetupGuide.eyebrow, String(localized: "Open Music Setup"))
         XCTAssertFalse(ListenBrainzSetupGuide.headline.isEmpty)
         XCTAssertFalse(ListenBrainzSetupGuide.summary.isEmpty)
         XCTAssertEqual(

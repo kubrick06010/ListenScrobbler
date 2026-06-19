@@ -233,7 +233,7 @@ private struct MobileSocialMetric: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(value.formatted())
                 .font(.headline.monospacedDigit())
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -290,12 +290,12 @@ private struct MobileDiscoveryPlaceholderView: View {
                 .accessibilityHidden(true)
 
             ContentUnavailableView(
-                title,
+                LocalizedStringKey(title),
                 systemImage: symbol,
-                description: Text(detail)
+                description: Text(LocalizedStringKey(detail))
             )
         }
-        .navigationTitle(title)
+        .navigationTitle(LocalizedStringKey(title))
     }
 
     private var symbolImageName: String {

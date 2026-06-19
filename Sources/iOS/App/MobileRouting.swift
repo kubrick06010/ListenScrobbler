@@ -12,13 +12,13 @@ enum MobileTab: String, CaseIterable, Hashable, Identifiable {
     var title: String {
         switch self {
         case .home:
-            return "Home"
+            return String(localized: "Home")
         case .listens:
-            return "Listens"
+            return String(localized: "Listens")
         case .discover:
-            return "Discover"
+            return String(localized: "Discover")
         case .account:
-            return "Account"
+            return String(localized: "Account")
         }
     }
 

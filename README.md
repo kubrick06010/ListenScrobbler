@@ -136,6 +136,7 @@ Implementation work should stay aligned with the open ecosystem instead of inven
 - `docs/IOS_DEVELOPMENT_PATH.md`
 - `docs/IOS_SOURCE_INTEGRATIONS_PLAN.md`
 - `docs/UI_UX_IMPROVEMENT_PLAN.md`
+- `docs/LOCALIZATION.md`
 - `docs/REPOSITORY_RELEASE_PLAN.md`
 - `docs/RELEASE_PROCESS.md`
 - `ROADMAP.md`

@@ -1,0 +1,1556 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ listens" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ escuchas"
+          }
+        }
+      }
+    },
+    "%@ on ListenBrainz" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ en ListenBrainz"
+          }
+        }
+      }
+    },
+    "%d followers, %d following, and %d neighbor listens loaded" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d seguidores, %d seguidos y %d escuchas cercanas cargadas"
+          }
+        }
+      }
+    },
+    "%d recommendations loaded" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d recomendaciones cargadas"
+          }
+        }
+      }
+    },
+    "A familiar listening timeline" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una cronología musical familiar"
+          }
+        }
+      }
+    },
+    "Account" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuenta"
+          }
+        }
+      }
+    },
+    "Add Existing Data" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir datos existentes"
+          }
+        }
+      }
+    },
+    "Album" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Álbum"
+          }
+        }
+      }
+    },
+    "All Time" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo"
+          }
+        }
+      }
+    },
+    "Allow Media & Apple Music access in Settings to scan local plays." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite el acceso a Contenido y Apple Music en Ajustes para analizar reproducciones locales."
+          }
+        }
+      }
+    },
+    "Artist" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Artista"
+          }
+        }
+      }
+    },
+    "Available in a later build." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disponible en una versión posterior."
+          }
+        }
+      }
+    },
+    "Baseline created. Future scans will submit new plays." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Línea base creada. Los próximos análisis enviarán nuevas reproducciones."
+          }
+        }
+      }
+    },
+    "Beta Diagnostics" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagnóstico beta"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
+        }
+      }
+    },
+    "Charts, pins, followers, similar users, and recommendations use open identifiers you can take elsewhere." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listas, pines, seguidores, usuarios similares y recomendaciones usan identificadores abiertos que puedes llevar a otros sitios."
+          }
+        }
+      }
+    },
+    "Clear" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vaciar"
+          }
+        }
+      }
+    },
+    "Connect" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectar"
+          }
+        }
+      }
+    },
+    "Connect ListenBrainz" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectar ListenBrainz"
+          }
+        }
+      }
+    },
+    "Connect ListenBrainz before submitting listens." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta ListenBrainz antes de enviar escuchas."
+          }
+        }
+      }
+    },
+    "Connect ListenBrainz or pull to refresh." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta ListenBrainz o desliza para actualizar."
+          }
+        }
+      }
+    },
+    "Connect ListenBrainz to load recommendations" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta ListenBrainz para cargar recomendaciones"
+          }
+        }
+      }
+    },
+    "Connect ListenBrainz to load social activity" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta ListenBrainz para cargar actividad social"
+          }
+        }
+      }
+    },
+    "Connect ListenBrainz to load stats" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta ListenBrainz para cargar estadísticas"
+          }
+        }
+      }
+    },
+    "Connect ListenBrainz in a few deliberate steps." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta ListenBrainz en unos pocos pasos claros."
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
+        }
+      }
+    },
+    "Copy ListenBrainz Token" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar token de ListenBrainz"
+          }
+        }
+      }
+    },
+    "Copy your user token" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia tu token de usuario"
+          }
+        }
+      }
+    },
+    "Create Account" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear cuenta"
+          }
+        }
+      }
+    },
+    "Create MusicBrainz Account" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear cuenta de MusicBrainz"
+          }
+        }
+      }
+    },
+    "Create or sign in with MusicBrainz, copy your ListenBrainz user token, validate it in ListenScrobbler, then run one test submission or library scan. No password is stored in the app." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crea una cuenta o inicia sesión con MusicBrainz, copia tu token de usuario de ListenBrainz, valídalo en ListenScrobbler y luego haz un envío de prueba o un análisis de biblioteca. La app no guarda ninguna contraseña."
+          }
+        }
+      }
+    },
+    "Create or sign in to MusicBrainz" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crea una cuenta o inicia sesión en MusicBrainz"
+          }
+        }
+      }
+    },
+    "Current Pin" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pin actual"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar"
+          }
+        }
+      }
+    },
+    "Delete Listen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar escucha"
+          }
+        }
+      }
+    },
+    "Delete this ListenBrainz listen?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar esta escucha de ListenBrainz?"
+          }
+        }
+      }
+    },
+    "Destination" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Destino"
+          }
+        }
+      }
+    },
+    "Detected" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detectadas"
+          }
+        }
+      }
+    },
+    "Diagnostics" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagnóstico"
+          }
+        }
+      }
+    },
+    "Disconnect" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desconectar"
+          }
+        }
+      }
+    },
+    "Discover" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descubrir"
+          }
+        }
+      }
+    },
+    "Discovery" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descubrimiento"
+          }
+        }
+      }
+    },
+    "Discovery without a locked graph" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descubrimiento sin grafo cerrado"
+          }
+        }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Duration Minutes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minutos de duracion"
+          }
+        }
+      }
+    },
+    "Duration Seconds" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segundos de duracion"
+          }
+        }
+      }
+    },
+    "Enable submissions" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activa los envios"
+          }
+        }
+      }
+    },
+    "Export" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar"
+          }
+        }
+      }
+    },
+    "Export Diagnostics" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar diagnostico"
+          }
+        }
+      }
+    },
+    "Failed" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fallidas"
+          }
+        }
+      }
+    },
+    "Failed to load recommendations: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron cargar las recomendaciones: %@"
+          }
+        }
+      }
+    },
+    "Failed to load social activity: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo cargar la actividad social: %@"
+          }
+        }
+      }
+    },
+    "Failed to load stats: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron cargar las estadísticas: %@"
+          }
+        }
+      }
+    },
+    "Followers" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguidores"
+          }
+        }
+      }
+    },
+    "Following" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiendo"
+          }
+        }
+      }
+    },
+    "Guided Setup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuracion guiada"
+          }
+        }
+      }
+    },
+    "Home" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicio"
+          }
+        }
+      }
+    },
+    "Keep ListenBrainz enabled, choose whether to send now playing and completed listens, then save the settings." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén ListenBrainz activo, elige si quieres enviar ahora en reproducción y escuchas completadas, y guarda los ajustes."
+          }
+        }
+      }
+    },
+    "Listen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escucha"
+          }
+        }
+      }
+    },
+    "ListenBrainz schedules deletions, so counts may update after the next hourly cleanup." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ListenBrainz programa las eliminaciones, asi que los recuentos pueden actualizarse tras la siguiente limpieza horaria."
+          }
+        }
+      }
+    },
+    "ListenBrainz Status" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado de ListenBrainz"
+          }
+        }
+      }
+    },
+    "ListenBrainz uses your MusicBrainz account. Sign in on the web first so the token page can show your account token." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ListenBrainz usa tu cuenta de MusicBrainz. Inicia sesión primero en la web para que la página del token pueda mostrar tu token de cuenta."
+          }
+        }
+      }
+    },
+    "ListenScrobbler Status" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado de ListenScrobbler"
+          }
+        }
+      }
+    },
+    "ListenScrobbler submits listens to ListenBrainz and uses official ListenBrainz logo assets from the MetaBrainz Design System." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ListenScrobbler envía escuchas a ListenBrainz y usa recursos oficiales del logotipo de ListenBrainz del sistema de diseño de MetaBrainz."
+          }
+        }
+      }
+    },
+    "Listened" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuchado"
+          }
+        }
+      }
+    },
+    "Listens" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuchas"
+          }
+        }
+      }
+    },
+    "Loading %@ stats" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando estadísticas de %@"
+          }
+        }
+      }
+    },
+    "Loaded %@ stats" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estadisticas de %@ cargadas"
+          }
+        }
+      }
+    },
+    "Loading ListenBrainz" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando ListenBrainz"
+          }
+        }
+      }
+    },
+    "Loading recommendations" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando recomendaciones"
+          }
+        }
+      }
+    },
+    "Loading social activity" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando actividad social"
+          }
+        }
+      }
+    },
+    "Manual Scrobble" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scrobble manual"
+          }
+        }
+      }
+    },
+    "Minutes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minutos"
+          }
+        }
+      }
+    },
+    "Mobile Scope" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alcance móvil"
+          }
+        }
+      }
+    },
+    "Month" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mes"
+          }
+        }
+      }
+    },
+    "Music Access" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceso a música"
+          }
+        }
+      }
+    },
+    "Music Library Scrobbling" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scrobbling de biblioteca musical"
+          }
+        }
+      }
+    },
+    "Music library access is unavailable." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El acceso a la biblioteca musical no está disponible."
+          }
+        }
+      }
+    },
+    "Music library permission has not been requested." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no se ha solicitado permiso para la biblioteca musical."
+          }
+        }
+      }
+    },
+    "Music library scanning compares local play counts with a saved baseline. The first scan does not submit old history; later scans submit detected new plays to ListenBrainz. Failed submissions stay pending for the next scan." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El análisis de biblioteca compara los recuentos locales con una línea base guardada. El primer análisis no envía historial antiguo; los análisis posteriores envían nuevas reproducciones detectadas a ListenBrainz. Los envíos fallidos quedan pendientes para el siguiente análisis."
+          }
+        }
+      }
+    },
+    "Music library scanning is enabled." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El análisis de biblioteca musical está activado."
+          }
+        }
+      }
+    },
+    "No discovery yet" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay descubrimiento"
+          }
+        }
+      }
+    },
+    "No listens loaded" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay escuchas cargadas"
+          }
+        }
+      }
+    },
+    "No new Music library plays detected." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han detectado nuevas reproducciones de la biblioteca musical."
+          }
+        }
+      }
+    },
+    "No recommendations returned" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se recibieron recomendaciones"
+          }
+        }
+      }
+    },
+    "No recent listen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin escucha reciente"
+          }
+        }
+      }
+    },
+    "Now Playing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonando ahora"
+          }
+        }
+      }
+    },
+    "Open Add Data" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Add Data"
+          }
+        }
+      }
+    },
+    "Open Discovery" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir descubrimiento"
+          }
+        }
+      }
+    },
+    "Open ListenScrobbler" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir ListenScrobbler"
+          }
+        }
+      }
+    },
+    "Open Manual Scrobble" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir scrobble manual"
+          }
+        }
+      }
+    },
+    "Open Music Setup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configuración de música abierta"
+          }
+        }
+      }
+    },
+    "Open Onboarding" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir bienvenida"
+          }
+        }
+      }
+    },
+    "Open Token Page" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir página del token"
+          }
+        }
+      }
+    },
+    "Open User Token" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir token de usuario"
+          }
+        }
+      }
+    },
+    "Optional: import older history" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opcional: importa historial antiguo"
+          }
+        }
+      }
+    },
+    "Paste a ListenBrainz token." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pega un token de ListenBrainz."
+          }
+        }
+      }
+    },
+    "Paste the token in ListenScrobbler." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pega el token en ListenScrobbler."
+          }
+        }
+      }
+    },
+    "Pending Queue" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cola pendiente"
+          }
+        }
+      }
+    },
+    "Pending Retry" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentos pendientes"
+          }
+        }
+      }
+    },
+    "Pinned" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fijada"
+          }
+        }
+      }
+    },
+    "Radio" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radio"
+          }
+        }
+      }
+    },
+    "Range" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rango"
+          }
+        }
+      }
+    },
+    "Recent Listen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escucha reciente"
+          }
+        }
+      }
+    },
+    "Recent listens, now playing state, manual submissions, and library scans stay quick to reach." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las escuchas recientes, el estado de reproducción, los envíos manuales y los análisis de biblioteca siguen siempre a mano."
+          }
+        }
+      }
+    },
+    "Recommended" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recomendada"
+          }
+        }
+      }
+    },
+    "Recommendations" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recomendaciones"
+          }
+        }
+      }
+    },
+    "Refresh Discover" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar Descubrir"
+          }
+        }
+      }
+    },
+    "Refresh ListenBrainz" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar ListenBrainz"
+          }
+        }
+      }
+    },
+    "Refresh ListenScrobbler Widgets" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar widgets de ListenScrobbler"
+          }
+        }
+      }
+    },
+    "Refresh Recommendations" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar recomendaciones"
+          }
+        }
+      }
+    },
+    "Refresh Social" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar social"
+          }
+        }
+      }
+    },
+    "Refresh ListenScrobbler to update ListenBrainz." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualiza ListenScrobbler para actualizar ListenBrainz."
+          }
+        }
+      }
+    },
+    "Refresh recommendations in ListenScrobbler." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualiza las recomendaciones en ListenScrobbler."
+          }
+        }
+      }
+    },
+    "Refreshing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizando"
+          }
+        }
+      }
+    },
+    "Repeat Recent Listen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repetir escucha reciente"
+          }
+        }
+      }
+    },
+    "Reset Scan Baseline" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restablecer línea base"
+          }
+        }
+      }
+    },
+    "Scan Music Library" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analizar biblioteca musical"
+          }
+        }
+      }
+    },
+    "Scanning" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analizando"
+          }
+        }
+      }
+    },
+    "Scrobble" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scrobble"
+          }
+        }
+      }
+    },
+    "Search" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar"
+          }
+        }
+      }
+    },
+    "Seconds" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segundos"
+          }
+        }
+      }
+    },
+    "Setup checklist" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lista de configuracion"
+          }
+        }
+      }
+    },
+    "Share" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir"
+          }
+        }
+      }
+    },
+    "Show ListenBrainz connection state and queued mobile listens." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra el estado de conexión de ListenBrainz y las escuchas móviles en cola."
+          }
+        }
+      }
+    },
+    "Show the current pin or first ListenBrainz recommendation." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra el pin actual o la primera recomendacion de ListenBrainz."
+          }
+        }
+      }
+    },
+    "Show the latest ListenBrainz listen captured by ListenScrobbler." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra la última escucha de ListenBrainz capturada por ListenScrobbler."
+          }
+        }
+      }
+    },
+    "Similar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Similares"
+          }
+        }
+      }
+    },
+    "Skip" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omitir"
+          }
+        }
+      }
+    },
+    "Social Feed" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actividad social"
+          }
+        }
+      }
+    },
+    "Start Scrobbling" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empezar scrobbling"
+          }
+        }
+      }
+    },
+    "Stats" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estadisticas"
+          }
+        }
+      }
+    },
+    "Submit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar"
+          }
+        }
+      }
+    },
+    "Submit Manual Scrobble" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar scrobble manual"
+          }
+        }
+      }
+    },
+    "Submitted %d new plays." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d nuevas reproducciones enviadas."
+          }
+        }
+      }
+    },
+    "Submitted %d of %d detected plays. %d pending retry." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviadas %d de %d reproducciones detectadas. %d pendiente de reintento."
+          }
+        }
+      }
+    },
+    "Submitted %d pending plays." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d reproducciones pendientes enviadas."
+          }
+        }
+      }
+    },
+    "Submitted %d pending plays. %d still pending retry." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d reproducciones pendientes enviadas. %d siguen pendientes de reintento."
+          }
+        }
+      }
+    },
+    "Submitted to ListenBrainz." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviado a ListenBrainz."
+          }
+        }
+      }
+    },
+    "Submitted %@ to ListenBrainz." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ enviado a ListenBrainz."
+          }
+        }
+      }
+    },
+    "Title" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Título"
+          }
+        }
+      }
+    },
+    "Top Artists" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Artistas principales"
+          }
+        }
+      }
+    },
+    "Top Releases" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Releases principales"
+          }
+        }
+      }
+    },
+    "Top Tracks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canciones principales"
+          }
+        }
+      }
+    },
+    "Track" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancion"
+          }
+        }
+      }
+    },
+    "Track Title" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Título de canción"
+          }
+        }
+      }
+    },
+    "Updated %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizado %@"
+          }
+        }
+      }
+    },
+    "Use ListenBrainz's Add Data page for supported imports. ListenScrobbler does not require web music-service settings to submit local or manual listens." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa la página Add Data de ListenBrainz para importaciones compatibles. ListenScrobbler no necesita ajustes web de servicios musicales para enviar escuchas locales o manuales."
+          }
+        }
+      }
+    },
+    "Use it to sign in to ListenBrainz." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Úsala para iniciar sesión en ListenBrainz."
+          }
+        }
+      }
+    },
+    "User token" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token de usuario"
+          }
+        }
+      }
+    },
+    "Verify with one listen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica con una escucha"
+          }
+        }
+      }
+    },
+    "Week" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semana"
+          }
+        }
+      }
+    },
+    "What carries forward" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo que se mantiene"
+          }
+        }
+      }
+    },
+    "Year" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Año"
+          }
+        }
+      }
+    },
+    "Your account stays portable" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu cuenta sigue siendo portable"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -47,10 +47,10 @@ public enum MobileStatsRange: String, CaseIterable, Identifiable {
 
     public var title: String {
         switch self {
-        case .week: return "Week"
-        case .month: return "Month"
-        case .year: return "Year"
-        case .allTime: return "All Time"
+        case .week: return String(localized: "Week")
+        case .month: return String(localized: "Month")
+        case .year: return String(localized: "Year")
+        case .allTime: return String(localized: "All Time")
         }
     }
 }
@@ -185,11 +185,11 @@ public final class MobileListeningStore: ObservableObject {
         public var statusText: String {
             switch self {
             case .disconnected:
-                return "Connect ListenBrainz"
+                return String(localized: "Connect ListenBrainz")
             case let .connected(username):
-                return "\(username) on ListenBrainz"
+                return String.localizedStringWithFormat(String(localized: "%@ on ListenBrainz"), username)
             case .loading:
-                return "Loading ListenBrainz"
+                return String(localized: "Loading ListenBrainz")
             case let .failed(message):
                 return message
             }
@@ -200,11 +200,11 @@ public final class MobileListeningStore: ObservableObject {
     @Published public private(set) var recentListens: [MobileListenSummary] = []
     @Published public private(set) var currentPin: MobilePinnedRecording?
     @Published public private(set) var statsSnapshot: MobileStatsSnapshot?
-    @Published public private(set) var statsStatus = "Connect ListenBrainz to load stats"
+    @Published public private(set) var statsStatus = String(localized: "Connect ListenBrainz to load stats")
     @Published public private(set) var recommendedRecordings: [MobileRecommendedRecording] = []
-    @Published public private(set) var recommendationsStatus = "Connect ListenBrainz to load recommendations"
+    @Published public private(set) var recommendationsStatus = String(localized: "Connect ListenBrainz to load recommendations")
     @Published public private(set) var socialSnapshot: MobileSocialSnapshot?
-    @Published public private(set) var socialStatus = "Connect ListenBrainz to load social activity"
+    @Published public private(set) var socialStatus = String(localized: "Connect ListenBrainz to load social activity")
     @Published public private(set) var isRefreshing = false
     @Published public private(set) var isRefreshingStats = false
     @Published public private(set) var isRefreshingRecommendations = false
@@ -259,7 +259,7 @@ public final class MobileListeningStore: ObservableObject {
         let trimmedToken = token.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedToken.isEmpty else {
             logger.warning("ListenBrainz connect rejected empty token")
-            connectionState = .failed("Paste a ListenBrainz token.")
+            connectionState = .failed(String(localized: "Paste a ListenBrainz token."))
             return
         }
 
@@ -315,11 +315,11 @@ public final class MobileListeningStore: ObservableObject {
         recentListens = []
         currentPin = nil
         statsSnapshot = nil
-        statsStatus = "Connect ListenBrainz to load stats"
+        statsStatus = String(localized: "Connect ListenBrainz to load stats")
         recommendedRecordings = []
-        recommendationsStatus = "Connect ListenBrainz to load recommendations"
+        recommendationsStatus = String(localized: "Connect ListenBrainz to load recommendations")
         socialSnapshot = nil
-        socialStatus = "Connect ListenBrainz to load social activity"
+        socialStatus = String(localized: "Connect ListenBrainz to load social activity")
         connectionState = .disconnected
         widgetSnapshotStore.clear()
         persistWidgetSnapshot()
@@ -371,14 +371,14 @@ public final class MobileListeningStore: ObservableObject {
 
     public func refreshStats(range: MobileStatsRange = .week) async {
         guard case let .connected(username) = connectionState else {
-            statsStatus = "Connect ListenBrainz to load stats"
+            statsStatus = String(localized: "Connect ListenBrainz to load stats")
             statsSnapshot = nil
             return
         }
 
         logger.info("ListenBrainz mobile stats refresh started for user \(username, privacy: .public)")
         isRefreshingStats = true
-        statsStatus = "Loading \(range.title.lowercased()) stats"
+        statsStatus = String.localizedStringWithFormat(String(localized: "Loading %@ stats"), range.title.lowercased())
         defer { isRefreshingStats = false }
 
         do {
@@ -388,24 +388,24 @@ public final class MobileListeningStore: ObservableObject {
                 count: 8
             )
             statsSnapshot = MobileStatsSnapshot(snapshot: snapshot, range: range)
-            statsStatus = "Loaded \(range.title.lowercased()) stats"
+            statsStatus = String.localizedStringWithFormat(String(localized: "Loaded %@ stats"), range.title.lowercased())
             logger.info("ListenBrainz mobile stats refresh succeeded with \(self.statsSnapshot?.topArtists.count ?? 0, privacy: .public) artists")
         } catch {
             logger.error("ListenBrainz mobile stats refresh failed: \(error.localizedDescription, privacy: .public)")
-            statsStatus = "Failed to load stats: \(error.localizedDescription)"
+            statsStatus = String.localizedStringWithFormat(String(localized: "Failed to load stats: %@"), error.localizedDescription)
         }
     }
 
     public func refreshRecommendations() async {
         guard case let .connected(username) = connectionState else {
-            recommendationsStatus = "Connect ListenBrainz to load recommendations"
+            recommendationsStatus = String(localized: "Connect ListenBrainz to load recommendations")
             recommendedRecordings = []
             return
         }
 
         logger.info("ListenBrainz mobile recommendations refresh started for user \(username, privacy: .public)")
         isRefreshingRecommendations = true
-        recommendationsStatus = "Loading recommendations"
+        recommendationsStatus = String(localized: "Loading recommendations")
         defer { isRefreshingRecommendations = false }
 
         do {
@@ -416,27 +416,27 @@ public final class MobileListeningStore: ObservableObject {
             )
             recommendedRecordings = recommendations.map(MobileRecommendedRecording.init(recommendation:))
             recommendationsStatus = recommendedRecordings.isEmpty
-                ? "No recommendations returned"
-                : "Loaded \(recommendedRecordings.count) recommendations"
+                ? String(localized: "No recommendations returned")
+                : String.localizedStringWithFormat(String(localized: "%d recommendations loaded"), recommendedRecordings.count)
             persistWidgetSnapshot()
             logger.info("ListenBrainz mobile recommendations refresh succeeded with \(self.recommendedRecordings.count, privacy: .public) recordings")
         } catch {
             logger.error("ListenBrainz mobile recommendations refresh failed: \(error.localizedDescription, privacy: .public)")
-            recommendationsStatus = "Failed to load recommendations: \(error.localizedDescription)"
+            recommendationsStatus = String.localizedStringWithFormat(String(localized: "Failed to load recommendations: %@"), error.localizedDescription)
             persistWidgetSnapshot()
         }
     }
 
     public func refreshSocial() async {
         guard case let .connected(username) = connectionState else {
-            socialStatus = "Connect ListenBrainz to load social activity"
+            socialStatus = String(localized: "Connect ListenBrainz to load social activity")
             socialSnapshot = nil
             return
         }
 
         logger.info("ListenBrainz mobile social refresh started for user \(username, privacy: .public)")
         isRefreshingSocial = true
-        socialStatus = "Loading social activity"
+        socialStatus = String(localized: "Loading social activity")
         defer { isRefreshingSocial = false }
 
         do {
@@ -468,11 +468,16 @@ public final class MobileListeningStore: ObservableObject {
                 neighborListens: listens.map(MobileSocialListen.init(listen:)),
                 fetchedAt: .now
             )
-            socialStatus = "Loaded \(resolvedFollowers.count) followers, \(resolvedFollowing.count) following, and \(listens.count) neighbor listens"
+            socialStatus = String.localizedStringWithFormat(
+                String(localized: "%d followers, %d following, and %d neighbor listens loaded"),
+                resolvedFollowers.count,
+                resolvedFollowing.count,
+                listens.count
+            )
             logger.info("ListenBrainz mobile social refresh succeeded with \(listens.count, privacy: .public) neighbor listens")
         } catch {
             logger.error("ListenBrainz mobile social refresh failed: \(error.localizedDescription, privacy: .public)")
-            socialStatus = "Failed to load social activity: \(error.localizedDescription)"
+            socialStatus = String.localizedStringWithFormat(String(localized: "Failed to load social activity: %@"), error.localizedDescription)
         }
     }
 
@@ -570,7 +575,7 @@ public enum MobileListeningError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .listenBrainzDisconnected:
-            return "Connect ListenBrainz before submitting listens."
+            return String(localized: "Connect ListenBrainz before submitting listens.")
         }
     }
 }
