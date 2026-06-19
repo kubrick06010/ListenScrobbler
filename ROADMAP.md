@@ -61,10 +61,10 @@ Targets:
 
 - Expand playlist support.
 - Improve follow and public-user discovery flows.
-- Add ListenBrainz-style artist detail sheets on macOS and iOS, including
+- Refine ListenBrainz-style artist detail sheets on macOS and iOS, including
   Wikipedia/Wikidata biography highlights when an artist identity can be
   resolved through MusicBrainz.
-- Bring iOS recent-listen interactions to parity with macOS where possible:
+- Broaden iOS recent-listen parity with macOS where possible, building on
   swipe actions for delete, love/unlove, pin/unpin, and tap-through detail
   routes for the recording, release, and artist.
 - Cache recent listens, stats, pins, and recommendations with clear refresh behavior.
@@ -119,9 +119,9 @@ Make the app feel calmer, faster, and more discoverable.
 Targets:
 
 - Refine empty, loading, error, and partial-data states.
-- Add shared macOS/iOS localization infrastructure with `Localizable.xcstrings`,
-  starting with English and Spanish, and keep all visible product text ready to
-  follow the user's device language automatically.
+- Expand shared macOS/iOS localization coverage in `Localizable.xcstrings`,
+  starting from the English and Spanish foundation, and keep all visible product
+  text ready to follow the user's device language automatically.
 - Prepare a reviewed expansion path for additional locales after English and
   Spanish, starting with French, German, Italian, and Portuguese.
 - Audit keyboard navigation and VoiceOver labels for primary controls.

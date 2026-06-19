@@ -28,17 +28,17 @@ flows.
 - Show the user's ListenBrainz name, last refresh, last scan, and pending count
   in one compact Account header.
 - Add a "Run Scan" primary action and a "View Pending" secondary action.
-- Add a free "Export Listening History" action in Account for portable
-  scrobble/listen export, with progress, success, and failure states.
+- Keep the free "Export Listening History" action in Account polished and
+  portable, with progress, success, and failure states.
 
 ### 2. Listens
 
 - Keep the manual `+` action but make it source-aware once source metadata lands.
-- Add iOS swipe actions for recent listens: delete, love/unlove, and pin/unpin,
-  using clear destructive/positive roles and showing unavailable actions only
-  when identity can be resolved safely.
-- Navigate from a tapped listen row into a track detail screen with sections for
-  recording metadata, release context, artist context, ListenBrainz actions, and
+- Polish the shipped iOS swipe actions for recent listens: delete, love/unlove,
+  and pin/unpin, using clear destructive/positive roles and showing unavailable
+  actions only when identity can be resolved safely.
+- Broaden the shipped tap-through listen detail screen with richer recording
+  metadata, release context, artist context, ListenBrainz actions, and
   MusicBrainz/ListenBrainz links.
 - Add visible states for submitting, queued, failed, and refreshed.
 - Add pull-to-refresh and a last-updated timestamp.
@@ -53,16 +53,17 @@ flows.
 
 ### 4. Discover
 
-- Replace placeholder cards with real ListenBrainz entry points:
-  recommendations, similar users/artists, playlists, and LB Radio prompts.
-- Implement the Search option in Discover with a real search field, scoped
-  result sections, loading/empty/error states, and navigation into matching
-  artist, track, release, or user detail routes.
-- Implement the Radio option in Discover with selectable seeds or prompts,
+- Refine real ListenBrainz entry points across recommendations, similar
+  users/artists, playlists, Search, and Radio.
+- Broaden the shipped Search option in Discover with stronger result ranking,
+  scoped empty/error states, and navigation into matching artist, track, release,
+  or user detail routes.
+- Broaden the shipped Radio option in Discover with more seed choices,
   generated recommendation queues, loading/empty/error states, and clear links
   into track, artist, release, and ListenBrainz context.
-- Add artist detail sheets from artist rows and recommendations, with biography
-  highlights, MusicBrainz identity, ListenBrainz context, and source links.
+- Refine artist detail sheets from artist rows and recommendations, with
+  biography highlights, MusicBrainz identity, ListenBrainz context, and source
+  links.
 - Disable unavailable integrations with honest status, not marketing copy.
 
 ### 5. Visual System
