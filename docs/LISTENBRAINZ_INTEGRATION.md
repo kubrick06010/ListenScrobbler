@@ -281,15 +281,9 @@ Fixtures should prefer payloads cross-checked against the ListenBrainz OpenAPI s
 
 1. Add compatibility UI and "artists in common" to `Social`.
 2. Refactor `ListenBrainzService` around a shared request pipeline with retry/backoff.
-3. Add iOS recent-listen swipe actions for love/unlove and pin/unpin, plus
-   tap-through track, release, and artist detail navigation.
-4. Add macOS and iOS artist detail sheets with MusicBrainz identity,
-   ListenBrainz context, and Wikipedia/Wikidata biography highlights.
-5. Add free iOS Account export for listening history in a portable format.
-6. Implement iOS Discover Search with scoped open-ecosystem result types.
-7. Implement iOS Discover Radio with ListenBrainz-backed recommendation queues.
-8. Add shared macOS/iOS localization infrastructure with complete English and
+3. Broaden OpenAPI-aligned fixtures and tests for mobile actions, Search, Radio,
+   export, and biography edge cases.
+4. Add shared macOS/iOS localization infrastructure with complete English and
    Spanish string catalogs for visible app text.
-9. Broaden OpenAPI-aligned fixtures and tests.
-10. Add JSPF export/import groundwork.
+5. Add JSPF export/import groundwork.
 11. Add MusicBrainz enrichment and provenance surfacing.

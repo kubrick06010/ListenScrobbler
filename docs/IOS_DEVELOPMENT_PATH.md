@@ -159,23 +159,8 @@ xcodebuild test \
   public facades.
 - Add device-level trace evidence for the current scanner build after installing
   it on a physical iPhone.
-- Add artist detail sheets that match ListenBrainz's open-metadata pattern:
-  compact artist identity, ListenBrainz context, MusicBrainz links, and
-  Wikipedia/Wikidata biography highlights when available.
-- Add iOS listen-row swipe actions for love/unlove and pin/unpin alongside
-  delete, with disabled or explanatory states when a row lacks MBID/MSID
-  identity.
-- Add iOS track detail navigation from recent listens, including recording
-  metadata, release context, artist drill-in, ListenBrainz actions, and external
-  MusicBrainz/ListenBrainz links.
-- Add a free Account export action for user listening history, covering recent
-  ListenBrainz listens and locally known scrobbles in an open, portable format.
-- Replace the iOS Discover Search "later build" placeholder with a working
-  search flow for artists, recordings/releases, and ListenBrainz users where
-  the underlying open APIs support it.
-- Replace the iOS Discover Radio "later build" placeholder with a working
-  radio/discovery flow backed by ListenBrainz radio prompts, recommendations,
-  or affinity data where available.
+- Broaden the shipped iOS detail, Search, Radio, export, swipe-action, and
+  biography flows with device screenshots and deeper empty/error states.
 - Localize visible iOS strings through shared string catalogs, starting with
   English and Spanish, so the app follows the device language automatically.
 - Promote the pending queue from beta diagnostics to a fuller offline queue

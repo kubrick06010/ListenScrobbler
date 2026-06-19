@@ -90,10 +90,9 @@ Targets:
 
 - Public listening overlap.
 - Similar users and related artists.
-- Implement the iOS Discover Search entry point instead of the placeholder,
-  covering useful open-ecosystem searches for artists, recordings/releases,
-  and ListenBrainz users where supported.
-- Implement the iOS Discover Radio entry point instead of the placeholder,
+- Refine the iOS Discover Search entry point now that the placeholder is gone,
+  covering useful open-ecosystem searches for artists, recordings, and releases.
+- Refine the iOS Discover Radio entry point now that the placeholder is gone,
   using ListenBrainz radio, recommendations, or affinity data to build playable
   discovery queues where supported.
 - Recommendation-driven exploration.

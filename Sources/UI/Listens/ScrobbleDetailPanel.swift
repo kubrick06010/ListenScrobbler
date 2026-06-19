@@ -11,6 +11,7 @@ struct ScrobbleDetailPanel: View {
     let availableWidth: CGFloat
     let onShare: (ShareDraft) -> Void
     let onCaptureObsession: (ObsessionDraft) -> Void
+    @State private var biography: ArtistBiographySheetItem?
 
     var body: some View {
         let metrics = DetailPanelMetrics(width: availableWidth)
@@ -97,6 +98,9 @@ struct ScrobbleDetailPanel: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.trailing, 4)
         }
+        .sheet(item: $biography) { item in
+            ArtistBiographySheetView(item: item)
+        }
     }
 
     private var panelTitle: String {
@@ -119,6 +123,15 @@ struct ScrobbleDetailPanel: View {
                     Image(systemName: "heart.text.square")
                 }
                 .help("Capture obsession")
+            }
+
+            if let artistBiographyItem {
+                Button {
+                    biography = artistBiographyItem
+                } label: {
+                    Image(systemName: "book")
+                }
+                .help("Artist biography")
             }
 
             Button {
@@ -162,6 +175,20 @@ struct ScrobbleDetailPanel: View {
         scrobbleService.inspectedTrackDetails?.imageURL
             ?? item.imageURL
             ?? scrobbleService.inspectedOpenEntityDetails?.imageURL
+    }
+
+    private var artistBiographyItem: ArtistBiographySheetItem? {
+        guard let details = scrobbleService.inspectedOpenEntityDetails,
+              let summary = details.artistSummary?.nilIfBlank else {
+            return nil
+        }
+        return ArtistBiographySheetItem(
+            artistName: details.artistName,
+            summary: summary,
+            imageURL: details.artistImageURL ?? scrobbleService.inspectedArtistDetails?.imageURL,
+            sourceURL: details.artistSummaryURL,
+            languageCode: details.artistSummaryLanguageCode
+        )
     }
 
     private var shareKind: SharedMusicEntry.EntityKind {
@@ -724,4 +751,78 @@ struct ScrobbleDetailPanel: View {
         }
     }
 
+}
+
+private struct ArtistBiographySheetItem: Identifiable {
+    let artistName: String
+    let summary: String
+    let imageURL: String?
+    let sourceURL: URL?
+    let languageCode: String?
+
+    var id: String {
+        [artistName, languageCode ?? "unknown"].joined(separator: "|")
+    }
+}
+
+private struct ArtistBiographySheetView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
+    let item: ArtistBiographySheetItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text("Artist Biography")
+                    .font(.custom("Avenir Next Demi Bold", size: 22))
+                Spacer()
+                Button("Done") {
+                    dismiss()
+                }
+                .keyboardShortcut(.cancelAction)
+            }
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    biographyImage
+
+                    Text(item.artistName)
+                        .font(.custom("Avenir Next Demi Bold", size: 28))
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(item.summary)
+                        .font(.custom("Avenir Next Regular", size: 14))
+                        .lineSpacing(3)
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    if let sourceURL = item.sourceURL {
+                        Button {
+                            openURL(sourceURL)
+                        } label: {
+                            Label("Wikipedia", systemImage: "arrow.up.right.square")
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(20)
+        .frame(minWidth: 520, minHeight: 460)
+    }
+
+    @ViewBuilder
+    private var biographyImage: some View {
+        if let imageURL = item.imageURL, let url = URL(string: imageURL) {
+            CachedAsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                Color.white.opacity(0.06)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 220)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        }
+    }
 }

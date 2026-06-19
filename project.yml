@@ -18,6 +18,7 @@ targets:
       - path: Sources/Domain/Track.swift
       - path: Sources/Domain/VaultModels.swift
       - path: Sources/Services/ListenBrainzService.swift
+      - path: Sources/Services/MusicBrainzService.swift
       - path: Sources/Core
     settings:
       base:

@@ -130,10 +130,8 @@ flows.
   actions, and the same actions remain available from the detail screen.
 - Tapping an iOS listen row opens a Last.fm-style detail route that lets the
   user inspect the song, release, and artist without losing list position.
-- iOS Discover Search is implemented and no longer shows an "available in a
-  later build" placeholder.
-- iOS Discover Radio is implemented and no longer shows an "available in a
-  later build" placeholder.
+- iOS Discover Search is implemented and no longer shows placeholder copy.
+- iOS Discover Radio is implemented and no longer shows placeholder copy.
 - Artist detail sheets reach feature parity on macOS and iOS: biography
   highlight, MusicBrainz/Wikidata/Wikipedia attribution, ListenBrainz context,
   loading/empty/error states, and external links.

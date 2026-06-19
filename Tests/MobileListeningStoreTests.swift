@@ -150,6 +150,122 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(client.recommendationRefreshes.map(\.offset), [0])
     }
 
+    func testLoveAndUnloveUseRecordingIdentity() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+        let seed = MobileMusicDetailSeed(
+            kind: .track,
+            trackName: "French Disko",
+            artistName: "Stereolab",
+            recordingMBID: "recording-mbid"
+        )
+
+        let didLove = await store.love(seed)
+        let didUnlove = await store.unlove(seed)
+
+        XCTAssertTrue(didLove)
+        XCTAssertTrue(didUnlove)
+        XCTAssertEqual(client.lovedRecordingMBIDs, ["recording-mbid"])
+        XCTAssertEqual(client.unlovedRecordingMBIDs, ["recording-mbid"])
+    }
+
+    func testPinReplacesCurrentPinBeforePostingNewRecording() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        client.currentPin = ListenBrainzPinnedRecording(
+            id: 10,
+            recordingMbid: "old-mbid",
+            recordingMsid: nil,
+            trackName: "Old Pin",
+            artistName: "Old Artist",
+            blurb: nil,
+            createdAt: nil,
+            pinnedUntil: nil,
+            userName: "open-user"
+        )
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+        await store.refresh()
+
+        let didPin = await store.pin(
+            MobileMusicDetailSeed(
+                kind: .track,
+                trackName: "New Pin",
+                artistName: "Bochum Welt",
+                recordingMBID: "new-mbid"
+            )
+        )
+
+        XCTAssertTrue(didPin)
+        XCTAssertEqual(client.unpinCurrentCount, 1)
+        XCTAssertEqual(client.pinnedRecordingMBIDs, ["new-mbid"])
+    }
+
+    func testSearchDiscoveryPublishesOpenMusicResults() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        let metadata = FakeMobileOpenMetadataClient()
+        metadata.searchResults = [
+            OpenMusicSearchResult(
+                id: "recording-1",
+                kind: .recording,
+                title: "Pack Yr Romantic Mind",
+                subtitle: "Stereolab",
+                detail: "Transient Random-Noise Bursts",
+                recordingMBID: "mbid-1",
+                artistMBID: "artist-1",
+                releaseMBID: "release-1",
+                imageURL: nil
+            )
+        ]
+        let store = MobileListeningStore(
+            settingsStore: settingsStore,
+            listenBrainz: client,
+            openMetadata: metadata
+        )
+
+        await store.searchDiscovery(query: "stereolab", scope: .tracks)
+
+        XCTAssertEqual(store.searchResults.map(\.title), ["Pack Yr Romantic Mind"])
+        XCTAssertEqual(store.searchResults.first?.seed.recordingMBID, "mbid-1")
+        XCTAssertEqual(metadata.searches.first?.query, "stereolab")
+        XCTAssertEqual(metadata.searches.first?.kind, .recording)
+    }
+
+    func testRefreshRadioBuildsRecommendationQueueAndRelatedArtists() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        client.recommendations = [
+            ListenBrainzRecommendedRecording(
+                id: "rec-1",
+                recordingMbid: "mbid-1",
+                title: "Outdoor Miner",
+                artistName: "Wire",
+                releaseName: "Chairs Missing",
+                score: 0.91
+            )
+        ]
+        client.similarArtists = [
+            ListenBrainzSimilarArtist(
+                id: "artist-2",
+                artistMbid: "artist-2",
+                name: "Magazine",
+                totalListenCount: 1200,
+                isSeedArtist: false,
+                imageURL: nil
+            )
+        ]
+        let store = MobileListeningStore(settingsStore: settingsStore, listenBrainz: client)
+
+        await store.refreshRadio(seed: MobileRadioSeed(id: "artist-1", artistName: "Wire", artistMBID: "artist-1"))
+
+        XCTAssertEqual(store.radioQueue.map(\.title), ["Outdoor Miner"])
+        XCTAssertEqual(store.radioQueue.first?.seed.recordingMBID, "mbid-1")
+        XCTAssertEqual(store.radioArtists.map(\.name), ["Magazine"])
+        XCTAssertEqual(client.similarArtistRefreshes.first?.seedArtistMBID, "artist-1")
+        XCTAssertEqual(client.recommendationRefreshes.first?.count, 18)
+    }
+
     func testWidgetSnapshotCapturesConnectionListenPinAndRecommendation() async {
         let settingsStore = makeSettingsStore(username: "open-user", token: "token")
         let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
@@ -463,15 +579,24 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
     var following: [String] = []
     var similarUsers: [ListenBrainzSimilarUser] = []
     var socialListens: [ListenBrainzSocialListen] = []
+    var similarArtists: [ListenBrainzSimilarArtist] = []
     var recentListenRefreshUsernames: [String] = []
     var pinRefreshUsernames: [String] = []
     var statsRefreshes: [(username: String, range: ListenBrainzStatsRange)] = []
     var recommendationRefreshes: [(username: String, count: Int, offset: Int)] = []
+    var similarArtistRefreshes: [(seedArtistMBID: String, mode: ListenBrainzSimilarityMode)] = []
     var followerRefreshes: [String] = []
     var followingRefreshes: [String] = []
     var similarUserRefreshes: [(username: String, count: Int)] = []
     var socialListenRefreshes: [(usernames: [String], countPerUser: Int)] = []
     var deletedListens: [(listenedAt: Date, recordingMsid: String)] = []
+    var lovedRecordingMBIDs: [String] = []
+    var lovedRecordingMSIDs: [String] = []
+    var unlovedRecordingMBIDs: [String] = []
+    var unlovedRecordingMSIDs: [String] = []
+    var pinnedRecordingMBIDs: [String] = []
+    var pinnedRecordingMSIDs: [String] = []
+    var unpinCurrentCount = 0
     var didClear = false
 
     init(settingsStore: ListenBrainzSettingsStore) {
@@ -510,6 +635,35 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
         deletedListens.append((listenedAt: listenedAt, recordingMsid: recordingMsid))
     }
 
+    func loveRecording(recordingMbid: String) async throws {
+        lovedRecordingMBIDs.append(recordingMbid)
+    }
+
+    func loveRecording(recordingMsid: String) async throws {
+        lovedRecordingMSIDs.append(recordingMsid)
+    }
+
+    func unloveRecording(recordingMbid: String) async throws {
+        unlovedRecordingMBIDs.append(recordingMbid)
+    }
+
+    func unloveRecording(recordingMsid: String) async throws {
+        unlovedRecordingMSIDs.append(recordingMsid)
+    }
+
+    func pinRecording(recordingMbid: String, blurb: String?, pinnedUntil: Date?) async throws {
+        pinnedRecordingMBIDs.append(recordingMbid)
+    }
+
+    func pinRecording(recordingMsid: String, blurb: String?, pinnedUntil: Date?) async throws {
+        pinnedRecordingMSIDs.append(recordingMsid)
+    }
+
+    func unpinCurrentRecording() async throws {
+        unpinCurrentCount += 1
+        currentPin = nil
+    }
+
     func fetchStatsSnapshot(username: String, range: ListenBrainzStatsRange, count: Int) async throws -> ListenBrainzStatsSnapshot {
         statsRefreshes.append((username: username, range: range))
         if let statsSnapshot {
@@ -531,6 +685,17 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
     func fetchRecommendedRecordings(username: String, count: Int, offset: Int) async throws -> [ListenBrainzRecommendedRecording] {
         recommendationRefreshes.append((username: username, count: count, offset: offset))
         return recommendations
+    }
+
+    func fetchSimilarArtists(
+        seedArtistMBID: String,
+        mode: ListenBrainzSimilarityMode,
+        maxSimilarArtists: Int,
+        maxRecordingsPerArtist: Int,
+        popularityRange: ClosedRange<Int>
+    ) async throws -> [ListenBrainzSimilarArtist] {
+        similarArtistRefreshes.append((seedArtistMBID: seedArtistMBID, mode: mode))
+        return similarArtists
     }
 
     func fetchFollowers(username: String) async throws -> [String] {
@@ -555,6 +720,38 @@ private final class FakeMobileListenBrainzClient: MobileListenBrainzClient {
 
     func submitListen(_ track: Track) async throws {
         submittedTracks.append(track)
+    }
+}
+
+private final class FakeMobileOpenMetadataClient: MobileOpenMetadataClient {
+    var searchResults: [OpenMusicSearchResult] = []
+    var lookupDetails = OpenMusicEntityDetails(
+        trackName: "Track",
+        artistName: "Artist",
+        releaseName: "Release",
+        recordingMBID: "recording",
+        artistMBID: "artist",
+        releaseMBID: "release",
+        imageURL: nil,
+        artistImageURL: nil,
+        artistSummary: nil,
+        artistSummaryURL: nil,
+        artistSummaryLanguageCode: nil,
+        disambiguation: nil,
+        country: nil,
+        type: nil,
+        tags: [],
+        links: []
+    )
+    var searches: [(query: String, kind: OpenMusicSearchKind, limit: Int)] = []
+
+    func lookup(track: String?, artist: String, release: String?) async throws -> OpenMusicEntityDetails {
+        lookupDetails
+    }
+
+    func search(query: String, kind: OpenMusicSearchKind, limit: Int) async throws -> [OpenMusicSearchResult] {
+        searches.append((query: query, kind: kind, limit: limit))
+        return searchResults
     }
 }
 
