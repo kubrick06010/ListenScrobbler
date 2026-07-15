@@ -1790,16 +1790,19 @@ final class ScrobbleService: ObservableObject {
 
         currentTrack = track
         currentTrackStart = .now
-        accumulatedPlayTime = 0
+        accumulatedPlayTime = min(
+            max(0, Date().timeIntervalSince(track.startedAt)),
+            max(0, track.duration)
+        )
         hasQueuedCurrentTrack = false
         hasSentNowPlayingForCurrentTrack = false
         currentListenBrainzRecordingMSID = nil
         listenBrainzCurrentTrackLoved = false
         listenBrainzFeedbackStatus = listenBrainzEnabled ? "Ready to love \(track.title)" : "Connect ListenBrainz to love tracks"
         isUpdatingListenBrainzFeedback = false
-        elapsedForCurrentTrack = 0
+        elapsedForCurrentTrack = accumulatedPlayTime
         scrobbleThreshold = threshold(for: track)
-        scrobbleProgress = 0
+        scrobbleProgress = progressValue(elapsed: elapsedForCurrentTrack, threshold: scrobbleThreshold)
         playbackState = "Playing"
 
         thresholdTask?.cancel()

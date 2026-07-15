@@ -19,11 +19,15 @@ struct MobileHomeView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("ListenScrobbler")
                             .font(.largeTitle.bold())
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.72)
                         Text(listeningStore.connectionState.statusText)
                             .foregroundStyle(.secondary)
                     }
                 }
                 .padding(.vertical, 8)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("ListenScrobbler, \(listeningStore.connectionState.statusText)")
             }
 
             if let pin = listeningStore.currentPin {
@@ -104,16 +108,6 @@ struct MobileHomeView: View {
             }
         }
         .navigationTitle("Home")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                } label: {
-                    Image(systemName: "play.circle")
-                }
-                .disabled(true)
-                .accessibilityLabel("Now Playing")
-            }
-        }
         .refreshable {
             await listeningStore.refresh()
             await listeningStore.refreshStats(range: statsRange)

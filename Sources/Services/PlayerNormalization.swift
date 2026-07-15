@@ -6,19 +6,22 @@ struct PlayerMetadata {
     let album: String?
     let duration: TimeInterval
     let artworkURL: String?
+    let playbackPosition: TimeInterval?
 
     init(
         title: String,
         artist: String,
         album: String?,
         duration: TimeInterval,
-        artworkURL: String? = nil
+        artworkURL: String? = nil,
+        playbackPosition: TimeInterval? = nil
     ) {
         self.title = title
         self.artist = artist
         self.album = album
         self.duration = duration
         self.artworkURL = artworkURL
+        self.playbackPosition = playbackPosition
     }
 }
 

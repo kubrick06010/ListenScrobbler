@@ -1,4 +1,7 @@
 import Foundation
+#if os(macOS)
+import AppKit
+#endif
 
 enum PlayerEvent {
     case trackStarted(Track)
@@ -51,12 +54,19 @@ final class DistributedPlayerMonitor: PlayerMonitor {
     private let notificationName: String
     private let sourceApp: String
     private let metadataProvider: PlayerMetadataProviding?
+    private let isSourceRunning: (String) -> Bool
     private let center = DistributedNotificationCenter.default()
 
-    init(notificationName: String, sourceApp: String, metadataProvider: PlayerMetadataProviding?) {
+    init(
+        notificationName: String,
+        sourceApp: String,
+        metadataProvider: PlayerMetadataProviding?,
+        isSourceRunning: @escaping (String) -> Bool = DistributedPlayerMonitor.defaultIsSourceRunning
+    ) {
         self.notificationName = notificationName
         self.sourceApp = sourceApp
         self.metadataProvider = metadataProvider
+        self.isSourceRunning = isSourceRunning
     }
 
     func start() {
@@ -67,6 +77,43 @@ final class DistributedPlayerMonitor: PlayerMonitor {
             object: nil,
             suspensionBehavior: .deliverImmediately
         )
+        detectInitialPlayback()
+    }
+
+    private func detectInitialPlayback() {
+        guard isSourceRunning(sourceApp), let metadata = metadataProvider?.fetchMetadata(for: sourceApp) else {
+            return
+        }
+
+        let position = min(max(0, metadata.playbackPosition ?? 0), max(0, metadata.duration))
+        onEvent?(
+            .trackStarted(
+                Track(
+                    title: metadata.title,
+                    artist: metadata.artist,
+                    album: metadata.album,
+                    duration: metadata.duration,
+                    startedAt: Date().addingTimeInterval(-position),
+                    sourceApp: sourceApp,
+                    artworkURL: metadata.artworkURL
+                )
+            )
+        )
+    }
+
+    private static func defaultIsSourceRunning(_ sourceApp: String) -> Bool {
+        let bundleIdentifier: String
+        switch sourceApp {
+        case "Spotify":
+            bundleIdentifier = "com.spotify.client"
+        case "Apple Music":
+            bundleIdentifier = "com.apple.Music"
+        case "iTunes":
+            bundleIdentifier = "com.apple.iTunes"
+        default:
+            return false
+        }
+        return !NSRunningApplication.runningApplications(withBundleIdentifier: bundleIdentifier).isEmpty
     }
 
     func stop() {
@@ -94,7 +141,7 @@ final class AppleScriptMetadataProvider: PlayerMetadataProviding {
             script = """
             tell application "Spotify"
                 if player state is playing then
-                    return (name of current track) & "||" & (artist of current track) & "||" & (album of current track) & "||" & (duration of current track) & "||" & (artwork url of current track)
+                    return (name of current track) & "||" & (artist of current track) & "||" & (album of current track) & "||" & (duration of current track as integer) & "||" & (artwork url of current track) & "||" & (player position as integer)
                 end if
             end tell
             """
@@ -103,7 +150,7 @@ final class AppleScriptMetadataProvider: PlayerMetadataProviding {
             tell application "Music"
                 if player state is playing then
                     set t to current track
-                    return (name of t) & "||" & (artist of t) & "||" & (album of t) & "||" & (duration of t)
+                    return (name of t) & "||" & (artist of t) & "||" & (album of t) & "||" & (duration of t as integer) & "||||" & (player position as integer)
                 end if
             end tell
             """
@@ -112,7 +159,7 @@ final class AppleScriptMetadataProvider: PlayerMetadataProviding {
             tell application "iTunes"
                 if player state is playing then
                     set t to current track
-                    return (name of t) & "||" & (artist of t) & "||" & (album of t) & "||" & (duration of t)
+                    return (name of t) & "||" & (artist of t) & "||" & (album of t) & "||" & (duration of t as integer) & "||||" & (player position as integer)
                 end if
             end tell
             """
@@ -140,7 +187,8 @@ final class AppleScriptMetadataProvider: PlayerMetadataProviding {
             artist: components[1],
             album: components[2].isEmpty ? nil : components[2],
             duration: duration,
-            artworkURL: components.indices.contains(4) ? components[4].nilIfBlank : nil
+            artworkURL: components.indices.contains(4) ? components[4].nilIfBlank : nil,
+            playbackPosition: components.indices.contains(5) ? Double(components[5]) : nil
         )
     }
 }

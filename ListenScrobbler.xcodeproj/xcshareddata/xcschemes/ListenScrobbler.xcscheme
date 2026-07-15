@@ -64,6 +64,17 @@
                ReferencedContainer = "container:ListenScrobbler.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B11551641DCCFC3A45ED4EFD"
+               BuildableName = "ListenScrobblerUITests.xctest"
+               BlueprintName = "ListenScrobblerUITests"
+               ReferencedContainer = "container:ListenScrobbler.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

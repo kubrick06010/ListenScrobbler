@@ -86,7 +86,8 @@ struct MobileListensView: View {
                     Image(systemName: "plus")
                 }
                 .disabled(!listeningStore.hasStoredToken)
-                .accessibilityLabel("Manual Scrobble")
+                .accessibilityLabel("Add Listen")
+                .accessibilityIdentifier("listens.add")
             }
         }
         .overlay {

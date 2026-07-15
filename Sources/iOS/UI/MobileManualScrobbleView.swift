@@ -2,6 +2,12 @@ import ListenScrobblerCore
 import SwiftUI
 
 struct MobileManualScrobbleView: View {
+    private enum Field: Hashable {
+        case title
+        case artist
+        case album
+    }
+
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var listeningStore: MobileListeningStore
 
@@ -13,6 +19,7 @@ struct MobileManualScrobbleView: View {
     @State private var listenedAt = Date()
     @State private var isSubmitting = false
     @State private var result: SubmissionResult?
+    @FocusState private var focusedField: Field?
 
     init(draft: MobileManualScrobbleDraft = .empty) {
         _title = State(initialValue: draft.title)
@@ -26,10 +33,18 @@ struct MobileManualScrobbleView: View {
                 Section("Track") {
                     TextField("Title", text: $title)
                         .textInputAutocapitalization(.words)
+                        .focused($focusedField, equals: .title)
+                        .submitLabel(.next)
+                        .onSubmit { focusedField = .artist }
                     TextField("Artist", text: $artist)
                         .textInputAutocapitalization(.words)
+                        .focused($focusedField, equals: .artist)
+                        .submitLabel(.next)
+                        .onSubmit { focusedField = .album }
                     TextField("Album", text: $album)
                         .textInputAutocapitalization(.words)
+                        .focused($focusedField, equals: .album)
+                        .submitLabel(.done)
                 }
 
                 Section("Listen") {
@@ -49,7 +64,7 @@ struct MobileManualScrobbleView: View {
                     }
                 }
             }
-            .navigationTitle("Manual Scrobble")
+            .navigationTitle("Add Listen")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -70,6 +85,11 @@ struct MobileManualScrobbleView: View {
                         }
                     }
                     .disabled(!canSubmit || isSubmitting)
+                }
+            }
+            .onAppear {
+                if title.isEmpty {
+                    focusedField = .title
                 }
             }
         }

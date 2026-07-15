@@ -2,6 +2,56 @@ import XCTest
 @testable import ListenScrobbler
 
 final class PlayerNormalizationTests: XCTestCase {
+    func testMonitorDetectsAlreadyPlayingTrackAtStartup() {
+        let provider = StaticMetadataProvider(
+            metadata: PlayerMetadata(
+                title: "Startup Track",
+                artist: "Startup Artist",
+                album: "Startup Album",
+                duration: 240,
+                playbackPosition: 75
+            )
+        )
+        let monitor = DistributedPlayerMonitor(
+            notificationName: "org.listenscrobbler.tests.startup.\(UUID().uuidString)",
+            sourceApp: "Spotify",
+            metadataProvider: provider,
+            isSourceRunning: { _ in true }
+        )
+        var detectedTrack: Track?
+        monitor.onEvent = { event in
+            if case let .trackStarted(track) = event {
+                detectedTrack = track
+            }
+        }
+
+        monitor.start()
+        monitor.stop()
+
+        XCTAssertEqual(detectedTrack?.title, "Startup Track")
+        XCTAssertEqual(detectedTrack?.sourceApp, "Spotify")
+        XCTAssertEqual(
+            detectedTrack.map { Date().timeIntervalSince($0.startedAt) } ?? 0,
+            75,
+            accuracy: 1
+        )
+    }
+
+    func testMonitorDoesNotQueryAPlayerThatIsNotRunning() {
+        let provider = CountingMetadataProvider()
+        let monitor = DistributedPlayerMonitor(
+            notificationName: "org.listenscrobbler.tests.stopped.\(UUID().uuidString)",
+            sourceApp: "Spotify",
+            metadataProvider: provider,
+            isSourceRunning: { _ in false }
+        )
+
+        monitor.start()
+        monitor.stop()
+
+        XCTAssertEqual(provider.fetchCount, 0)
+    }
+
     func testPausedPayloadMapsToPausedEvent() {
         let payload: [AnyHashable: Any] = ["Player State": "Paused"]
         let event = PlayerNotificationNormalizer.event(
@@ -79,6 +129,16 @@ final class PlayerNormalizationTests: XCTestCase {
         guard case .stopped? = event else {
             return XCTFail("Expected stopped event")
         }
+    }
+}
+
+private final class CountingMetadataProvider: PlayerMetadataProviding {
+    private(set) var fetchCount = 0
+
+    func fetchMetadata(for sourceApp: String) -> PlayerMetadata? {
+        _ = sourceApp
+        fetchCount += 1
+        return nil
     }
 }
 

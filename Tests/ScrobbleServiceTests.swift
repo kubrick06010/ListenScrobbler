@@ -3,6 +3,33 @@ import XCTest
 
 final class ScrobbleServiceTests: XCTestCase {
     @MainActor
+    func testAlreadyPlayingTrackContinuesFromDetectedPosition() async {
+        let monitor = TestMonitor()
+        let service = ScrobbleService(
+            api: MockAPI(),
+            listenBrainz: isolatedListenBrainzService(),
+            monitor: monitor,
+            sessionStore: InMemorySessionStore(),
+            queueStore: InMemoryQueueStore()
+        )
+        let track = Track(
+            title: "Already Playing",
+            artist: "Artist",
+            album: "Album",
+            duration: 300,
+            startedAt: Date().addingTimeInterval(-80),
+            sourceApp: "Spotify"
+        )
+
+        monitor.emit(.trackStarted(track))
+        await Task.yield()
+
+        XCTAssertGreaterThanOrEqual(service.elapsedForCurrentTrack, 79)
+        XCTAssertGreaterThan(service.scrobbleProgress, 0)
+        withExtendedLifetime(service) {}
+    }
+
+    @MainActor
     func testManualQueueAvoidsDuplicates() async {
         let api = MockAPI()
         let monitor = TestMonitor()

@@ -60,6 +60,25 @@ created from the validated `main` branch.
      -destination 'platform=macOS'
    ```
 
+   For UI-affecting releases, also run the signed macOS UI target and the iOS
+   Simulator UI target:
+
+   ```bash
+   xcodebuild test \
+     -project ListenScrobbler.xcodeproj \
+     -scheme ListenScrobbler \
+     -destination 'platform=macOS' \
+     -only-testing:ListenScrobblerUITests
+   ```
+
+   ```bash
+   xcodebuild test \
+     -project ListenScrobbler.xcodeproj \
+     -scheme ListenScrobbleriOS \
+     -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+     -only-testing:ListenScrobbleriOSUITests
+   ```
+
 7. Open a release pull request and merge it after review, unless this is the
    first import into the new repository.
 8. Create and push the release tag from the validated `main` commit:
@@ -95,9 +114,9 @@ iOS release or TestFlight build:
 5. Archive/sign through Xcode or a future CI workflow with App Store Connect
    credentials.
 
-Do not publish the iOS `1.0.0` release until manual submission, Music library
-baseline/delta behavior, duplicate prevention, retry persistence, and current
-device traces are verified on hardware.
+Before publishing an iOS `1.0.0` release candidate, repeat hardware validation
+for manual submission, Music library baseline/delta behavior, duplicate
+prevention, retry persistence, and current device traces.
 
 ## Future Automation
 

@@ -127,7 +127,7 @@ struct MobileAccountView: View {
                         pendingScrobbles: musicLibraryScanner.pendingScrobbles
                     )
                 } label: {
-                    Label("Export Scrobbles", systemImage: "square.and.arrow.up")
+                    Label("Export Listening Data", systemImage: "square.and.arrow.up")
                 }
             }
 
