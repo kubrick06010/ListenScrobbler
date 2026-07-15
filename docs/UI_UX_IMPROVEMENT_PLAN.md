@@ -1,5 +1,32 @@
 # UI/UX Improvement Plan
 
+Last reviewed: 2026-07-15.
+
+## Current Status
+
+The 2026-07-15 cross-platform audit is complete. The implementation now has:
+
+- one grouped sidebar on macOS instead of duplicate sidebar and bottom-tab
+  navigation;
+- a compact global macOS status strip for account, submissions, queue, and
+  player monitoring;
+- an actionable Dashboard empty state with connection, resume, and queue
+  actions;
+- macOS menu commands and keyboard shortcuts for queue, listens, refresh, and
+  diagnostics;
+- stable accessibility labels on primary icon-only actions and UI automation
+  hooks that do not collapse the VoiceOver hierarchy;
+- consistent user-facing `Listen`, `Listens`, `Submission Queue`, and pending
+  terminology while retaining `scrobble` only where it describes a technical
+  API or persisted model;
+- a focused iOS Add Listen form with keyboard progression;
+- essential macOS and iOS UI tests; and
+- screenshot verification on a compact macOS window, iPhone 17 Pro, iPhone SE,
+  and iPad regular-width navigation.
+
+Screenshots generated during local review live under
+`tmp/ui-goal-screenshots/` and are intentionally not release inputs.
+
 ListenScrobbler should feel like one product across macOS and iOS while respecting
 each platform. macOS remains a dense desktop control room; iOS should be a
 focused listening companion with fast account, listens, scan, and discovery
@@ -20,6 +47,9 @@ flows.
   Spanish as the first complete locales and later locales added only with review.
 
 ## iOS Plan
+
+Items below are the remaining product-depth backlog; shipped foundations are
+described in the current-status section and the roadmap.
 
 ### 1. First-Run And Account
 
@@ -75,6 +105,10 @@ flows.
 
 ## macOS Plan
 
+The navigation, status-strip, Dashboard empty-state, menu parity, and keyboard
+work in this section shipped in the 2026-07-15 audit pass. Remaining bullets are
+ongoing depth and localization work.
+
 ### 1. Navigation And Density
 
 - Keep the sidebar but reduce repeated status copy inside panels.
@@ -117,6 +151,11 @@ flows.
   widths.
 
 ## Acceptance Criteria
+
+The primary navigation, empty-state, accessibility, keyboard, UI-test, and
+responsive screenshot criteria were verified on 2026-07-15. Criteria involving
+connected-account data and broader feature parity remain release-candidate
+checks because they require live ListenBrainz data.
 
 - iOS and macOS use the same source/status language.
 - iOS and macOS follow the user's device language for visible app text, with

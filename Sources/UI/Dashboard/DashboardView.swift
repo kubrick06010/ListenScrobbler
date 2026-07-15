@@ -8,6 +8,7 @@ struct DashboardView: View {
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var scrobbleService: ScrobbleService
     @State private var moodPalette = DashboardMoodPalette.fallback
+    let onOpenQueue: () -> Void
     let onOpenTrackDetail: (_ track: String, _ artist: String, _ album: String?, _ imageURL: String?) -> Void
     let onShareTrack: (ShareDraft) -> Void
     let onCaptureObsession: (ObsessionDraft) -> Void
@@ -131,11 +132,7 @@ struct DashboardView: View {
                         )
                         .animation(.easeInOut(duration: 0.45), value: moodPalette)
                     } else {
-                        Text("No track detected.")
-                            .font(.custom("Avenir Next Medium", size: 14))
-                            .foregroundStyle(.secondary)
-                            .padding(20)
-                            .appPanelStyle()
+                        dashboardEmptyState
                     }
                 }
                 .frame(maxWidth: metrics.contentMaxWidth, alignment: .leading)
@@ -154,6 +151,85 @@ struct DashboardView: View {
                     moodPalette = palette
                 }
             }
+        }
+    }
+
+    private var dashboardEmptyState: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(alignment: .top, spacing: 16) {
+                Image(systemName: "waveform.circle")
+                    .font(.system(size: 38, weight: .medium))
+                    .foregroundStyle(.tint)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Ready for your next listen")
+                        .font(.custom("Avenir Next Demi Bold", size: 20))
+                    Text("Play music in a supported player. ListenScrobbler will show the current track here and submit it when it reaches the listening threshold.")
+                        .font(.custom("Avenir Next Regular", size: 14))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            Divider()
+
+            HStack(spacing: 20) {
+                Label(
+                    scrobbleService.scrobblingEnabled ? "Submissions enabled" : "Submissions paused",
+                    systemImage: scrobbleService.scrobblingEnabled ? "checkmark.circle.fill" : "pause.circle.fill"
+                )
+                .foregroundStyle(scrobbleService.scrobblingEnabled ? .green : .orange)
+
+                Label(scrobbleService.monitorStatus, systemImage: "dot.radiowaves.left.and.right")
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            .font(.custom("Avenir Next Medium", size: 12))
+
+            HStack(spacing: 10) {
+                if !scrobbleService.scrobblingEnabled {
+                    Button("Resume Submissions") {
+                        scrobbleService.toggleScrobbling()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut(.defaultAction)
+                }
+
+                connectionSettingsButton
+
+                Button {
+                    onOpenQueue()
+                } label: {
+                    Label("View Queue", systemImage: "tray.full")
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding(22)
+        .frame(maxWidth: 680, alignment: .leading)
+        .appPanelStyle()
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("dashboard.emptyState")
+    }
+
+    @ViewBuilder
+    private var connectionSettingsButton: some View {
+        if #available(macOS 14.0, *) {
+            SettingsLink {
+                Label("Connection Settings", systemImage: "gearshape")
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("dashboard.connectionSettings")
+        } else {
+            Button {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                NSApp.activate(ignoringOtherApps: true)
+            } label: {
+                Label("Connection Settings", systemImage: "gearshape")
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("dashboard.connectionSettings")
         }
     }
 

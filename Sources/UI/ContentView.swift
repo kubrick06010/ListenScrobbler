@@ -12,6 +12,27 @@ enum WorkspaceTab: String, CaseIterable, Hashable, Identifiable {
 
     var id: String { rawValue }
 
+    var accessibilityIdentifier: String {
+        "sidebar.\(String(describing: self))"
+    }
+
+    enum Group: String, CaseIterable {
+        case listening = "Listening"
+        case discover = "Discover"
+        case library = "Library"
+    }
+
+    var group: Group {
+        switch self {
+        case .dashboard, .queue, .scrobbles:
+            return .listening
+        case .charts, .social:
+            return .discover
+        case .shared, .obsessions:
+            return .library
+        }
+    }
+
     var symbol: String {
         switch self {
         case .dashboard:
@@ -120,10 +141,20 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            List(availableTabs, selection: $selectedTab) { tab in
+            List(selection: $selectedTab) {
+                ForEach(WorkspaceTab.Group.allCases, id: \.self) { group in
+                    let tabs = availableTabs.filter { $0.group == group }
+                    if !tabs.isEmpty {
+                        Section(group.rawValue) {
+                            ForEach(tabs) { tab in
                     Label(tab.rawValue, systemImage: tab.symbol)
                         .tag(tab)
                         .font(.custom("Avenir Next Medium", size: 13))
+                        .accessibilityIdentifier(tab.accessibilityIdentifier)
+                            }
+                        }
+                    }
+                }
             }
             .navigationTitle("ListenScrobbler")
             .listStyle(.sidebar)
@@ -164,6 +195,9 @@ struct ContentView: View {
                         switch selectedTab ?? .dashboard {
                         case .dashboard:
                             DashboardView(
+                                onOpenQueue: {
+                                    selectedTab = .queue
+                                },
                                 onOpenTrackDetail: { track, artist, album, imageURL in
                                     openDeepLink(track: track, artist: artist, album: album, imageURL: imageURL)
                                 },
@@ -375,19 +409,22 @@ struct ContentView: View {
                     }
                 }
 
-                VStack(spacing: 0) {
-                    settingsFooter
-                        .background(appBarBackground)
-
-                    BottomTabShell(selectedTab: Binding(
-                        get: { selectedTab ?? .scrobbles },
-                        set: { selectedTab = $0 }
-                    ))
-                }
+                globalStatusBar
+                    .background(appBarBackground)
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: AppEvents.showDiagnostics)) { _ in
             isDiagnosticsPresented = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AppEvents.showQueue)) { _ in
+            selectedTab = .queue
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AppEvents.showListens)) { _ in
+            selectedTab = .scrobbles
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AppEvents.refreshListens)) { _ in
+            selectedTab = .scrobbles
+            Task { await scrobbleService.refreshScrobbles() }
         }
         .onAppear {
             configureVaultStores()
@@ -464,6 +501,7 @@ struct ContentView: View {
     }
 
     private func presentOnboardingIfNeeded() {
+        guard !ProcessInfo.processInfo.arguments.contains("--skip-onboarding") else { return }
         guard !didCompleteOpenMusicOnboarding else { return }
         guard scrobbleService.listenBrainzUsername?.isEmpty != false else { return }
         isOpenMusicOnboardingPresented = true
@@ -520,6 +558,40 @@ struct ContentView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .contentShape(Rectangle())
+    }
+
+    private var globalStatusBar: some View {
+        HStack(spacing: 14) {
+            settingsFooter
+
+            Divider()
+                .frame(height: 16)
+
+            Label(
+                scrobbleService.scrobblingEnabled ? "Submissions on" : "Submissions off",
+                systemImage: scrobbleService.scrobblingEnabled ? "waveform.badge.checkmark" : "waveform.slash"
+            )
+            .foregroundStyle(scrobbleService.scrobblingEnabled ? .green : .secondary)
+            .accessibilityLabel(scrobbleService.scrobblingEnabled ? "Listening submissions enabled" : "Listening submissions disabled")
+
+            Button {
+                selectedTab = .queue
+            } label: {
+                Label("\(scrobbleService.queuedSubmissionJobs.count) pending", systemImage: "tray.full")
+            }
+            .buttonStyle(.plain)
+            .help("Open submission queue")
+            .accessibilityLabel("Open submission queue, \(scrobbleService.queuedSubmissionJobs.count) pending")
+
+            Spacer(minLength: 8)
+
+            Text(scrobbleService.monitorStatus)
+                .lineLimit(1)
+                .foregroundStyle(.secondary)
+                .accessibilityLabel("Player monitor: \(scrobbleService.monitorStatus)")
+        }
+        .font(.custom("Avenir Next Medium", size: 12))
+        .padding(.trailing, 12)
     }
 
     private func openDeepLink(scrobble: CompatibilityRecentScrobble) {

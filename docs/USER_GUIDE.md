@@ -25,6 +25,17 @@ In Settings > ListenBrainz:
 
 You can turn either option off while keeping the account connected.
 
+## Detect Playback At Launch
+
+On macOS, ListenScrobbler checks Spotify, Apple Music, and iTunes when it opens.
+If one of those apps is already running and playing a track, ListenScrobbler
+detects it immediately and continues the listening counter from the player's
+current position. It does not open or query players that are closed.
+
+macOS may ask for Automation permission the first time ListenScrobbler reads a
+supported player. If detection is unavailable, review ListenScrobbler under
+System Settings > Privacy & Security > Automation.
+
 ## Verify Setup
 
 After connecting:

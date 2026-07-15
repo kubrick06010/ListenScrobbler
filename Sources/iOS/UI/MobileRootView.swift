@@ -46,6 +46,7 @@ struct MobileRootView: View {
             }
             .tabItem {
                 Label(MobileTab.home.title, systemImage: MobileTab.home.symbolName)
+                    .accessibilityIdentifier("tab.home")
             }
             .tag(MobileTab.home)
 
@@ -54,6 +55,7 @@ struct MobileRootView: View {
             }
             .tabItem {
                 Label(MobileTab.listens.title, systemImage: MobileTab.listens.symbolName)
+                    .accessibilityIdentifier("tab.listens")
             }
             .tag(MobileTab.listens)
 
@@ -62,6 +64,7 @@ struct MobileRootView: View {
             }
             .tabItem {
                 Label(MobileTab.discover.title, systemImage: MobileTab.discover.symbolName)
+                    .accessibilityIdentifier("tab.discover")
             }
             .tag(MobileTab.discover)
 
@@ -70,6 +73,7 @@ struct MobileRootView: View {
             }
             .tabItem {
                 Label(MobileTab.account.title, systemImage: MobileTab.account.symbolName)
+                    .accessibilityIdentifier("tab.account")
             }
             .tag(MobileTab.account)
         }
@@ -113,6 +117,7 @@ struct MobileRootView: View {
     }
 
     private func presentOnboardingIfNeeded() {
+        guard !ProcessInfo.processInfo.arguments.contains("--skip-onboarding") else { return }
         guard !didCompleteOpenMusicOnboarding else { return }
         guard case .disconnected = listeningStore.connectionState else { return }
         isOpenMusicOnboardingPresented = true
@@ -149,5 +154,6 @@ private struct MobileSidebarTabRow: View {
         .buttonStyle(.plain)
         .foregroundStyle(isSelected ? Color.accentColor : Color.primary)
         .listRowBackground(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
+        .accessibilityIdentifier("sidebar.\(tab.rawValue)")
     }
 }

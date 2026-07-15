@@ -2,29 +2,23 @@
 
 ListenScrobbler is a macOS SwiftUI app for open listening history, centered on ListenBrainz, MusicBrainz, and local-first music memory.
 
-Version `1.1.0` is the current macOS release line. The iOS target is being
-prepared as its first `1.0.0` release after physical-device beta validation.
+Version `1.1.1` is the current macOS release line. The iOS target remains on its
+first `1.0.0` release line and is validated independently before TestFlight or
+App Store distribution.
 
-## Repository Plan
+## Repository
 
-ListenScrobbler should be published as one new GitHub repository, not split into
-separate macOS and iOS repos. The single-repo shape keeps shared ListenBrainz
+ListenScrobbler is published as one GitHub repository rather than separate
+macOS and iOS repos. The single-repo shape keeps shared ListenBrainz
 services, domain models, tests, release docs, icon assets, and WidgetKit support
 reviewable in one place while the product is still settling.
 
-Recommended GitHub target:
+Repository conventions:
 
 - Repository name: `ListenScrobbler`
 - Default branch: `main`
-- Working branches: short-lived branches such as `codex/ios-foundation`
-- Release tags: `v<version>`, for example `v1.1.0`
-
-After creating the new repository, point this local checkout at it:
-
-```bash
-git remote add origin git@github.com:kubrick06010/ListenScrobbler.git
-git push -u origin main
-```
+- Working branches: short-lived product/platform branches.
+- Release tags: `v<version>`, for example `v1.1.1`.
 
 The current app includes:
 
@@ -36,8 +30,10 @@ The current app includes:
 - Charts, listening archive views, and social discovery surfaces shaped around open data.
 - Local-first shared music and obsession vaults.
 - Menu bar controls, launch-at-login, proxy settings, diagnostics, and player monitoring.
-- iOS foundation work for ListenBrainz connection, manual submission, recent
-  listens, Music library scan baseline/delta behavior, and pending retries.
+- Startup recovery of tracks already playing in Spotify, Apple Music, or iTunes,
+  including their current playback position.
+- iOS ListenBrainz connection, manual submission, recent listens, Music library
+  scan baseline/delta behavior, discovery, widgets, diagnostics, and pending retries.
 
 ## Direction
 

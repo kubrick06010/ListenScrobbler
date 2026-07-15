@@ -2,11 +2,35 @@
 
 ## Unreleased
 
+## 1.1.1 - 2026-07-15
+
 ### Added
 
+- Startup detection for tracks already playing in Spotify, Apple Music, or
+  iTunes, including their current playback position without launching players
+  that are closed.
+- macOS and iOS smoke UI-test targets for primary navigation, submission queue,
+  listens, and Add Listen reachability.
+- macOS menu commands and keyboard shortcuts for the submission queue, listens,
+  refresh, and diagnostics.
 - Documented ListenBrainz listen deletion in the user guide and integration
   notes, including the `recording_msid` requirement and ListenBrainz's
   asynchronous cleanup behavior.
+
+### Changed
+
+- Simplified macOS navigation to a single grouped sidebar and replaced the
+  duplicate bottom tab bar with a global account/submission/monitor status strip.
+- Reworked the empty Dashboard into an actionable connection, monitoring, and
+  queue state.
+- Improved primary accessibility labels, iOS form keyboard focus, cross-platform
+  Listen terminology, and compact iPhone title scaling.
+- Verified the refreshed UI at compact macOS, iPhone 17 Pro, iPhone SE, and iPad
+  regular widths.
+- Corrected the macOS generated `Info.plist` so Apple Events permission and
+  native application metadata are no longer contaminated by the iOS widget.
+- Advanced macOS to version `1.1.1` build `7` and the unreleased iOS `1.0.0`
+  line to build `2`.
 
 ## 1.1.0 - 2026-06-13
 

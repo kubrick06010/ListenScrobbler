@@ -1,12 +1,11 @@
 # Repository And Release Plan
 
-This plan turns the iOS foundation and macOS iconography parity work into a
-reviewable branch, then into releases only after the physical-device beta gate
-is proven.
+This document records the completed single-repository decision and the current
+cross-platform release policy.
 
 ## Repository Decision
 
-Use one new GitHub repository named `ListenScrobbler`.
+Use the existing GitHub repository named `ListenScrobbler`.
 
 Do not split the codebase into separate macOS and iOS repositories yet. The app
 currently shares ListenBrainz services, domain models, tests, iconography,
@@ -14,11 +13,11 @@ release workflow, WidgetKit support, and documentation across targets. Keeping
 those pieces together avoids duplicate release process and keeps source-aware
 iOS work aligned with the macOS client.
 
-Recommended repository shape:
+Repository shape:
 
 - GitHub repository: `kubrick06010/ListenScrobbler`
 - Default branch: `main`
-- Feature/review branches: short-lived branches such as `codex/ios-foundation`
+- Feature/review branches: short-lived product/platform branches.
 - Long-lived platform branches: avoid unless App Store/TestFlight operations
   force one later.
 - Release tags: `v<version>`, created from validated `main` commits.
@@ -27,22 +26,20 @@ The deleted `OpenScrobbler` GitHub repository should not be reused in docs,
 release notes, or outreach. If historical context is needed, mention only that
 local migration code can read old `OpenScrobbler` app-support data.
 
-After creating the new empty GitHub repository, configure this checkout:
+The configured remote is:
 
 ```bash
-git remote add origin git@github.com:kubrick06010/ListenScrobbler.git
-git branch -M main
-git push -u origin main
+git remote get-url origin
+# https://github.com/kubrick06010/ListenScrobbler.git
 ```
 
 ## Version Bump
 
-- macOS target: `1.1.0` build `6`.
-- iOS target: first release `1.0.0` build `1`.
+- macOS target: `1.1.1` build `7`.
+- iOS target: first release `1.0.0` build `2`.
 - `project.yml` is the source of truth; regenerate
   `ListenScrobbler.xcodeproj` after version changes.
-- `CHANGELOG.md` must include a `1.1.0` section covering macOS changes and iOS
-  first-release scope.
+- `CHANGELOG.md` must include a section for each published macOS version.
 
 ## Repository Hygiene
 
@@ -105,40 +102,21 @@ Before tagging an iOS release:
 - Rerun scan without another play and confirm no duplicate.
 - Capture a current-build trace under `tmp/device-traces/`.
 
-## Commit And Push Plan
+## Commit And Push Policy
 
 1. Stage only tracked release inputs, source, tests, docs, project files, and
    generated assets.
-2. Commit as:
-
-   ```bash
-   git commit -m "Rebrand as ListenScrobbler"
-   ```
-
-3. Create the new GitHub repository `kubrick06010/ListenScrobbler`.
-4. Attach the new remote if it is not already configured:
-
-   ```bash
-   git remote add origin git@github.com:kubrick06010/ListenScrobbler.git
-   ```
-
-5. Rename the local default branch and push:
-
-   ```bash
-   git branch -M main
-   git push -u origin main
-   ```
-
-6. Use follow-up branches and draft PRs for remaining physical-device validation
-   or TestFlight work.
+2. Commit with a terse description of the complete release diff.
+3. Push a short-lived review branch and open a pull request against `main`.
+4. Merge only after macOS tests, platform builds, and required UI checks pass.
 
 ## Release Tag Plan
 
 After review and merge to `main`:
 
 ```bash
-git tag -a v1.1.0 -m "ListenScrobbler 1.1.0"
-git push origin v1.1.0
+git tag -a v1.1.1 -m "ListenScrobbler 1.1.1"
+git push origin v1.1.1
 ```
 
 The existing GitHub Actions release workflow publishes the macOS asset. iOS

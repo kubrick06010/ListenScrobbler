@@ -4,6 +4,9 @@ import ServiceManagement
 
 enum AppEvents {
     static let showDiagnostics = Notification.Name("fm.listenscrobbler.showDiagnostics")
+    static let showQueue = Notification.Name("fm.listenscrobbler.showQueue")
+    static let showListens = Notification.Name("fm.listenscrobbler.showListens")
+    static let refreshListens = Notification.Name("fm.listenscrobbler.refreshListens")
 }
 
 @main
@@ -34,6 +37,28 @@ struct ListenScrobblerApp: App {
         .defaultSize(width: 1180, height: 760)
         .commands {
             CommandMenu("Tools") {
+                Button("Show Submission Queue") {
+                    postMainWindowEvent(AppEvents.showQueue)
+                }
+                .keyboardShortcut("q", modifiers: [.command, .shift])
+
+                Button("Show Listens") {
+                    postMainWindowEvent(AppEvents.showListens)
+                }
+                .keyboardShortcut("l", modifiers: [.command, .shift])
+
+                Button("Refresh Listens") {
+                    postMainWindowEvent(AppEvents.refreshListens)
+                }
+                .keyboardShortcut("r", modifiers: [.command])
+
+                Button("Show Diagnostics") {
+                    postMainWindowEvent(AppEvents.showDiagnostics)
+                }
+                .keyboardShortcut("d", modifiers: [.command, .shift])
+
+                Divider()
+
                 Button(showDockIcon ? "Switch To Menu Bar Only" : "Show Dock Icon") {
                     toggleDockIconVisibility()
                 }
@@ -97,6 +122,14 @@ struct ListenScrobblerApp: App {
         NSApp.activate(ignoringOtherApps: true)
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: AppEvents.showDiagnostics, object: nil)
+        }
+    }
+
+    private func postMainWindowEvent(_ name: Notification.Name) {
+        openWindow(id: "main")
+        NSApp.activate(ignoringOtherApps: true)
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: name, object: nil)
         }
     }
 

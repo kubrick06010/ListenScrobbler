@@ -1,6 +1,47 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@" : {
+
+    },
+    "%@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        }
+      }
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ Albums" : {
+
+    },
+    "%@ Artists" : {
+
+    },
+    "%@ jobs" : {
+
+    },
+    "%@ ListenBrainz Artists" : {
+
+    },
+    "%@ ListenBrainz Releases" : {
+
+    },
+    "%@ ListenBrainz Tracks" : {
+
+    },
     "%@ listens" : {
       "localizations" : {
         "es" : {
@@ -11,7 +52,11 @@
         }
       }
     },
+    "%@ Listens" : {
+
+    },
     "%@ on ListenBrainz" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -21,7 +66,52 @@
         }
       }
     },
+    "%@ plays" : {
+
+    },
+    "%@ tracks" : {
+
+    },
+    "%@ Tracks" : {
+
+    },
+    "%@ trend: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ trend: %2$@"
+          }
+        }
+      }
+    },
+    "%@ tries" : {
+
+    },
+    "%@/1000 characters" : {
+
+    },
+    "%@%% compatibility" : {
+
+    },
+    "%@s" : {
+
+    },
+    "%@s / %@s" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@s / %2$@s"
+          }
+        }
+      }
+    },
+    "%@s listen mark" : {
+
+    },
     "%d followers, %d following, and %d neighbor listens loaded" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -32,6 +122,7 @@
       }
     },
     "%d recommendations loaded" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -42,6 +133,7 @@
       }
     },
     "A familiar listening timeline" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -50,6 +142,9 @@
           }
         }
       }
+    },
+    "A guided setup path for the open music identity ListenScrobbler uses across submissions, charts, and diagnostics." : {
+
     },
     "Account" : {
       "localizations" : {
@@ -61,6 +156,9 @@
         }
       }
     },
+    "Account And Session" : {
+
+    },
     "Add Existing Data" : {
       "localizations" : {
         "es" : {
@@ -70,6 +168,19 @@
           }
         }
       }
+    },
+    "Add Listen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir escucha"
+          }
+        }
+      }
+    },
+    "Affinity Network" : {
+
     },
     "Album" : {
       "localizations" : {
@@ -82,6 +193,7 @@
       }
     },
     "All Time" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -111,7 +223,26 @@
         }
       }
     },
+    "Artist Biography" : {
+
+    },
+    "Artist Details" : {
+
+    },
+    "Artist Origins" : {
+
+    },
+    "Artist Profile" : {
+
+    },
+    "as" : {
+
+    },
+    "Auth State: %@" : {
+
+    },
     "Available in a later build." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -121,7 +252,14 @@
         }
       }
     },
+    "Avg. listens per day" : {
+
+    },
+    "Backend: %@" : {
+
+    },
     "Baseline created. Future scans will submit new plays." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -141,6 +279,15 @@
         }
       }
     },
+    "Blurb" : {
+
+    },
+    "Build Playlist" : {
+
+    },
+    "by %@" : {
+
+    },
     "Cancel" : {
       "localizations" : {
         "es" : {
@@ -151,7 +298,17 @@
         }
       }
     },
+    "Capabilities: %@" : {
+
+    },
+    "Capture Obsession" : {
+
+    },
+    "Charts" : {
+
+    },
     "Charts, pins, followers, similar users, and recommendations use open identifiers you can take elsewhere." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -171,6 +328,18 @@
         }
       }
     },
+    "Click a node to open profile in-app." : {
+
+    },
+    "Compare Archives" : {
+
+    },
+    "Compatibility" : {
+
+    },
+    "Compatibility Session" : {
+
+    },
     "Connect" : {
       "localizations" : {
         "es" : {
@@ -182,6 +351,7 @@
       }
     },
     "Connect ListenBrainz" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -192,6 +362,7 @@
       }
     },
     "Connect ListenBrainz before submitting listens." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -200,6 +371,20 @@
           }
         }
       }
+    },
+    "Connect ListenBrainz in a few deliberate steps." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conecta ListenBrainz en unos pocos pasos claros."
+          }
+        }
+      }
+    },
+    "Connect ListenBrainz in Preferences to unlock open archive charts, recent listens, and cross-platform history." : {
+
     },
     "Connect ListenBrainz or pull to refresh." : {
       "localizations" : {
@@ -212,6 +397,7 @@
       }
     },
     "Connect ListenBrainz to load recommendations" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -222,6 +408,7 @@
       }
     },
     "Connect ListenBrainz to load social activity" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -232,6 +419,7 @@
       }
     },
     "Connect ListenBrainz to load stats" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -241,12 +429,16 @@
         }
       }
     },
-    "Connect ListenBrainz in a few deliberate steps." : {
+    "Connected through ListenBrainz similarity data" : {
+
+    },
+    "Connection Settings" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Conecta ListenBrainz en unos pocos pasos claros."
+            "value" : "Ajustes de conexión"
           }
         }
       }
@@ -262,6 +454,7 @@
       }
     },
     "Copy ListenBrainz Token" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -272,6 +465,7 @@
       }
     },
     "Copy your user token" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -280,6 +474,9 @@
           }
         }
       }
+    },
+    "Create a ListenBrainz playlist from the first eight recommendations currently loaded." : {
+
     },
     "Create Account" : {
       "localizations" : {
@@ -292,6 +489,7 @@
       }
     },
     "Create MusicBrainz Account" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -301,22 +499,24 @@
         }
       }
     },
-    "Create or sign in with MusicBrainz, copy your ListenBrainz user token, validate it in ListenScrobbler, then run one test submission or library scan. No password is stored in the app." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crea una cuenta o inicia sesión con MusicBrainz, copia tu token de usuario de ListenBrainz, valídalo en ListenScrobbler y luego haz un envío de prueba o un análisis de biblioteca. La app no guarda ninguna contraseña."
-          }
-        }
-      }
-    },
     "Create or sign in to MusicBrainz" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crea una cuenta o inicia sesión en MusicBrainz"
+          }
+        }
+      }
+    },
+    "Create or sign in with MusicBrainz, copy your ListenBrainz user token, validate it in ListenScrobbler, then run one test submission or library scan. No password is stored in the app." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crea una cuenta o inicia sesión con MusicBrainz, copia tu token de usuario de ListenBrainz, valídalo en ListenScrobbler y luego haz un envío de prueba o un análisis de biblioteca. La app no guarda ninguna contraseña."
           }
         }
       }
@@ -422,6 +622,7 @@
       }
     },
     "Discovery without a locked graph" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -462,6 +663,7 @@
       }
     },
     "Enable submissions" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -491,6 +693,16 @@
         }
       }
     },
+    "Export Listening Data" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportar datos de escucha"
+          }
+        }
+      }
+    },
     "Failed" : {
       "localizations" : {
         "es" : {
@@ -502,6 +714,7 @@
       }
     },
     "Failed to load recommendations: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -512,6 +725,7 @@
       }
     },
     "Failed to load social activity: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -522,6 +736,7 @@
       }
     },
     "Failed to load stats: %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -530,6 +745,9 @@
           }
         }
       }
+    },
+    "Follow Someone" : {
+
     },
     "Followers" : {
       "localizations" : {
@@ -541,6 +759,9 @@
         }
       }
     },
+    "Followers + Following" : {
+
+    },
     "Following" : {
       "localizations" : {
         "es" : {
@@ -550,6 +771,9 @@
           }
         }
       }
+    },
+    "from %@" : {
+
     },
     "Guided Setup" : {
       "localizations" : {
@@ -571,7 +795,11 @@
         }
       }
     },
+    "If Dock icon is hidden, the app starts silently in the menu bar on login." : {
+
+    },
     "Keep ListenBrainz enabled, choose whether to send now playing and completed listens, then save the settings." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -591,6 +819,28 @@
         }
       }
     },
+    "ListenBrainz Archive" : {
+
+    },
+    "ListenBrainz Artist Context" : {
+
+    },
+    "ListenBrainz Context" : {
+
+    },
+    "ListenBrainz has %@ public plays for %@. You've listened to %@ %@ times and %@ %@ time(s)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "ListenBrainz has %1$@ public plays for %2$@. You've listened to %3$@ %4$@ times and %5$@ %6$@ time(s)."
+          }
+        }
+      }
+    },
+    "ListenBrainz is the primary destination for now playing, completed listens, charts, and open social discovery." : {
+
+    },
     "ListenBrainz schedules deletions, so counts may update after the next hourly cleanup." : {
       "localizations" : {
         "es" : {
@@ -601,7 +851,14 @@
         }
       }
     },
+    "ListenBrainz Setup" : {
+
+    },
+    "ListenBrainz Social" : {
+
+    },
     "ListenBrainz Status" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -612,6 +869,7 @@
       }
     },
     "ListenBrainz uses your MusicBrainz account. Sign in on the web first so the token page can show your account token." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -620,6 +878,50 @@
           }
         }
       }
+    },
+    "Listened" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuchado"
+          }
+        }
+      }
+    },
+    "Listener" : {
+
+    },
+    "Listening Activity" : {
+
+    },
+    "Listening clock" : {
+
+    },
+    "Listening Dashboard" : {
+
+    },
+    "Listening from %@" : {
+
+    },
+    "Listening since %@" : {
+
+    },
+    "Listening Submissions" : {
+
+    },
+    "Listens" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escuchas"
+          }
+        }
+      }
+    },
+    "ListenScrobbler" : {
+
     },
     "ListenScrobbler Status" : {
       "localizations" : {
@@ -641,37 +943,8 @@
         }
       }
     },
-    "Listened" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escuchado"
-          }
-        }
-      }
-    },
-    "Listens" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escuchas"
-          }
-        }
-      }
-    },
-    "Loading %@ stats" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cargando estadísticas de %@"
-          }
-        }
-      }
-    },
     "Loaded %@ stats" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -681,7 +954,19 @@
         }
       }
     },
+    "Loading %@ stats" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando estadísticas de %@"
+          }
+        }
+      }
+    },
     "Loading ListenBrainz" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -692,6 +977,7 @@
       }
     },
     "Loading recommendations" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -702,6 +988,7 @@
       }
     },
     "Loading social activity" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -710,6 +997,12 @@
           }
         }
       }
+    },
+    "Local-first" : {
+
+    },
+    "Mainstream score" : {
+
     },
     "Manual Scrobble" : {
       "localizations" : {
@@ -742,6 +1035,7 @@
       }
     },
     "Month" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -757,16 +1051,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acceso a música"
-          }
-        }
-      }
-    },
-    "Music Library Scrobbling" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scrobbling de biblioteca musical"
           }
         }
       }
@@ -811,6 +1095,28 @@
         }
       }
     },
+    "Music Library Scrobbling" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scrobbling de biblioteca musical"
+          }
+        }
+      }
+    },
+    "Neighbor Listening" : {
+
+    },
+    "No affinity network available yet for this range." : {
+
+    },
+    "No artist details yet." : {
+
+    },
+    "No current track" : {
+
+    },
     "No discovery yet" : {
       "localizations" : {
         "es" : {
@@ -820,6 +1126,12 @@
           }
         }
       }
+    },
+    "No graph data available." : {
+
+    },
+    "No ListenBrainz charts loaded yet." : {
+
     },
     "No listens loaded" : {
       "localizations" : {
@@ -832,6 +1144,7 @@
       }
     },
     "No new Music library plays detected." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -841,15 +1154,26 @@
         }
       }
     },
-    "No recommendations returned" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se recibieron recomendaciones"
-          }
-        }
-      }
+    "No origin map available yet for this range." : {
+
+    },
+    "No overall top artists available." : {
+
+    },
+    "No pin activity yet." : {
+
+    },
+    "No playlists loaded." : {
+
+    },
+    "No profile loaded." : {
+
+    },
+    "No public listening activity available." : {
+
+    },
+    "No public neighbor listens loaded yet." : {
+
     },
     "No recent listen" : {
       "localizations" : {
@@ -861,6 +1185,47 @@
         }
       }
     },
+    "No recent listens available." : {
+
+    },
+    "No recommendations loaded yet." : {
+
+    },
+    "No recommendations returned" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se recibieron recomendaciones"
+          }
+        }
+      }
+    },
+    "No related listeners available." : {
+
+    },
+    "No shared top artists yet." : {
+
+    },
+    "No tags available yet." : {
+
+    },
+    "No track details yet." : {
+
+    },
+    "No track detected" : {
+
+    },
+    "No weekly top artists available." : {
+
+    },
+    "Nobody here yet." : {
+
+    },
+    "Nothing pinned right now." : {
+
+    },
     "Now Playing" : {
       "localizations" : {
         "es" : {
@@ -871,7 +1236,17 @@
         }
       }
     },
+    "Obsession Card" : {
+
+    },
+    "Obsessions" : {
+
+    },
+    "Obsessions are recovered from this app's local per-account store and optional `.listenscrobbler-obsessions.json` imports. They remain portable, private, and independent from any single platform." : {
+
+    },
     "Open Add Data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -880,6 +1255,9 @@
           }
         }
       }
+    },
+    "Open data" : {
+
     },
     "Open Discovery" : {
       "localizations" : {
@@ -911,7 +1289,11 @@
         }
       }
     },
+    "Open Metadata" : {
+
+    },
     "Open Music Setup" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -932,6 +1314,7 @@
       }
     },
     "Open Token Page" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -951,7 +1334,11 @@
         }
       }
     },
+    "Operational state: Preferences > Advanced" : {
+
+    },
     "Optional: import older history" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -962,6 +1349,7 @@
       }
     },
     "Paste a ListenBrainz token." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -972,6 +1360,7 @@
       }
     },
     "Paste the token in ListenScrobbler." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1001,6 +1390,15 @@
         }
       }
     },
+    "People Listening Now" : {
+
+    },
+    "Pick someone you follow, someone who follows you, or a similar user to compare your open listening history." : {
+
+    },
+    "Pinch to zoom, drag to pan" : {
+
+    },
     "Pinned" : {
       "localizations" : {
         "es" : {
@@ -1010,6 +1408,22 @@
           }
         }
       }
+    },
+    "Play music in a supported player. ListenScrobbler will show the current track here and submit it when it reaches the listening threshold." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproduce música en un reproductor compatible. ListenScrobbler mostrará aquí la pista actual y la enviará cuando alcance el umbral de escucha."
+          }
+        }
+      }
+    },
+    "Profile" : {
+
+    },
+    "Queue is empty. Tracks that pass threshold rules will appear here for each enabled backend." : {
+
     },
     "Radio" : {
       "localizations" : {
@@ -1031,6 +1445,16 @@
         }
       }
     },
+    "Ready for your next listen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo para tu próxima escucha"
+          }
+        }
+      }
+    },
     "Recent Listen" : {
       "localizations" : {
         "es" : {
@@ -1041,12 +1465,26 @@
         }
       }
     },
+    "Recent ListenBrainz Activity" : {
+
+    },
     "Recent listens, now playing state, manual submissions, and library scans stay quick to reach." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Las escuchas recientes, el estado de reproducción, los envíos manuales y los análisis de biblioteca siguen siempre a mano."
+          }
+        }
+      }
+    },
+    "Recommendations" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recomendaciones"
           }
         }
       }
@@ -1061,15 +1499,8 @@
         }
       }
     },
-    "Recommendations" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recomendaciones"
-          }
-        }
-      }
+    "Recommended For You" : {
+
     },
     "Refresh Discover" : {
       "localizations" : {
@@ -1087,6 +1518,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Actualizar ListenBrainz"
+          }
+        }
+      }
+    },
+    "Refresh ListenScrobbler to update ListenBrainz." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualiza ListenScrobbler para actualizar ListenBrainz."
           }
         }
       }
@@ -1111,32 +1552,22 @@
         }
       }
     },
-    "Refresh Social" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualizar social"
-          }
-        }
-      }
-    },
-    "Refresh ListenScrobbler to update ListenBrainz." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualiza ListenScrobbler para actualizar ListenBrainz."
-          }
-        }
-      }
-    },
     "Refresh recommendations in ListenScrobbler." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Actualiza las recomendaciones en ListenScrobbler."
+          }
+        }
+      }
+    },
+    "Refresh Social" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar social"
           }
         }
       }
@@ -1151,6 +1582,9 @@
         }
       }
     },
+    "Related Listeners" : {
+
+    },
     "Repeat Recent Listen" : {
       "localizations" : {
         "es" : {
@@ -1161,12 +1595,26 @@
         }
       }
     },
+    "Reports" : {
+
+    },
     "Reset Scan Baseline" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Restablecer línea base"
+          }
+        }
+      }
+    },
+    "Resume Submissions" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reanudar envíos"
           }
         }
       }
@@ -1221,6 +1669,27 @@
         }
       }
     },
+    "Select a shared entry." : {
+
+    },
+    "Select an obsession." : {
+
+    },
+    "Send Recommendation" : {
+
+    },
+    "Separation Graph: %@" : {
+
+    },
+    "Separation Network" : {
+
+    },
+    "Separation: %@" : {
+
+    },
+    "Session: %@" : {
+
+    },
     "Setup checklist" : {
       "localizations" : {
         "es" : {
@@ -1240,6 +1709,18 @@
           }
         }
       }
+    },
+    "Share to Vault" : {
+
+    },
+    "Share with another app user by exporting a `.listenscrobbler-shared.json` bundle, or move track-based shares into portable `.jspf` playlists with MusicBrainz identifiers when available." : {
+
+    },
+    "Shared" : {
+
+    },
+    "Shared Card" : {
+
     },
     "Show ListenBrainz connection state and queued mobile listens." : {
       "localizations" : {
@@ -1271,6 +1752,26 @@
         }
       }
     },
+    "Showing %@ of %@ people" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Showing %1$@ of %2$@ people"
+          }
+        }
+      }
+    },
+    "Showing %@ of %@ related listeners" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Showing %1$@ of %2$@ related listeners"
+          }
+        }
+      }
+    },
     "Similar" : {
       "localizations" : {
         "es" : {
@@ -1280,6 +1781,18 @@
           }
         }
       }
+    },
+    "Similar Albums" : {
+
+    },
+    "Similar Artists" : {
+
+    },
+    "Similar Tracks" : {
+
+    },
+    "Single account" : {
+
     },
     "Skip" : {
       "localizations" : {
@@ -1321,6 +1834,9 @@
         }
       }
     },
+    "Submission Queue" : {
+
+    },
     "Submit" : {
       "localizations" : {
         "es" : {
@@ -1341,7 +1857,18 @@
         }
       }
     },
+    "Submitted %@ to ListenBrainz." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ enviado a ListenBrainz."
+          }
+        }
+      }
+    },
     "Submitted %d new plays." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1352,6 +1879,7 @@
       }
     },
     "Submitted %d of %d detected plays. %d pending retry." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1362,6 +1890,7 @@
       }
     },
     "Submitted %d pending plays." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1372,6 +1901,7 @@
       }
     },
     "Submitted %d pending plays. %d still pending retry." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1391,15 +1921,8 @@
         }
       }
     },
-    "Submitted %@ to ListenBrainz." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ enviado a ListenBrainz."
-          }
-        }
-      }
+    "Tags: %@" : {
+
     },
     "Title" : {
       "localizations" : {
@@ -1421,6 +1944,15 @@
         }
       }
     },
+    "Top Artists Overall" : {
+
+    },
+    "Top Artists This Week" : {
+
+    },
+    "Top ListenBrainz Tracks" : {
+
+    },
     "Top Releases" : {
       "localizations" : {
         "es" : {
@@ -1430,6 +1962,9 @@
           }
         }
       }
+    },
+    "Top tags" : {
+
     },
     "Top Tracks" : {
       "localizations" : {
@@ -1441,6 +1976,9 @@
         }
       }
     },
+    "Top Tracks By This Artist" : {
+
+    },
     "Track" : {
       "localizations" : {
         "es" : {
@@ -1450,6 +1988,12 @@
           }
         }
       }
+    },
+    "Track And Artist Explore" : {
+
+    },
+    "Track Details" : {
+
     },
     "Track Title" : {
       "localizations" : {
@@ -1461,6 +2005,9 @@
         }
       }
     },
+    "Trends vs. %@" : {
+
+    },
     "Updated %@" : {
       "localizations" : {
         "es" : {
@@ -1471,7 +2018,19 @@
         }
       }
     },
+    "Use it to sign in to ListenBrainz." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Úsala para iniciar sesión en ListenBrainz."
+          }
+        }
+      }
+    },
     "Use ListenBrainz's Add Data page for supported imports. ListenScrobbler does not require web music-service settings to submit local or manual listens." : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1481,15 +2040,8 @@
         }
       }
     },
-    "Use it to sign in to ListenBrainz." : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Úsala para iniciar sesión en ListenBrainz."
-          }
-        }
-      }
+    "Use these only when you need the web step." : {
+
     },
     "User token" : {
       "localizations" : {
@@ -1502,6 +2054,7 @@
       }
     },
     "Verify with one listen" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1511,7 +2064,35 @@
         }
       }
     },
+    "View Queue" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver cola"
+          }
+        }
+      }
+    },
+    "vs %@" : {
+
+    },
+    "vs. %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "vs. %1$@ %2$@"
+          }
+        }
+      }
+    },
+    "vs. %@%% baseline" : {
+
+    },
     "Week" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1531,7 +2112,24 @@
         }
       }
     },
+    "With a %@%% mainstream score, you are %@ compared to your recent baseline." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "With a %1$@%% mainstream score, you are %2$@ compared to your recent baseline."
+          }
+        }
+      }
+    },
+    "X-axis: %@" : {
+
+    },
+    "Y-axis: listens" : {
+
+    },
     "Year" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1541,7 +2139,34 @@
         }
       }
     },
+    "You %@ · Them %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "You %1$@ · Them %2$@"
+          }
+        }
+      }
+    },
+    "You can reopen this anytime from ListenBrainz settings." : {
+
+    },
+    "You have %@ artists in your library and on average listen to %@ tracks per day." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "You have %1$@ artists in your library and on average listen to %2$@ tracks per day."
+          }
+        }
+      }
+    },
+    "You listened the most at %@ this period." : {
+
+    },
     "Your account stays portable" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -1550,6 +2175,9 @@
           }
         }
       }
+    },
+    "Your Listens" : {
+
     }
   },
   "version" : "1.0"
