@@ -41,6 +41,18 @@ ListenBrainz is the primary service. Compatibility code may remain temporarily a
 
 Charts and social features stay in scope. The goal is not to remove social music discovery, but to rebuild it on ListenBrainz-compatible concepts such as public listens, follows, similar users, MusicBrainz identifiers, playlists, pins, recommendations, and portable local archives.
 
+## Contributing And Roadmap
+
+ListenScrobbler is an open project and the roadmap is intentionally broader than
+the current release. Developers are invited to help extend the app and tackle
+the roadmap in focused, tested increments: improving ListenBrainz reliability,
+deepening MusicBrainz metadata and social discovery, evolving the local-first
+vaults and exports, polishing accessibility across macOS and iOS, and
+strengthening release automation. Before starting a larger change, please read
+[`ROADMAP.md`](ROADMAP.md) and the engineering practices, then open an issue or
+discussion describing the proposed slice. Contributions that improve the
+roadmap, documentation, tests, or implementation are all welcome.
+
 ## Architecture
 
 The app now follows the repository protocol in `docs/ENGINEERING_PRACTICES.md`. In short:
