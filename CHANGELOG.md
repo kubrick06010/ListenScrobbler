@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+## 1.1.2 - 2026-08-08
+
+### Added
+
+- Localized app content and shortcuts across the supported languages.
+- Richer listening insights, artist detail, activity charts, and social views.
+- Recognition and scrobble mock documentation plus expanded behavioral tests.
+
+### Fixed
+
+- Improved current-track metadata normalization and MusicBrainz matching so the
+  song playing in supported players is displayed and scrobbled more reliably.
+
+### Changed
+
+- Advanced macOS to version `1.1.2` build `8`.
+
 ## 1.1.1 - 2026-07-15
 
 ### Added
