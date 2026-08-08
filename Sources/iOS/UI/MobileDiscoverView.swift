@@ -461,7 +461,7 @@ private struct MobileSocialSummaryView: View {
                 }
             }
 
-            Text("Updated \(snapshot.fetchedAt.formatted(date: .omitted, time: .shortened))")
+            Text("Updated \(AppLocalization.date(snapshot.fetchedAt, date: .omitted, time: .shortened))")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }
@@ -475,7 +475,7 @@ private struct MobileSocialMetric: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(value.formatted())
+            Text(AppLocalization.integer(value))
                 .font(.headline.monospacedDigit())
             Text(LocalizedStringKey(title))
                 .font(.caption)
@@ -508,7 +508,7 @@ private struct MobileSocialListenRow: View {
                 HStack(spacing: 6) {
                     Text(listen.userName)
                     if let listenedAt = listen.listenedAt {
-                        Text(listenedAt.formatted(date: .omitted, time: .shortened))
+                        Text(AppLocalization.date(listenedAt, date: .omitted, time: .shortened))
                     }
                 }
                 .font(.caption)

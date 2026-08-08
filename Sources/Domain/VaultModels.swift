@@ -10,9 +10,9 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
 
         var displayName: String {
             switch self {
-            case .track: return "Track"
-            case .artist: return "Artist"
-            case .album: return "Album"
+            case .track: return String(localized: "Track")
+            case .artist: return String(localized: "Artist")
+            case .album: return String(localized: "Album")
             }
         }
     }
@@ -26,9 +26,9 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
 
         var displayName: String {
             switch self {
-            case .sent: return "Sent"
-            case .received: return "Received"
-            case .imported: return "Imported"
+            case .sent: return String(localized: "Sent")
+            case .received: return String(localized: "Received")
+            case .imported: return String(localized: "Imported")
             }
         }
     }
@@ -41,10 +41,10 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
 
         var displayName: String {
             switch self {
-            case .appLocal: return "Local"
-            case .legacyServiceImport: return "Legacy import"
-            case .webImport: return "Web import"
-            case .fileImport: return "File import"
+            case .appLocal: return String(localized: "Local")
+            case .legacyServiceImport: return String(localized: "Legacy import")
+            case .webImport: return String(localized: "Web import")
+            case .fileImport: return String(localized: "File import")
             }
         }
     }
@@ -104,10 +104,10 @@ struct ObsessionEntry: Codable, Identifiable, Equatable {
 
         var displayName: String {
             switch self {
-            case .userCaptured: return "Local"
-            case .webImport: return "Web import"
-            case .manualImport: return "File import"
-            case .listenBrainzPin: return "ListenBrainz pin"
+            case .userCaptured: return String(localized: "Local")
+            case .webImport: return String(localized: "Web import")
+            case .manualImport: return String(localized: "File import")
+            case .listenBrainzPin: return String(localized: "ListenBrainz pin")
             }
         }
     }

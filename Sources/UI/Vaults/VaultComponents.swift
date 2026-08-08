@@ -138,7 +138,7 @@ struct ObsessionTimelineRow: View {
                 Text(entry.artist)
                     .font(.custom("Avenir Next Regular", size: 13))
                     .foregroundStyle(.secondary)
-                Text(entry.note ?? "No note captured.")
+                Text(entry.note ?? String(localized: "No note captured."))
                     .font(.custom("Avenir Next Regular", size: 12))
                     .lineLimit(2)
             }
@@ -184,7 +184,7 @@ struct SharedDetailView: View {
                 Label(entry.apiStatus ?? entry.source.displayName, systemImage: "checkmark.seal")
                     .font(.custom("Avenir Next Medium", size: 13))
                 Divider()
-                Text(entry.message ?? "No message attached.")
+                Text(entry.message ?? String(localized: "No message attached."))
                     .font(.custom("Avenir Next Regular", size: 13))
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
@@ -233,7 +233,7 @@ struct ObsessionDetailView: View {
                         .foregroundStyle(.green)
                 }
                 Divider()
-                Text(entry.note ?? "No note captured.")
+                Text(entry.note ?? String(localized: "No note captured."))
                     .font(.custom("Avenir Next Regular", size: 13))
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
@@ -247,10 +247,11 @@ struct ObsessionDetailView: View {
                     Button {
                         toggleListenBrainzPin(entry)
                     } label: {
-                        Label(
-                            listenBrainzPinRowID(for: entry, scrobbleService: scrobbleService) == nil ? "Pin on ListenBrainz" : "Delete ListenBrainz Pin",
-                            systemImage: listenBrainzPinRowID(for: entry, scrobbleService: scrobbleService) == nil ? "pin" : "pin.slash"
-                        )
+                        if listenBrainzPinRowID(for: entry, scrobbleService: scrobbleService) == nil {
+                            Label("Pin on ListenBrainz", systemImage: "pin")
+                        } else {
+                            Label("Delete ListenBrainz Pin", systemImage: "pin.slash")
+                        }
                     }
                     .buttonStyle(.bordered)
                     .disabled(!canToggleListenBrainzPin(entry, scrobbleService: scrobbleService))

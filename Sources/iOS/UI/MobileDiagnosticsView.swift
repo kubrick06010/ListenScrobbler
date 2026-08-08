@@ -26,8 +26,8 @@ struct MobileDiagnosticsSnapshot: Identifiable {
     ) -> MobileDiagnosticsSnapshot {
         MobileDiagnosticsSnapshot(
             generatedAt: Date(),
-            appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown",
-            buildVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "unknown",
+            appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? String(localized: "unknown"),
+            buildVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? String(localized: "unknown"),
             osVersion: "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)",
             deviceModel: UIDevice.current.model,
             connectionState: listeningStore.connectionState.statusText,
@@ -43,49 +43,54 @@ struct MobileDiagnosticsSnapshot: Identifiable {
     }
 
     var exportText: String {
+        let unknown = String(localized: "unknown")
+        let yes = String(localized: "yes")
+        let no = String(localized: "no")
+        let never = String(localized: "never")
+        let none = String(localized: "none")
         var lines: [String] = [
-            "ListenScrobbler iOS Diagnostics",
-            "Generated: \(Self.isoDate(generatedAt))",
-            "App: \(appVersion) (\(buildVersion))",
-            "OS: \(osVersion)",
-            "Device: \(deviceModel)",
+            String(localized: "ListenScrobbler iOS Diagnostics"),
+            String(localized: "Generated: \(Self.isoDate(generatedAt))"),
+            String(localized: "App: \(appVersion) (\(buildVersion))"),
+            String(localized: "OS: \(osVersion)"),
+            String(localized: "Device: \(deviceModel)"),
             "",
             "ListenBrainz",
-            "- State: \(connectionState)",
-            "- Username: \(configuredUsername.isEmpty ? "unknown" : configuredUsername)",
-            "- Stored token present: \(hasStoredToken ? "yes" : "no")",
+            String(localized: "- State: \(connectionState)"),
+            String(localized: "- Username: \(configuredUsername.isEmpty ? unknown : configuredUsername)"),
+            String(localized: "- Stored token present: \(hasStoredToken ? yes : no)"),
             "",
-            "Music Library Scanner",
-            "- Authorization: \(musicAuthorization)",
-            "- Scanning: \(isScanning ? "yes" : "no")",
-            "- Last scan: \(lastScanAt.map(Self.isoDate) ?? "never")",
-            "- Last error: \(lastError?.nilIfBlank ?? "none")",
-            "- Pending retry count: \(pendingScrobbles.count)"
+            String(localized: "Music Library Scanner"),
+            String(localized: "- Authorization: \(musicAuthorization)"),
+            String(localized: "- Scanning: \(isScanning ? yes : no)"),
+            String(localized: "- Last scan: \(lastScanAt.map(Self.isoDate) ?? never)"),
+            String(localized: "- Last error: \(lastError?.nilIfBlank ?? none)"),
+            String(localized: "- Pending retry count: \(pendingScrobbles.count)")
         ]
 
         if let lastSummary {
             lines.append(contentsOf: [
-                "- Summary detected: \(lastSummary.detected)",
-                "- Summary submitted: \(lastSummary.submitted)",
-                "- Summary failed: \(lastSummary.failed)",
-                "- Summary retried: \(lastSummary.retried)",
-                "- Summary retry submitted: \(lastSummary.retrySubmitted)",
-                "- Summary retry failed: \(lastSummary.retryFailed)",
-                "- Summary pending: \(lastSummary.pending)",
-                "- Baseline created: \(lastSummary.baselineCreated ? "yes" : "no")",
-                "- Message: \(lastSummary.message)"
+                String(localized: "- Summary detected: \(lastSummary.detected)"),
+                String(localized: "- Summary submitted: \(lastSummary.submitted)"),
+                String(localized: "- Summary failed: \(lastSummary.failed)"),
+                String(localized: "- Summary retried: \(lastSummary.retried)"),
+                String(localized: "- Summary retry submitted: \(lastSummary.retrySubmitted)"),
+                String(localized: "- Summary retry failed: \(lastSummary.retryFailed)"),
+                String(localized: "- Summary pending: \(lastSummary.pending)"),
+                String(localized: "- Baseline created: \(lastSummary.baselineCreated ? yes : no)"),
+                String(localized: "- Message: \(lastSummary.message)")
             ])
         }
 
         if pendingScrobbles.isEmpty {
-            lines.append(contentsOf: ["", "Pending Queue", "- empty"])
+            lines.append(contentsOf: ["", String(localized: "Pending Queue"), String(localized: "- empty")])
         } else {
-            lines.append(contentsOf: ["", "Pending Queue"])
+            lines.append(contentsOf: ["", String(localized: "Pending Queue")])
             for item in pendingScrobbles.prefix(25) {
                 lines.append(contentsOf: Self.pendingLines(item))
             }
             if pendingScrobbles.count > 25 {
-                lines.append("- \(pendingScrobbles.count - 25) additional pending item(s) omitted")
+                lines.append(String(localized: "- \(pendingScrobbles.count - 25) additional pending item(s) omitted"))
             }
         }
 
@@ -93,26 +98,28 @@ struct MobileDiagnosticsSnapshot: Identifiable {
     }
 
     private static func pendingLines(_ item: MobilePendingScrobble) -> [String] {
+        let unknown = String(localized: "unknown")
+        let none = String(localized: "none")
         var lines = [
             "- \(item.candidate.title) / \(item.candidate.artist)",
-            "  library item: \(item.libraryItemID)",
-            "  source: \(item.candidate.source)",
-            "  album: \(item.candidate.album?.nilIfBlank ?? "unknown")",
-            "  listened: \(isoDate(item.candidate.listenedAt))",
-            "  duration: \(Int(item.candidate.duration.rounded()))s",
-            "  attempts: \(item.attempts)",
-            "  last error: \(item.lastError?.nilIfBlank ?? "none")",
-            "  updated: \(isoDate(item.updatedAt))"
+            String(localized: "  library item: \(item.libraryItemID)"),
+            String(localized: "  source: \(item.candidate.source)"),
+            String(localized: "  album: \(item.candidate.album?.nilIfBlank ?? unknown)"),
+            String(localized: "  listened: \(isoDate(item.candidate.listenedAt))"),
+            String(localized: "  duration: \(Int(item.candidate.duration.rounded()))s"),
+            String(localized: "  attempts: \(item.attempts)"),
+            String(localized: "  last error: \(item.lastError?.nilIfBlank ?? none)"),
+            String(localized: "  updated: \(isoDate(item.updatedAt))")
         ]
 
         if let metadata = item.candidate.sourceMetadata {
-            lines.append("  media player: \(metadata.mediaPlayer?.nilIfBlank ?? "unknown")")
-            lines.append("  music service: \(metadata.musicService?.nilIfBlank ?? "unknown")")
-            lines.append("  music service name: \(metadata.musicServiceName?.nilIfBlank ?? "unknown")")
-            lines.append("  origin url: \(metadata.originURL?.nilIfBlank ?? "none")")
-            lines.append("  spotify id: \(metadata.spotifyID?.nilIfBlank ?? "none")")
-            lines.append("  duration played: \(metadata.durationPlayed.map { "\(Int($0.rounded()))s" } ?? "unknown")")
-            lines.append("  original client: \(metadata.originalSubmissionClient?.nilIfBlank ?? "unknown")")
+            lines.append(String(localized: "  media player: \(metadata.mediaPlayer?.nilIfBlank ?? unknown)"))
+            lines.append(String(localized: "  music service: \(metadata.musicService?.nilIfBlank ?? unknown)"))
+            lines.append(String(localized: "  music service name: \(metadata.musicServiceName?.nilIfBlank ?? unknown)"))
+            lines.append(String(localized: "  origin url: \(metadata.originURL?.nilIfBlank ?? none)"))
+            lines.append(String(localized: "  spotify id: \(metadata.spotifyID?.nilIfBlank ?? none)"))
+            lines.append(String(localized: "  duration played: \(metadata.durationPlayed.map { "\(Int($0.rounded()))s" } ?? unknown)"))
+            lines.append(String(localized: "  original client: \(metadata.originalSubmissionClient?.nilIfBlank ?? unknown)"))
         }
 
         return lines

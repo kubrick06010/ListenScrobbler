@@ -47,7 +47,7 @@ struct ProfileView: View {
                                 profilePill("Loved", scrobbleService.lovedTracksCount)
                             }
                             if let registered = profile.registeredAt {
-                                Text("Listening since \(registered.formatted(date: .abbreviated, time: .omitted))")
+                                Text("Listening since \(AppLocalization.date(registered, date: .abbreviated, time: .omitted))")
                                     .font(.custom("Avenir Next Regular", size: 12))
                                     .foregroundStyle(.secondary)
                             }
@@ -62,7 +62,7 @@ struct ProfileView: View {
                 }
 
                 if let artistCount = profileArtistCount, let avg = scrobbleService.tracksPerDayAverage {
-                    Text("You have \(artistCount.formatted()) artists in your library and on average listen to \(avg.formatted()) tracks per day.")
+                    Text("You have \(AppLocalization.integer(artistCount)) artists in your library and on average listen to \(AppLocalization.integer(avg)) tracks per day.")
                         .font(.custom("Avenir Next Medium", size: 15))
                         .padding(14)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -85,7 +85,7 @@ struct ProfileView: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(artist.name)
                                         .font(.custom("Avenir Next Medium", size: 13))
-                                    Text("\((artist.playcount ?? 0).formatted()) plays")
+                                    Text("\(AppLocalization.integer(artist.playcount ?? 0)) plays")
                                         .font(.custom("Avenir Next Regular", size: 12))
                                         .foregroundStyle(.secondary)
                                 }
@@ -114,7 +114,7 @@ struct ProfileView: View {
                                     Text(artist.name)
                                         .font(.custom("Avenir Next Regular", size: 12))
                                     Spacer()
-                                    Text((artist.playcount ?? 0).formatted())
+                                    Text(AppLocalization.integer(artist.playcount ?? 0))
                                         .font(.custom("Avenir Next Regular", size: 11))
                                         .foregroundStyle(.secondary)
                                 }
@@ -130,12 +130,12 @@ struct ProfileView: View {
         }
     }
 
-    private func profilePill(_ title: String, _ value: Int?) -> some View {
+    private func profilePill(_ title: LocalizedStringKey, _ value: Int?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title)
                 .font(.custom("Avenir Next Medium", size: 11))
                 .foregroundStyle(.secondary)
-            Text((value ?? 0).formatted())
+            Text(AppLocalization.integer(value ?? 0))
                 .font(.custom("Avenir Next Medium", size: 13))
         }
         .padding(.horizontal, 8)

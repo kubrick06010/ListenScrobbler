@@ -58,10 +58,11 @@ struct MobileListensView: View {
                                 }
                             }
                         } label: {
-                            Label(
-                                listeningStore.isCurrentPin(listen) ? "Unpin" : "Pin",
-                                systemImage: listeningStore.isCurrentPin(listen) ? "pin.slash" : "pin"
-                            )
+                            if listeningStore.isCurrentPin(listen) {
+                                Label("Unpin", systemImage: "pin.slash")
+                            } else {
+                                Label("Pin", systemImage: "pin")
+                            }
                         }
                         .tint(.orange)
                         .disabled(!canSendFeedback(listen))

@@ -129,7 +129,9 @@ struct ListenActionRow: View {
                 } label: {
                     Image(systemName: loved ? "heart.fill" : "heart")
                 }
-                .help(loved ? "Unlove on ListenBrainz" : "Love on ListenBrainz")
+                .help(loved
+                    ? String(localized: "Unlove on ListenBrainz")
+                    : String(localized: "Love on ListenBrainz"))
                 .disabled(!scrobbleService.listenBrainzEnabled || scrobbleService.isUpdatingListenBrainzFeedback)
 
                 Button {
@@ -148,7 +150,9 @@ struct ListenActionRow: View {
                 } label: {
                     Image(systemName: isPinned ? "pin.fill" : "pin")
                 }
-                .help(isPinned ? "Unpin from ListenBrainz" : "Pin on ListenBrainz")
+                .help(isPinned
+                    ? String(localized: "Unpin from ListenBrainz")
+                    : String(localized: "Pin on ListenBrainz"))
                 .disabled(!scrobbleService.listenBrainzEnabled)
 
                 Button {
@@ -163,10 +167,14 @@ struct ListenActionRow: View {
                 } label: {
                     Image(systemName: "trash")
                 }
-                .help(canDeleteListen ? "Delete from ListenBrainz" : "ListenBrainz deletion needs a listen timestamp and recording MSID")
+                .help(canDeleteListen
+                    ? String(localized: "Delete from ListenBrainz")
+                    : String(localized: "ListenBrainz deletion needs a listen timestamp and recording MSID"))
                 .disabled(!canDeleteListen)
 
-                Text(nowPlaying ? "Now" : (playedAt?.formatted(date: .omitted, time: .shortened) ?? "-"))
+                Text(nowPlaying
+                    ? String(localized: "Now")
+                    : (playedAt.map { AppLocalization.date($0, date: .omitted, time: .shortened) } ?? "-"))
                     .font(.custom("Avenir Next Regular", size: 11))
                     .foregroundStyle(.secondary)
                     .frame(minWidth: 42, alignment: .trailing)

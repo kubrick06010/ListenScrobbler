@@ -38,7 +38,7 @@ struct ExploreView: View {
                                 detailRow("Listeners", formatCount(track.listeners))
                                 detailRow("Playcount", formatCount(track.playcount))
                                 if let user = track.userPlaycount {
-                                    detailRow("Your Plays", "\(user)")
+                                    detailRow("Your Plays", AppLocalization.integer(user))
                                 }
                                 if !track.tags.isEmpty {
                                     Text("Tags: \(track.tags.prefix(8).joined(separator: " · "))")
@@ -70,7 +70,7 @@ struct ExploreView: View {
                                 detailRow("Listeners", formatCount(artist.listeners))
                                 detailRow("Playcount", formatCount(artist.playcount))
                                 if let user = artist.userPlaycount {
-                                    detailRow("In your library", "\(user)")
+                                    detailRow("In your library", AppLocalization.integer(user))
                                 }
                                 if !artist.tags.isEmpty {
                                     Text("Tags: \(artist.tags.prefix(8).joined(separator: " · "))")
@@ -109,7 +109,7 @@ struct ExploreView: View {
         }
     }
 
-    private func detailRow(_ key: String, _ value: String) -> some View {
+    private func detailRow(_ key: LocalizedStringKey, _ value: String) -> some View {
         HStack {
             Text(key).foregroundStyle(.secondary)
             Spacer()
@@ -119,8 +119,8 @@ struct ExploreView: View {
     }
 
     private func formatCount(_ value: Int?) -> String {
-        guard let value else { return "Unknown" }
-        return value.formatted()
+        guard let value else { return String(localized: "Unknown") }
+        return AppLocalization.integer(value)
     }
 
     @ViewBuilder

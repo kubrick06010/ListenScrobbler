@@ -250,42 +250,45 @@ enum CompatibilityAPIError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingSession:
-            return "Compatibility session is missing. Please sign in."
+            return String(localized: "Compatibility session is missing. Please sign in.")
         case .invalidResponse:
-            return "Unexpected response from the compatibility service."
+            return String(localized: "Unexpected response from the compatibility service.")
         case .invalidCredentials:
-            return "Invalid compatibility credentials."
+            return String(localized: "Invalid compatibility credentials.")
         case .invalidSession:
-            return "Compatibility session expired or invalid."
+            return String(localized: "Compatibility session expired or invalid.")
         case let .rateLimited(retryAfter):
             if let retryAfter {
-                return "Rate limited by the compatibility service. Retry in about \(retryAfter) seconds."
+                return String.localizedStringWithFormat(
+                    String(localized: "Rate limited by the compatibility service. Retry in about %lld seconds."),
+                    Int64(retryAfter)
+                )
             }
-            return "Rate limited by the compatibility service."
+            return String(localized: "Rate limited by the compatibility service.")
         case .networkUnavailable:
-            return "Network is unavailable."
+            return String(localized: "Network is unavailable.")
         case .transport:
-            return "Could not reach the compatibility service."
+            return String(localized: "Could not reach the compatibility service.")
         case let .api(code, message):
-            return "Compatibility API error \(code): \(message)"
+            return String.localizedStringWithFormat(String(localized: "Compatibility API error %lld: %@"), Int64(code), message)
         }
     }
 
     var recoverySuggestion: String {
         switch self {
         case .missingSession, .invalidSession:
-            return "Sign in again to refresh your compatibility session."
+            return String(localized: "Sign in again to refresh your compatibility session.")
         case .invalidCredentials:
-            return "Verify your compatibility credentials and try again."
+            return String(localized: "Verify your compatibility credentials and try again.")
         case let .rateLimited(retryAfter):
             if let retryAfter {
-                return "Wait \(retryAfter) seconds, then retry."
+                return String.localizedStringWithFormat(String(localized: "Wait %lld seconds, then retry."), Int64(retryAfter))
             }
-            return "Wait a few minutes before retrying."
+            return String(localized: "Wait a few minutes before retrying.")
         case .networkUnavailable, .transport:
-            return "Check network connectivity. Queued listens will retry automatically."
+            return String(localized: "Check network connectivity. Queued listens will retry automatically.")
         case .invalidResponse, .api:
-            return "Retry later. If this persists, inspect compatibility API status and credentials."
+            return String(localized: "Retry later. If this persists, inspect compatibility API status and credentials.")
         }
     }
 }
@@ -453,7 +456,7 @@ final class CompatibilityAPIClient: CompatibilityAPI {
                 playcount: nil,
                 userPlaycount: nil,
                 url: nil,
-                summary: "No detailed metadata available for this track.",
+                summary: String(localized: "No detailed metadata available for this track."),
                 tags: []
             )
         } catch {
@@ -508,7 +511,7 @@ final class CompatibilityAPIClient: CompatibilityAPI {
                 playcount: nil,
                 userPlaycount: nil,
                 url: nil,
-                summary: "No detailed metadata available for this artist.",
+                summary: String(localized: "No detailed metadata available for this artist."),
                 tags: [],
                 similarArtists: []
             )
@@ -1938,13 +1941,13 @@ final class CompatibilityAPIStub: CompatibilityAPI {
         CompatibilityTrackDetails(
             name: track,
             artist: artist,
-            album: "Unknown Album",
+            album: String(localized: "Unknown Album"),
             imageURL: nil,
             listeners: 0,
             playcount: 0,
             userPlaycount: 0,
             url: nil,
-            summary: "Track details are unavailable in stub mode.",
+            summary: String(localized: "Track details are unavailable in stub mode."),
             tags: []
         )
     }
@@ -1957,7 +1960,7 @@ final class CompatibilityAPIStub: CompatibilityAPI {
             playcount: 0,
             userPlaycount: 0,
             url: nil,
-            summary: "Artist details are unavailable in stub mode.",
+            summary: String(localized: "Artist details are unavailable in stub mode."),
             tags: [],
             similarArtists: []
         )
@@ -2110,13 +2113,13 @@ final class CompatibilityAPIStub: CompatibilityAPI {
     private func periodLabel(_ period: CompatibilityTopArtistPeriod) -> String {
         switch period {
         case .week:
-            return "Weekly"
+            return String(localized: "Weekly")
         case .month:
-            return "Monthly"
+            return String(localized: "Monthly")
         case .year:
-            return "Yearly"
+            return String(localized: "Yearly")
         case .overall:
-            return "Overall"
+            return String(localized: "Overall")
         }
     }
 

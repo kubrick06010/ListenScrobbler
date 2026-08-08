@@ -132,13 +132,16 @@ private struct MobileStatsOverviewRow: View {
                 Spacer()
 
                 if let totalListenCount = snapshot.totalListenCount {
-                    Text(String.localizedStringWithFormat(String(localized: "%@ listens"), totalListenCount.formatted()))
+                    Text(String.localizedStringWithFormat(
+                        String(localized: "%@ listens"),
+                        AppLocalization.integer(totalListenCount)
+                    ))
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }
             }
 
-            Text("Updated \(snapshot.fetchedAt.formatted(date: .omitted, time: .shortened))")
+            Text("Updated \(AppLocalization.date(snapshot.fetchedAt, date: .omitted, time: .shortened))")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }
@@ -167,7 +170,7 @@ private struct MobileStatRow: View {
 
             Spacer(minLength: 8)
 
-            Text(value.formatted())
+            Text(AppLocalization.integer(value))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .monospacedDigit()

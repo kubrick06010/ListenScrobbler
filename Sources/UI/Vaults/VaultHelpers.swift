@@ -66,7 +66,7 @@ func listenBrainzPinRowID(from id: UUID) -> Int? {
 }
 
 func vaultDate(_ date: Date) -> String {
-    date.formatted(date: .abbreviated, time: .omitted)
+    AppLocalization.date(date, date: .abbreviated, time: .omitted)
 }
 
 func savePanelURL(defaultName: String) -> URL? {
@@ -88,9 +88,9 @@ func openPanelURL() -> URL? {
 
 func presentVaultError(_ error: Error) {
     let alert = NSAlert()
-    alert.messageText = "Vault operation failed"
+    alert.messageText = String(localized: "Vault operation failed")
     alert.informativeText = error.localizedDescription
     alert.alertStyle = .warning
-    alert.addButton(withTitle: "OK")
+    alert.addButton(withTitle: String(localized: "OK"))
     alert.runModal()
 }
