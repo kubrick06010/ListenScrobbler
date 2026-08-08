@@ -7,6 +7,12 @@ struct OpenMusicEntityDetails: Equatable {
         let url: URL
     }
 
+    struct ArtistConnection: Identifiable, Equatable {
+        let id: String
+        let name: String
+        let relationship: String
+    }
+
     let trackName: String?
     let artistName: String
     let releaseName: String?
@@ -18,15 +24,50 @@ struct OpenMusicEntityDetails: Equatable {
     let artistSummary: String?
     let artistSummaryURL: URL?
     let artistSummaryLanguageCode: String?
+    let artistBeginDate: String?
+    let artistEndDate: String?
+    let artistEnded: Bool?
+    let artistArea: String?
     let disambiguation: String?
     let country: String?
     let type: String?
     let tags: [String]
     let links: [Link]
+    let artistConnections: [ArtistConnection]
 
     var hasResolvedMusicBrainzEntity: Bool {
         recordingMBID != nil || artistMBID != nil || releaseMBID != nil
     }
+}
+
+extension OpenMusicEntityDetails {
+    /// Wikipedia is allowed to fall back to English for identity and artwork,
+    /// but prose shown in the app must match the language selected for the app.
+    var artistSummaryForPreferredAppLanguage: String? {
+        artistSummary(forAppLanguageCode: preferredAppLanguageCode())
+    }
+
+    func artistSummary(forAppLanguageCode languageCode: String) -> String? {
+        guard let summary = artistSummary?.nilIfBlank,
+              let summaryLanguageCode = artistSummaryLanguageCode?.nilIfBlank else {
+            return nil
+        }
+        return appLanguageCode(summaryLanguageCode) == appLanguageCode(languageCode) ? summary : nil
+    }
+}
+
+func preferredAppLanguageCode(bundle: Bundle = .main) -> String {
+    AppLocalization.languageCode(bundle: bundle)
+}
+
+func preferredAppLocale(bundle: Bundle = .main, regionLocale: Locale = .current) -> Locale {
+    AppLocalization.locale(bundle: bundle, regionLocale: regionLocale)
+}
+
+private func appLanguageCode(_ identifier: String) -> String {
+    Locale(identifier: identifier).language.languageCode?.identifier.lowercased()
+        ?? identifier.split(separator: "-").first.map(String.init)?.lowercased()
+        ?? "en"
 }
 
 enum OpenMusicSearchKind: String, CaseIterable {
@@ -55,15 +96,18 @@ final class MusicBrainzService {
     private let baseURL: URL
     private let coverArtBaseURL: URL
     private let urlSession: URLSession
+    private let preferredAppLanguageCodes: () -> [String]
 
     init(
         baseURL: URL = URL(string: "https://musicbrainz.org/ws/2")!,
         coverArtBaseURL: URL = URL(string: "https://coverartarchive.org/release")!,
-        urlSession: URLSession = .shared
+        urlSession: URLSession = .shared,
+        preferredAppLanguageCodes: @escaping () -> [String] = { Bundle.main.preferredLocalizations }
     ) {
         self.baseURL = baseURL
         self.coverArtBaseURL = coverArtBaseURL
         self.urlSession = urlSession
+        self.preferredAppLanguageCodes = preferredAppLanguageCodes
     }
 
     func lookup(track: String?, artist: String, release: String?) async throws -> OpenMusicEntityDetails {
@@ -120,11 +164,21 @@ final class MusicBrainzService {
             artistSummary: artistSupplement.summary,
             artistSummaryURL: artistSupplement.summaryURL,
             artistSummaryLanguageCode: artistSupplement.summaryLanguageCode,
+            artistBeginDate: artistIdentity?.lifeSpan?.begin?.nilIfBlank,
+            artistEndDate: artistIdentity?.lifeSpan?.end?.nilIfBlank,
+            artistEnded: artistIdentity?.lifeSpan?.ended,
+            artistArea: artistIdentity?.area?.name.nilIfBlank,
             disambiguation: resolvedRecording?.disambiguation?.nilIfBlank ?? artistIdentity?.disambiguation?.nilIfBlank,
             country: artistIdentity?.country?.nilIfBlank,
             type: artistIdentity?.type?.nilIfBlank ?? resolvedRelease?.status?.nilIfBlank,
             tags: Array(tags.prefix(12)),
-            links: links(recordingMBID: recordingMBID, artistMBID: artistMBID, releaseMBID: releaseMBID)
+            links: links(
+                recordingMBID: recordingMBID,
+                artistMBID: artistMBID,
+                releaseMBID: releaseMBID,
+                artistRelations: artistIdentity?.relations ?? []
+            ),
+            artistConnections: artistConnections(from: artistIdentity?.relations ?? [])
         )
     }
 
@@ -240,7 +294,7 @@ final class MusicBrainzService {
         let response: ArtistSearchResponse = try await search(
             entity: "artist",
             query: "artist:\(quoted(name))",
-            includes: "tags+url-rels"
+            includes: "tags+url-rels+artist-rels"
         )
         return response.artists.first
     }
@@ -264,7 +318,7 @@ final class MusicBrainzService {
         )
         components?.queryItems = [
             URLQueryItem(name: "fmt", value: "json"),
-            URLQueryItem(name: "inc", value: "tags+url-rels")
+            URLQueryItem(name: "inc", value: "tags+url-rels+artist-rels")
         ]
         guard let url = components?.url else { throw MusicBrainzError.invalidResponse }
         return try await fetchJSON(url: url)
@@ -274,11 +328,12 @@ final class MusicBrainzService {
         recordingArtist: MusicBrainzArtist?,
         searchedArtist: MusicBrainzArtist?
     ) async -> MusicBrainzArtist? {
-        guard let recordingArtist else { return searchedArtist }
-        guard recordingArtist.id != searchedArtist?.id else {
-            return searchedArtist ?? recordingArtist
-        }
-        return (try? await lookupArtist(id: recordingArtist.id)) ?? recordingArtist
+        // MusicBrainz search responses intentionally contain only a subset of
+        // the artist entity. In particular, `inc=...-rels` is not applied to
+        // search results, so treating a matching search hit as the final artist
+        // silently drops Wikidata, Wikipedia and artist relationships.
+        guard let candidate = recordingArtist ?? searchedArtist else { return nil }
+        return (try? await lookupArtist(id: candidate.id)) ?? candidate
     }
 
     private func searchRelease(title: String, artist: String) async throws -> MusicBrainzRelease? {
@@ -385,7 +440,7 @@ final class MusicBrainzService {
             throw MusicBrainzError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            throw MusicBrainzError.api(message: "Open metadata endpoint returned HTTP \(http.statusCode).")
+            throw MusicBrainzError.api(message: String(localized: "Open metadata endpoint returned HTTP \(http.statusCode)."))
         }
         return try JSONDecoder().decode(T.self, from: data)
     }
@@ -402,11 +457,11 @@ final class MusicBrainzService {
         }
 
         let summaryTarget = entity.wikipediaSummaryTarget(preferredLanguageCodes: preferredWikipediaLanguageCodes())
-        async let summary = fetchWikipediaSummary(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode)
-        let imageURL = entity.imageFileName.flatMap(commonsImageURL(fileName:))
+        let summary = await fetchWikipediaSummary(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode)
+        let imageURL = summary?.imageURL ?? entity.imageFileName.flatMap(commonsImageURL(fileName:))
         return MusicBrainzArtistSupplement(
             imageURL: imageURL,
-            summary: await summary?.nilIfBlank,
+            summary: summary?.extract?.nilIfBlank,
             summaryURL: wikipediaURL(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode),
             summaryLanguageCode: summaryTarget?.languageCode
         )
@@ -424,7 +479,7 @@ final class MusicBrainzService {
         )
     }
 
-    private func fetchWikipediaSummary(title: String?, languageCode: String?) async -> String? {
+    private func fetchWikipediaSummary(title: String?, languageCode: String?) async -> ArtistWikipediaSummary? {
         guard let title = title?.nilIfBlank,
               let languageCode = languageCode?.nilIfBlank else { return nil }
         var allowed = CharacterSet.urlPathAllowed
@@ -434,7 +489,8 @@ final class MusicBrainzService {
             return nil
         }
         let response: WikipediaSummaryResponse? = try? await fetchJSON(url: url)
-        return response?.extract
+        guard let response else { return nil }
+        return ArtistWikipediaSummary(extract: response.extract, imageURL: response.thumbnail?.source)
     }
 
     private func wikipediaURL(title: String?, languageCode: String?) -> URL? {
@@ -450,7 +506,10 @@ final class MusicBrainzService {
     }
 
     private func preferredWikipediaLanguageCodes() -> [String] {
-        let preferred = Locale.preferredLanguages.compactMap { language -> String? in
+        // Follow the language selected for ListenScrobbler rather than the
+        // user's global language list. Those values can differ when macOS has
+        // a per-app language override.
+        let preferred = preferredAppLanguageCodes().compactMap { language -> String? in
             return Locale(identifier: language).language.languageCode?.identifier.nilIfBlank
         }
         return (preferred + ["en"])
@@ -597,7 +656,12 @@ final class MusicBrainzService {
             .lowercased() ?? ""
     }
 
-    private func links(recordingMBID: String?, artistMBID: String?, releaseMBID: String?) -> [OpenMusicEntityDetails.Link] {
+    private func links(
+        recordingMBID: String?,
+        artistMBID: String?,
+        releaseMBID: String?,
+        artistRelations: [MusicBrainzRelation] = []
+    ) -> [OpenMusicEntityDetails.Link] {
         var output: [OpenMusicEntityDetails.Link] = []
         if let recordingMBID {
             output.append(.init(
@@ -625,7 +689,40 @@ final class MusicBrainzService {
                 url: URL(string: "https://musicbrainz.org/release/\(releaseMBID)")!
             ))
         }
+        for relation in artistRelations {
+            guard let resource = relation.url?.resource,
+                  let url = URL(string: resource),
+                  let title = relation.displayTitle else { continue }
+            output.append(.init(
+                id: "artist-relation-\(relation.type ?? "link")-\(resource)",
+                title: title,
+                url: url
+            ))
+        }
         return output
+    }
+
+    private func artistConnections(from relations: [MusicBrainzRelation]) -> [OpenMusicEntityDetails.ArtistConnection] {
+        var seen = Set<String>()
+        return relations.compactMap { relation in
+            guard let artist = relation.artist,
+                  let relationship = relation.connectionTitle else { return nil }
+            let id = "\(relation.type ?? "connection")-\(artist.id)"
+            guard seen.insert(id).inserted else { return nil }
+            return .init(
+                id: id,
+                name: artist.name,
+                relationship: relationship
+            )
+        }
+        .sorted { lhs, rhs in
+            let left = lhs.relationship.connectionPriority
+            let right = rhs.relationship.connectionPriority
+            if left == right {
+                return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+            return left < right
+        }
     }
 }
 
@@ -636,7 +733,7 @@ enum MusicBrainzError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .invalidResponse:
-            return "Unexpected response from MusicBrainz."
+            return String(localized: "Unexpected response from MusicBrainz.")
         case let .api(message):
             return message
         }
@@ -685,6 +782,13 @@ private struct MusicBrainzArtist: Decodable {
     let type: String?
     let tags: [MusicBrainzTag]?
     let relations: [MusicBrainzRelation]?
+    let lifeSpan: MusicBrainzLifeSpan?
+    let area: MusicBrainzArea?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, disambiguation, country, type, tags, relations, area
+        case lifeSpan = "life-span"
+    }
 
     var wikidataID: String? {
         relations?
@@ -693,6 +797,16 @@ private struct MusicBrainzArtist: Decodable {
             .compactMap { $0.url?.resource.wikidataEntityID }
             .first
     }
+}
+
+private struct MusicBrainzLifeSpan: Decodable {
+    let begin: String?
+    let end: String?
+    let ended: Bool?
+}
+
+private struct MusicBrainzArea: Decodable {
+    let name: String
 }
 
 private struct MusicBrainzRelease: Decodable {
@@ -741,6 +855,43 @@ private struct CoverArtArchiveImage: Decodable {
 private struct MusicBrainzRelation: Decodable {
     let type: String?
     let url: MusicBrainzRelationURL?
+    let artist: MusicBrainzRelatedArtist?
+    let direction: String?
+
+    var displayTitle: String? {
+        switch type?.lowercased() {
+        case "official homepage": return String(localized: "Official website")
+        case "wikipedia": return "Wikipedia"
+        case "wikidata": return "Wikidata"
+        case "discogs": return "Discogs"
+        case "allmusic": return "AllMusic"
+        case "last.fm": return "Last.fm"
+        case "free streaming": return String(localized: "Listen")
+        case "youtube": return "YouTube"
+        case "social network": return String(localized: "Social")
+        default: return nil
+        }
+    }
+
+    var connectionTitle: String? {
+        guard artist != nil else { return nil }
+        switch type?.lowercased() {
+        case "is person": return "Alias"
+        case "member of band": return direction == "backward" ? "Member" : "Member of"
+        case "collaboration": return "Collaboration"
+        case "supporting musician": return "Supporting musician"
+        case "instrumental supporting musician": return "Instrumental support"
+        case "vocal supporting musician": return "Vocal support"
+        case "tribute": return "Tribute"
+        case let type?: return type.capitalized
+        case nil: return nil
+        }
+    }
+}
+
+private struct MusicBrainzRelatedArtist: Decodable {
+    let id: String
+    let name: String
 }
 
 private struct MusicBrainzRelationURL: Decodable {
@@ -828,6 +979,16 @@ private struct WikidataDataValue: Decodable {
 
 private struct WikipediaSummaryResponse: Decodable {
     let extract: String?
+    let thumbnail: WikipediaThumbnail?
+}
+
+private struct WikipediaThumbnail: Decodable {
+    let source: String?
+}
+
+private struct ArtistWikipediaSummary {
+    let extract: String?
+    let imageURL: String?
 }
 
 private extension String {
@@ -836,6 +997,17 @@ private extension String {
             return nil
         }
         return String(self[range])
+    }
+
+    var connectionPriority: Int {
+        switch lowercased() {
+        case "member of", "member": return 0
+        case "collaboration": return 1
+        case "supporting musician", "instrumental support", "vocal support": return 2
+        case "tribute": return 3
+        case "alias": return 4
+        default: return 5
+        }
     }
 }
 

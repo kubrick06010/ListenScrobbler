@@ -9,7 +9,7 @@ final class MusicBrainzServiceTests: XCTestCase {
     }
 
     func testLookupCombinesRecordingArtistAndReleaseMetadata() async throws {
-        let service = makeService { request in
+        let service = makeService(preferredAppLanguageCodes: ["en"]) { request in
             let response = HTTPURLResponse(
                 url: request.url!,
                 statusCode: 200,
@@ -25,6 +25,8 @@ final class MusicBrainzServiceTests: XCTestCase {
                 return (response, Data(Self.recordingPayload.utf8))
             case "/ws/2/artist":
                 return (response, Data(Self.artistPayload.utf8))
+            case "/ws/2/artist/artist-id":
+                return (response, Data(Self.artistLookupPayload.utf8))
             case "/ws/2/release":
                 return (response, Data(Self.releasePayload.utf8))
             case "/release/release-id":
@@ -49,6 +51,83 @@ final class MusicBrainzServiceTests: XCTestCase {
         XCTAssertTrue(details.links.contains { $0.url.absoluteString == "https://musicbrainz.org/recording/recording-id" })
     }
 
+    func testLookupBuildsRichArtistProfileFromOpenMetadata() async throws {
+        let service = makeService(preferredAppLanguageCodes: ["en"]) { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch (request.url!.host, request.url!.path) {
+            case ("musicbrainz.org", "/ws/2/artist"):
+                return (response, Data(Self.richArtistSearchPayload.utf8))
+            case ("musicbrainz.org", "/ws/2/artist/39fe04bf-ba1a-481d-9836-b96beb549033"):
+                return (response, Data(Self.richArtistLookupPayload.utf8))
+            case ("www.wikidata.org", _):
+                return (response, Data(Self.wikidataPayload.utf8))
+            case ("en.wikipedia.org", _):
+                return (response, Data(Self.wikipediaSummaryPayload.utf8))
+            default:
+                XCTFail("Unexpected URL \(request.url!.absoluteString)")
+                return (response, Data())
+            }
+        }
+
+        let details = try await service.lookup(track: nil, artist: "Richard H. Kirk", release: nil)
+
+        XCTAssertEqual(details.artistImageURL, "https://upload.example/richard.jpg")
+        XCTAssertEqual(details.artistSummary, "English composer, musician and producer.")
+        XCTAssertEqual(details.artistBeginDate, "1956-03-21")
+        XCTAssertEqual(details.artistEndDate, "2021-09-21")
+        XCTAssertEqual(details.artistEnded, true)
+        XCTAssertEqual(details.artistArea, "Sheffield")
+        XCTAssertEqual(details.artistSummary(forAppLanguageCode: "en"), "English composer, musician and producer.")
+        XCTAssertNil(details.artistSummary(forAppLanguageCode: "es"))
+        XCTAssertTrue(details.links.contains { $0.title == String(localized: "Official website") })
+        XCTAssertTrue(details.links.contains { $0.title == "Discogs" })
+        XCTAssertEqual(details.artistConnections.first?.name, "Cabaret Voltaire")
+        XCTAssertEqual(details.artistConnections.first?.relationship, "Member of")
+        XCTAssertTrue(MusicBrainzURLProtocol.requests.contains {
+            $0.url?.path == "/ws/2/artist/39fe04bf-ba1a-481d-9836-b96beb549033"
+        })
+        XCTAssertTrue(MusicBrainzURLProtocol.requests.contains { $0.url?.host == "en.wikipedia.org" })
+        XCTAssertFalse(MusicBrainzURLProtocol.requests.contains { $0.url?.host == "es.wikipedia.org" })
+    }
+
+    func testLookupUsesTheLanguageSelectedForTheAppForWikipedia() async throws {
+        let service = makeService(preferredAppLanguageCodes: ["es"]) { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch (request.url!.host, request.url!.path) {
+            case ("musicbrainz.org", "/ws/2/artist"):
+                return (response, Data(Self.richArtistSearchPayload.utf8))
+            case ("musicbrainz.org", "/ws/2/artist/39fe04bf-ba1a-481d-9836-b96beb549033"):
+                return (response, Data(Self.richArtistLookupPayload.utf8))
+            case ("www.wikidata.org", _):
+                return (response, Data(Self.wikidataPayload.utf8))
+            case ("es.wikipedia.org", _):
+                return (response, Data(Self.spanishWikipediaSummaryPayload.utf8))
+            default:
+                XCTFail("Unexpected URL \(request.url!.absoluteString)")
+                return (response, Data())
+            }
+        }
+
+        let details = try await service.lookup(track: nil, artist: "Richard H. Kirk", release: nil)
+
+        XCTAssertEqual(details.artistSummary, "Compositor, músico y productor inglés.")
+        XCTAssertEqual(details.artistSummaryLanguageCode, "es")
+        XCTAssertTrue(MusicBrainzURLProtocol.requests.contains { $0.url?.host == "es.wikipedia.org" })
+        XCTAssertFalse(MusicBrainzURLProtocol.requests.contains { $0.url?.host == "en.wikipedia.org" })
+    }
+
     func testLookupAvoidsAmbiguousSameNameRecordingFromDifferentArtist() async throws {
         let service = makeService { request in
             let response = HTTPURLResponse(
@@ -63,6 +142,8 @@ final class MusicBrainzServiceTests: XCTestCase {
                 return (response, Data(Self.ambiguousRecordingPayload.utf8))
             case "/ws/2/artist":
                 return (response, Data(Self.artistPayload.utf8))
+            case "/ws/2/artist/artist-id":
+                return (response, Data(Self.artistLookupPayload.utf8))
             case "/ws/2/release":
                 return (response, Data(Self.emptyReleasePayload.utf8))
             default:
@@ -103,6 +184,8 @@ final class MusicBrainzServiceTests: XCTestCase {
                 return (response, Data(Self.arnosParkRecordingPayload.utf8))
             case "/ws/2/artist":
                 return (response, Data(Self.bochumWeltArtistPayload.utf8))
+            case "/ws/2/artist/bochum-welt-id":
+                return (response, Data(Self.bochumWeltArtistLookupPayload.utf8))
             case "/ws/2/release":
                 return (response, Data(Self.emptyReleasePayload.utf8))
             case "/release/arnos-release-id":
@@ -185,6 +268,8 @@ final class MusicBrainzServiceTests: XCTestCase {
                 return (response, Data(Self.emptyRecordingPayload.utf8))
             case "/ws/2/artist":
                 return (response, Data(Self.artistPayload.utf8))
+            case "/ws/2/artist/artist-id":
+                return (response, Data(Self.artistLookupPayload.utf8))
             case "/ws/2/release":
                 let query = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?
                     .queryItems?
@@ -215,6 +300,7 @@ final class MusicBrainzServiceTests: XCTestCase {
     }
 
     private func makeService(
+        preferredAppLanguageCodes: [String] = ["en"],
         handler: @escaping (URLRequest) throws -> (HTTPURLResponse, Data)
     ) -> MusicBrainzService {
         MusicBrainzURLProtocol.handler = handler
@@ -223,7 +309,8 @@ final class MusicBrainzServiceTests: XCTestCase {
         configuration.protocolClasses = [MusicBrainzURLProtocol.self]
         return MusicBrainzService(
             baseURL: URL(string: "https://musicbrainz.org/ws/2")!,
-            urlSession: URLSession(configuration: configuration)
+            urlSession: URLSession(configuration: configuration),
+            preferredAppLanguageCodes: { preferredAppLanguageCodes }
         )
     }
 
@@ -261,6 +348,82 @@ final class MusicBrainzServiceTests: XCTestCase {
           ]
         }
       ]
+    }
+    """
+
+    private static let artistLookupPayload = """
+    {
+      "id": "artist-id",
+      "name": "Artist",
+      "country": "GB",
+      "type": "Group",
+      "tags": [
+        { "count": 5, "name": "electronic" }
+      ],
+      "relations": []
+    }
+    """
+
+    private static let richArtistSearchPayload = """
+    {
+      "artists": [
+        {
+          "id": "39fe04bf-ba1a-481d-9836-b96beb549033",
+          "name": "Richard H. Kirk",
+          "country": "GB",
+          "type": "Person"
+        }
+      ]
+    }
+    """
+
+    private static let richArtistLookupPayload = """
+    {
+      "id": "39fe04bf-ba1a-481d-9836-b96beb549033",
+      "name": "Richard H. Kirk",
+      "country": "GB",
+      "type": "Person",
+      "area": { "name": "Sheffield" },
+      "life-span": { "begin": "1956-03-21", "end": "2021-09-21", "ended": true },
+      "relations": [
+        { "type": "wikidata", "url": { "resource": "https://www.wikidata.org/wiki/Q547635" } },
+        { "type": "official homepage", "url": { "resource": "https://example.com" } },
+        { "type": "discogs", "url": { "resource": "https://discogs.com/artist/2238" } },
+        {
+          "type": "member of band",
+          "direction": "forward",
+          "artist": { "id": "cabaret-voltaire-id", "name": "Cabaret Voltaire" }
+        }
+      ],
+      "tags": [{ "count": 2, "name": "electronic" }]
+    }
+    """
+
+    private static let wikidataPayload = """
+    {
+      "entities": {
+        "Q547635": {
+          "sitelinks": {
+            "enwiki": { "title": "Richard H. Kirk" },
+            "eswiki": { "title": "Richard H. Kirk" }
+          },
+          "claims": { "P18": [{ "mainsnak": { "datavalue": { "value": "Richard.jpg" } } }] }
+        }
+      }
+    }
+    """
+
+    private static let wikipediaSummaryPayload = """
+    {
+      "extract": "English composer, musician and producer.",
+      "thumbnail": { "source": "https://upload.example/richard.jpg" }
+    }
+    """
+
+    private static let spanishWikipediaSummaryPayload = """
+    {
+      "extract": "Compositor, músico y productor inglés.",
+      "thumbnail": { "source": "https://upload.example/richard.jpg" }
     }
     """
 
@@ -373,6 +536,15 @@ final class MusicBrainzServiceTests: XCTestCase {
     }
     """
 
+    private static let bochumWeltArtistLookupPayload = """
+    {
+      "id": "bochum-welt-id",
+      "name": "Bochum Welt",
+      "type": "Person",
+      "relations": []
+    }
+    """
+
     private static let panRecordingPayload = """
     {
       "recordings": [
@@ -417,6 +589,8 @@ final class MusicBrainzServiceTests: XCTestCase {
       ]
     }
     """
+
+
 }
 
 private final class MusicBrainzURLProtocol: URLProtocol {

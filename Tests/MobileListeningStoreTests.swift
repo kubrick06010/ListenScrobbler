@@ -737,11 +737,16 @@ private final class FakeMobileOpenMetadataClient: MobileOpenMetadataClient {
         artistSummary: nil,
         artistSummaryURL: nil,
         artistSummaryLanguageCode: nil,
+        artistBeginDate: nil,
+        artistEndDate: nil,
+        artistEnded: nil,
+        artistArea: nil,
         disambiguation: nil,
         country: nil,
         type: nil,
         tags: [],
-        links: []
+        links: [],
+        artistConnections: []
     )
     var searches: [(query: String, kind: OpenMusicSearchKind, limit: Int)] = []
 

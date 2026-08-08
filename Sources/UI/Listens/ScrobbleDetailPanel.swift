@@ -106,11 +106,11 @@ struct ScrobbleDetailPanel: View {
     private var panelTitle: String {
         switch kind {
         case .track:
-            return "Track Detail"
+            return String(localized: "Track Detail")
         case .artist:
-            return "Artist Detail"
+            return String(localized: "Artist Detail")
         case .album:
-            return "Album Detail"
+            return String(localized: "Album Detail")
         }
     }
 
@@ -281,11 +281,11 @@ struct ScrobbleDetailPanel: View {
     private var headerSecondaryText: String {
         switch kind {
         case .track:
-            return "by \(item.artist)"
+            return String(localized: "by \(item.artist)")
         case .artist:
-            return "Artist overview"
+            return String(localized: "Artist overview")
         case .album:
-            return "by \(item.artist)"
+            return String(localized: "by \(item.artist)")
         }
     }
 
@@ -293,7 +293,7 @@ struct ScrobbleDetailPanel: View {
         switch kind {
         case .track:
             if let album = scrobbleService.inspectedTrackDetails?.album ?? item.album {
-                return "from \(album)"
+                return String(localized: "from \(album)")
             }
             return nil
         case .artist:
@@ -308,13 +308,13 @@ struct ScrobbleDetailPanel: View {
         if metrics.isCompact {
             VStack(alignment: .leading, spacing: metrics.stackSpacing) {
                 artistArt(artist.imageURL, size: metrics.artworkSize)
-                HTMLSummaryText(rawHTML: artist.summary ?? "No artist biography available.", fontSize: 14)
+                HTMLSummaryText(rawHTML: artist.summary ?? String(localized: "No artist biography available."), fontSize: 14)
                     .fixedSize(horizontal: false, vertical: true)
             }
         } else {
             HStack(alignment: .top, spacing: metrics.stackSpacing) {
                 artistArt(artist.imageURL)
-                HTMLSummaryText(rawHTML: artist.summary ?? "No artist biography available.", fontSize: 14)
+                HTMLSummaryText(rawHTML: artist.summary ?? String(localized: "No artist biography available."), fontSize: 14)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -326,12 +326,18 @@ struct ScrobbleDetailPanel: View {
                 Text("Open Metadata")
                     .font(.custom("Avenir Next Medium", size: 17))
                 Spacer()
-                Text(details.hasResolvedMusicBrainzEntity ? "MusicBrainz resolved" : "Best effort")
-                    .font(.custom("Avenir Next Medium", size: 11))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.white.opacity(0.06), in: Capsule())
+                Group {
+                    if details.hasResolvedMusicBrainzEntity {
+                        Text("MusicBrainz resolved")
+                    } else {
+                        Text("Best effort")
+                    }
+                }
+                .font(.custom("Avenir Next Medium", size: 11))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.white.opacity(0.06), in: Capsule())
             }
 
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 180), alignment: .leading)], alignment: .leading, spacing: 8) {
@@ -442,7 +448,7 @@ struct ScrobbleDetailPanel: View {
         .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
-    private func metadataCell(_ title: String, _ value: String?) -> some View {
+    private func metadataCell(_ title: LocalizedStringKey, _ value: String?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title)
                 .font(.custom("Avenir Next Medium", size: 11))
@@ -524,7 +530,7 @@ struct ScrobbleDetailPanel: View {
                             Text(artist.name)
                                 .font(.custom("Avenir Next Medium", size: 12))
                                 .lineLimit(2)
-                            Text("\(artist.totalListenCount.formatted()) plays")
+                            Text("\(AppLocalization.integer(artist.totalListenCount)) plays")
                                 .font(.custom("Avenir Next Regular", size: 11))
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
@@ -624,9 +630,9 @@ struct ScrobbleDetailPanel: View {
         }
     }
 
-    private func stat(_ title: String, _ value: Int?) -> some View {
+    private func stat(_ title: LocalizedStringKey, _ value: Int?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(value.map { $0.formatted() } ?? "—")
+            Text(value.map { AppLocalization.integer($0) } ?? "—")
                 .font(.custom("Avenir Next Demi Bold", size: 22))
             Text(title)
                 .font(.custom("Avenir Next Medium", size: 12))
@@ -635,10 +641,10 @@ struct ScrobbleDetailPanel: View {
     }
 
     private func count(_ value: Int?) -> String {
-        value.map { $0.formatted() } ?? "—"
+        value.map { AppLocalization.integer($0) } ?? "—"
     }
 
-    private func tagLinks(title: String, tags: [String]) -> some View {
+    private func tagLinks(title: LocalizedStringKey, tags: [String]) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.custom("Avenir Next Medium", size: 13))
@@ -655,7 +661,7 @@ struct ScrobbleDetailPanel: View {
         }
     }
 
-    private func weightedTagLinks(title: String, tags: [ListenBrainzArtistTag]) -> some View {
+    private func weightedTagLinks(title: LocalizedStringKey, tags: [ListenBrainzArtistTag]) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.custom("Avenir Next Medium", size: 13))

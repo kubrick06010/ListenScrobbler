@@ -8,6 +8,8 @@ settings:
     MARKETING_VERSION: 1.1.1
     GENERATE_INFOPLIST_FILE: YES
     PRODUCT_BUNDLE_IDENTIFIER: org.listenscrobbler.app
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
 
 targets:
   ListenScrobblerCore:
@@ -40,6 +42,8 @@ targets:
           - iOSWidgets
       - path: Resources
         buildPhase: resources
+        excludes:
+          - AppShortcuts.xcstrings
     settings:
       base:
         PRODUCT_NAME: ListenScrobbler
@@ -94,6 +98,8 @@ targets:
       - path: Sources/iOSWidgets
       - path: Resources
         buildPhase: resources
+        excludes:
+          - AppShortcuts.xcstrings
     dependencies:
       - target: ListenScrobblerCore
     settings:
