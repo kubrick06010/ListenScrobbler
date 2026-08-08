@@ -294,9 +294,20 @@ final class MusicBrainzService {
         let response: ArtistSearchResponse = try await search(
             entity: "artist",
             query: "artist:\(quoted(name))",
-            includes: "tags+url-rels+artist-rels"
+            includes: "tags+url-rels+artist-rels",
+            limit: 25
         )
-        return response.artists.first
+
+        // MusicBrainz artist search is relevance-based rather than exact. For
+        // example, `artist:"PAN"` ranks "Tygers of Pan Tang" first and also
+        // returns several unrelated artists named PAN. A recording credit is a
+        // stronger identity signal and is handled separately; without one, only
+        // accept a single exact-name candidate rather than inventing an artist.
+        let exactMatches = response.artists.filter {
+            normalized($0.name) == normalized(name)
+        }
+        guard exactMatches.count == 1 else { return nil }
+        return exactMatches[0]
     }
 
     func fetchArtistArtwork(artistMBID: String?, artistName: String?) async -> String? {
@@ -348,10 +359,14 @@ final class MusicBrainzService {
         let fallbackResponse: ReleaseSearchResponse = try await search(
             entity: "release",
             query: "release:\(quoted(title))",
-            includes: "artist-credits+tags"
+            includes: "artist-credits+tags",
+            limit: 25
         )
-        return fallbackResponse.releases.first { normalized($0.title) == normalized(title) }
-            ?? fallbackResponse.releases.first
+        let exactMatches = fallbackResponse.releases.filter {
+            normalized($0.title) == normalized(title)
+        }
+        guard exactMatches.count == 1 else { return nil }
+        return exactMatches[0]
     }
 
     private func search<T: Decodable>(entity: String, query: String, includes: String, limit: Int = 5) async throws -> T {

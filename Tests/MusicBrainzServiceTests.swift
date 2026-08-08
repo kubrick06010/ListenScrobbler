@@ -253,6 +253,54 @@ final class MusicBrainzServiceTests: XCTestCase {
         XCTAssertFalse(details.tags.contains("nwobhm"))
     }
 
+    func testLookupKeepsPlayerMetadataWhenArtistAndReleaseSearchesAreAmbiguous() async throws {
+        let service = makeService { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch request.url!.path {
+            case "/ws/2/recording":
+                return (response, Data(Self.emptyRecordingPayload.utf8))
+            case "/ws/2/artist":
+                return (response, Data(Self.ambiguousPanArtistSearchPayload.utf8))
+            case "/ws/2/release":
+                let query = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?
+                    .queryItems?
+                    .first(where: { $0.name == "query" })?
+                    .value ?? ""
+                if query.contains("artist:") {
+                    return (response, Data(Self.emptyReleasePayload.utf8))
+                }
+                return (response, Data(Self.ambiguousBSidesReleasePayload.utf8))
+            default:
+                XCTFail("Unexpected path \(request.url!.path)")
+                return (response, Data())
+            }
+        }
+
+        let details = try await service.lookup(
+            track: "Jose Culebra",
+            artist: "PAN",
+            release: "B-Sides"
+        )
+
+        XCTAssertEqual(details.trackName, "Jose Culebra")
+        XCTAssertEqual(details.artistName, "PAN")
+        XCTAssertEqual(details.releaseName, "B-Sides")
+        XCTAssertNil(details.recordingMBID)
+        XCTAssertNil(details.artistMBID)
+        XCTAssertNil(details.releaseMBID)
+        XCTAssertNil(details.imageURL)
+        XCTAssertNil(details.country)
+        XCTAssertNil(details.type)
+        XCTAssertTrue(details.tags.isEmpty)
+        XCTAssertFalse(details.hasResolvedMusicBrainzEntity)
+    }
+
     func testLookupFindsCompilationArtworkWhenReleaseIsNotCreditedToTrackArtist() async throws {
         // Given a compilation album where the release is not credited to the track artist.
         let service = makeService { request in
@@ -590,7 +638,56 @@ final class MusicBrainzServiceTests: XCTestCase {
     }
     """
 
+    private static let ambiguousPanArtistSearchPayload = """
+    {
+      "artists": [
+        {
+          "id": "tygers-artist-id",
+          "name": "Tygers of Pan Tang",
+          "country": "GB",
+          "type": "Group",
+          "tags": [
+            { "count": 2, "name": "nwobhm" }
+          ]
+        },
+        {
+          "id": "pan-person-id",
+          "name": "PAN",
+          "type": "Person",
+          "disambiguation": "video game music contributor"
+        },
+        {
+          "id": "pan-group-id",
+          "name": "Pan",
+          "country": "DK",
+          "type": "Group"
+        }
+      ]
+    }
+    """
 
+    private static let ambiguousBSidesReleasePayload = """
+    {
+      "releases": [
+        {
+          "id": "shihad-b-sides-id",
+          "title": "B-Sides",
+          "status": "Official",
+          "artist-credit": [
+            { "artist": { "id": "shihad-id", "name": "Shihad" } }
+          ]
+        },
+        {
+          "id": "dark-new-day-b-sides-id",
+          "title": "B-Sides",
+          "status": "Official",
+          "artist-credit": [
+            { "artist": { "id": "dark-new-day-id", "name": "Dark New Day" } }
+          ]
+        }
+      ]
+    }
+    """
 }
 
 private final class MusicBrainzURLProtocol: URLProtocol {
