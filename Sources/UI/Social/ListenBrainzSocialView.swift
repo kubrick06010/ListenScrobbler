@@ -11,53 +11,60 @@ struct ListenBrainzSocialView: View {
         case playlists = "Playlists"
 
         var id: String { rawValue }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .people: "People"
+            case .activity: "Activity"
+            case .recommendations: "Recommendations"
+            case .playlists: "Playlists"
+            }
+        }
+
+        var symbol: String {
+            switch self {
+            case .people: "person.2"
+            case .activity: "waveform.path.ecg"
+            case .recommendations: "sparkles"
+            case .playlists: "music.note.list"
+            }
+        }
     }
 
     @EnvironmentObject private var scrobbleService: ScrobbleService
     @State private var usernameToFollow = ""
     @State private var usernameToCompare = ""
-    @State private var playlistTitle = "ListenScrobbler Picks"
+    @State private var playlistTitle = String(localized: "ListenScrobbler Picks")
     @State private var selectedSection: SocialSection = .people
+    @State private var isRefreshingSocialData = false
     let onOpenRecommendation: (ListenBrainzRecommendedRecording) -> Void
     let onShareRecommendation: (ListenBrainzRecommendedRecording) -> Void
     let onRecommendToFollowers: (ListenBrainzRecommendedRecording) -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("ListenBrainz Social")
-                            .font(.custom("Avenir Next Demi Bold", size: 28))
-                        Text(scrobbleService.listenBrainzUsername ?? "Connect your ListenBrainz account to unlock the social graph.")
-                            .font(.custom("Avenir Next Medium", size: 12))
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    Button("Refresh") {
-                        Task {
-                            await scrobbleService.refreshListenBrainzSocial()
-                            await scrobbleService.refreshListenBrainzCompatibility()
-                            await scrobbleService.refreshListenBrainzRecommendations()
-                            await scrobbleService.refreshListenBrainzPins()
-                            await scrobbleService.refreshListenBrainzPlaylists()
+        GeometryReader { proxy in
+            let metrics = SocialMetrics(width: proxy.size.width - 48)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    socialHeader
+
+                    if !scrobbleService.listenBrainzEnabled {
+                        disconnectedSocialState
+                    } else {
+                        if let error = scrobbleService.listenBrainzLastError?.nilIfBlank {
+                            socialErrorBanner(error)
                         }
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
 
-                socialOverview
-
-                Picker("Social Section", selection: $selectedSection) {
-                    ForEach(SocialSection.allCases) { section in
-                        Text(section.rawValue).tag(section)
+                        socialOverview(metrics: metrics)
+                        socialSectionPicker(metrics: metrics)
+                        selectedSocialSection(metrics: metrics)
                     }
                 }
-                .pickerStyle(.segmented)
-
-                selectedSocialSection
+                .frame(maxWidth: metrics.contentMaxWidth, alignment: .leading)
+                .padding(24)
+                .frame(maxWidth: .infinity, alignment: .top)
             }
-            .padding(24)
         }
         .task(id: scrobbleService.listenBrainzUsername ?? "listenbrainz-social") {
             guard scrobbleService.listenBrainzEnabled else { return }
@@ -79,8 +86,61 @@ struct ListenBrainzSocialView: View {
         }
     }
 
-    private var socialOverview: some View {
-        HStack(spacing: 10) {
+    private var socialHeader: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: 20) {
+                socialTitle
+                Spacer(minLength: 20)
+                refreshButton
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                socialTitle
+                refreshButton
+            }
+        }
+    }
+
+    private var socialTitle: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("ListenBrainz Social")
+                .font(.custom("Avenir Next Demi Bold", size: 28))
+            if let username = scrobbleService.listenBrainzUsername?.nilIfBlank {
+                Text(username)
+                    .font(.custom("Avenir Next Medium", size: 12))
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("Connect your ListenBrainz account to unlock the social graph.")
+                    .font(.custom("Avenir Next Medium", size: 12))
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var refreshButton: some View {
+        Button {
+            Task { await refreshAllSocialData() }
+        } label: {
+            HStack(spacing: 7) {
+                if isRefreshingSocialData {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Image(systemName: "arrow.clockwise")
+                }
+                if isRefreshingSocialData {
+                    Text("Refreshing")
+                } else {
+                    Text("Refresh")
+                }
+            }
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(!scrobbleService.listenBrainzEnabled || isRefreshingSocialData)
+    }
+
+    private func socialOverview(metrics: SocialMetrics) -> some View {
+        LazyVGrid(columns: metrics.metricColumns, alignment: .leading, spacing: 10) {
             compactMetric("Followers", scrobbleService.listenBrainzFollowers.count)
             compactMetric("Following", scrobbleService.listenBrainzFollowing.count)
             compactMetric("Similar", scrobbleService.listenBrainzSimilarUsers.count)
@@ -91,27 +151,57 @@ struct ListenBrainzSocialView: View {
     }
 
     @ViewBuilder
-    private var selectedSocialSection: some View {
-        switch selectedSection {
-        case .people:
-            peopleSection
-        case .activity:
-            activitySection
-        case .recommendations:
-            recommendationsSection
-        case .playlists:
-            playlistsSection
+    private func socialSectionPicker(metrics: SocialMetrics) -> some View {
+        if metrics.isCompact {
+            HStack(spacing: 12) {
+                Label("Social Section", systemImage: selectedSection.symbol)
+                    .font(.custom("Avenir Next Demi Bold", size: 13))
+                Spacer()
+                Picker("Social Section", selection: $selectedSection) {
+                    ForEach(SocialSection.allCases) { section in
+                        Label(section.title, systemImage: section.symbol).tag(section)
+                    }
+                }
+                .labelsHidden()
+                .pickerStyle(.menu)
+                .frame(maxWidth: 220)
+            }
+            .padding(10)
+            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        } else {
+            Picker("Social Section", selection: $selectedSection) {
+                ForEach(SocialSection.allCases) { section in
+                    Text(section.title).tag(section)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.segmented)
         }
     }
 
-    private var peopleSection: some View {
+    @ViewBuilder
+    private func selectedSocialSection(metrics: SocialMetrics) -> some View {
+        switch selectedSection {
+        case .people:
+            peopleSection(metrics: metrics)
+        case .activity:
+            activitySection(metrics: metrics)
+        case .recommendations:
+            recommendationsSection(metrics: metrics)
+        case .playlists:
+            playlistsSection(metrics: metrics)
+        }
+    }
+
+    private func peopleSection(metrics: SocialMetrics) -> some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 14) {
+            adaptivePair(metrics: metrics) {
                 followCard
+            } trailing: {
                 compareCard
             }
 
-            HStack(alignment: .top, spacing: 14) {
+            adaptivePair(metrics: metrics) {
                 socialColumn(
                     title: "Followers",
                     subtitle: "People who can receive your personal recommendations.",
@@ -119,7 +209,7 @@ struct ListenBrainzSocialView: View {
                     actionTitle: nil,
                     action: nil
                 )
-
+            } trailing: {
                 socialColumn(
                     title: "Following",
                     subtitle: "People you follow on ListenBrainz.",
@@ -143,11 +233,12 @@ struct ListenBrainzSocialView: View {
         }
     }
 
-    private var activitySection: some View {
+    private func activitySection(metrics: SocialMetrics) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             socialListenActivityCard
-            HStack(alignment: .top, spacing: 14) {
+            adaptivePair(metrics: metrics) {
                 currentPinCard
+            } trailing: {
                 pinColumn(
                     title: "Following Pins",
                     subtitle: "Active pins from people you follow.",
@@ -157,10 +248,11 @@ struct ListenBrainzSocialView: View {
         }
     }
 
-    private var recommendationsSection: some View {
+    private func recommendationsSection(metrics: SocialMetrics) -> some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 14) {
+            adaptivePair(metrics: metrics) {
                 currentPinCard
+            } trailing: {
                 playlistBuilderCard
             }
 
@@ -184,10 +276,11 @@ struct ListenBrainzSocialView: View {
         }
     }
 
-    private var playlistsSection: some View {
+    private func playlistsSection(metrics: SocialMetrics) -> some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 14) {
+            adaptivePair(metrics: metrics) {
                 playlistBuilderCard
+            } trailing: {
                 pinColumn(
                     title: "Pin History",
                     subtitle: "Your recent pinned recordings.",
@@ -195,18 +288,37 @@ struct ListenBrainzSocialView: View {
                 )
             }
 
-            HStack(alignment: .top, spacing: 14) {
+            adaptivePair(metrics: metrics) {
                 playlistColumn(
                     title: "Your Playlists",
                     subtitle: "Metadata pulled from ListenBrainz.",
                     playlists: scrobbleService.listenBrainzPlaylists
                 )
-
+            } trailing: {
                 playlistColumn(
                     title: "Recommendation Playlists",
                     subtitle: "Algorithmic or highlighted recommendation lists.",
                     playlists: scrobbleService.listenBrainzRecommendationPlaylists
                 )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func adaptivePair<Leading: View, Trailing: View>(
+        metrics: SocialMetrics,
+        @ViewBuilder leading: () -> Leading,
+        @ViewBuilder trailing: () -> Trailing
+    ) -> some View {
+        if metrics.isCompact {
+            VStack(alignment: .leading, spacing: 14) {
+                leading()
+                trailing()
+            }
+        } else {
+            HStack(alignment: .top, spacing: 14) {
+                leading()
+                trailing()
             }
         }
     }
@@ -255,12 +367,12 @@ struct ListenBrainzSocialView: View {
         .appPanelStyle()
     }
 
-    private func compactMetric(_ label: String, _ value: Int) -> some View {
+    private func compactMetric(_ label: LocalizedStringKey, _ value: Int) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.custom("Avenir Next Medium", size: 11))
                 .foregroundStyle(.secondary)
-            Text(value.formatted())
+            Text(AppLocalization.integer(value))
                 .font(.custom("Avenir Next Demi Bold", size: 18))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -384,7 +496,7 @@ struct ListenBrainzSocialView: View {
             }
             Spacer()
             if let listenedAt = activity.listen.listenedAt {
-                Text(listenedAt.formatted(date: .omitted, time: .shortened))
+                Text(AppLocalization.date(listenedAt, date: .omitted, time: .shortened))
                     .font(.custom("Avenir Next Medium", size: 11))
                     .foregroundStyle(.secondary)
             }
@@ -446,7 +558,7 @@ struct ListenBrainzSocialView: View {
                 let title = playlistTitle.trimmingCharacters(in: .whitespacesAndNewlines)
                 Task {
                     _ = await scrobbleService.createListenBrainzPlaylist(
-                        title: title.isEmpty ? "ListenScrobbler Picks" : title,
+                        title: title.isEmpty ? String(localized: "ListenScrobbler Picks") : title,
                         from: picks
                     )
                 }
@@ -458,36 +570,11 @@ struct ListenBrainzSocialView: View {
         .appPanelStyle()
     }
 
-    private func statusCard(title: String, status: String, counts: [(String, Int)]) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.custom("Avenir Next Demi Bold", size: 16))
-            Text(status)
-                .font(.custom("Avenir Next Medium", size: 12))
-                .foregroundStyle(.secondary)
-            HStack(spacing: 10) {
-                ForEach(counts, id: \.0) { item in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(item.0)
-                            .font(.custom("Avenir Next Medium", size: 11))
-                            .foregroundStyle(.secondary)
-                        Text("\(item.1)")
-                            .font(.custom("Avenir Next Demi Bold", size: 18))
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(10)
-                    .background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-                }
-            }
-        }
-        .appPanelStyle()
-    }
-
     private func socialColumn(
-        title: String,
-        subtitle: String,
+        title: LocalizedStringKey,
+        subtitle: LocalizedStringKey,
         users: [String],
-        actionTitle: String?,
+        actionTitle: LocalizedStringKey?,
         action: ((String) -> Void)?
     ) -> some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -526,9 +613,15 @@ struct ListenBrainzSocialView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(recommendation.title)
                         .font(.custom("Avenir Next Demi Bold", size: 14))
-                    Text(recommendation.artistName ?? "Unknown artist")
-                        .font(.custom("Avenir Next Medium", size: 12))
-                        .foregroundStyle(.secondary)
+                    if let artistName = recommendation.artistName?.nilIfBlank {
+                        Text(artistName)
+                            .font(.custom("Avenir Next Medium", size: 12))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Unknown artist")
+                            .font(.custom("Avenir Next Medium", size: 12))
+                            .foregroundStyle(.secondary)
+                    }
                     if let releaseName = recommendation.releaseName {
                         Text(releaseName)
                             .font(.custom("Avenir Next Regular", size: 11))
@@ -536,7 +629,11 @@ struct ListenBrainzSocialView: View {
                     }
                 }
                 Spacer()
-                Text(String(format: "%.2f", recommendation.score))
+                Text(recommendation.score.formatted(
+                    .number
+                        .precision(.fractionLength(2))
+                        .locale(preferredAppLocale())
+                ))
                     .font(.custom("Avenir Next Demi Bold", size: 12))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -570,7 +667,7 @@ struct ListenBrainzSocialView: View {
         .background(Color.white.opacity(0.03), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
-    private func pinColumn(title: String, subtitle: String, pins: [ListenBrainzPinnedRecording]) -> some View {
+    private func pinColumn(title: LocalizedStringKey, subtitle: LocalizedStringKey, pins: [ListenBrainzPinnedRecording]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
                 .font(.custom("Avenir Next Demi Bold", size: 16))
@@ -613,7 +710,7 @@ struct ListenBrainzSocialView: View {
         .background(Color.white.opacity(0.03), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
-    private func playlistColumn(title: String, subtitle: String, playlists: [ListenBrainzPlaylistSummary]) -> some View {
+    private func playlistColumn(title: LocalizedStringKey, subtitle: LocalizedStringKey, playlists: [ListenBrainzPlaylistSummary]) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
                 .font(.custom("Avenir Next Demi Bold", size: 16))
@@ -657,5 +754,92 @@ struct ListenBrainzSocialView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .appPanelStyle()
+    }
+
+    private var disconnectedSocialState: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Image(systemName: "person.2.slash")
+                .font(.system(size: 30, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Connect ListenBrainz to see your community")
+                    .font(.custom("Avenir Next Demi Bold", size: 18))
+                Text("Follow listeners, compare compatibility, exchange recommendations, and keep an eye on shared playlists from one place.")
+                    .font(.custom("Avenir Next Regular", size: 13))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            settingsLink
+        }
+        .frame(maxWidth: 620, alignment: .leading)
+        .appPanelStyle()
+    }
+
+    @ViewBuilder
+    private var settingsLink: some View {
+        if #available(macOS 14.0, *) {
+            SettingsLink {
+                Label("Open Settings", systemImage: "gearshape")
+            }
+            .buttonStyle(.borderedProminent)
+        } else {
+            Button {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+            } label: {
+                Label("Open Settings", systemImage: "gearshape")
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+
+    private func socialErrorBanner(_ error: String) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Social data could not be refreshed")
+                    .font(.custom("Avenir Next Demi Bold", size: 13))
+                Text(error)
+                    .font(.custom("Avenir Next Regular", size: 12))
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+            }
+            Spacer(minLength: 8)
+            Button("Try Again") {
+                Task { await refreshAllSocialData() }
+            }
+            .buttonStyle(.bordered)
+            .disabled(isRefreshingSocialData)
+        }
+        .padding(12)
+        .background(Color.orange.opacity(0.09), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.orange.opacity(0.22), lineWidth: 1)
+        }
+    }
+
+    private func refreshAllSocialData() async {
+        guard scrobbleService.listenBrainzEnabled, !isRefreshingSocialData else { return }
+        isRefreshingSocialData = true
+        defer { isRefreshingSocialData = false }
+
+        await scrobbleService.refreshListenBrainzSocial()
+        await scrobbleService.refreshListenBrainzCompatibility()
+        await scrobbleService.refreshListenBrainzRecommendations()
+        await scrobbleService.refreshListenBrainzPins()
+        await scrobbleService.refreshListenBrainzPlaylists()
+    }
+}
+
+private struct SocialMetrics {
+    let width: CGFloat
+
+    var isCompact: Bool { width < 760 }
+    var contentMaxWidth: CGFloat { width >= 1260 ? 1260 : .infinity }
+    var metricColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: isCompact ? 104 : 132), spacing: 10, alignment: .leading)]
     }
 }
