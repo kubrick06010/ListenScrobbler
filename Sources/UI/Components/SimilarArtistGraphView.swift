@@ -4,20 +4,72 @@ import AppKit
 import UniformTypeIdentifiers
 
 struct SimilarArtistGraphNode: Identifiable, Equatable {
+    enum Kind: String, Equatable {
+        case similarity
+        case connection
+        case alias
+
+        var label: String {
+            switch self {
+            case .similarity: return String(localized: "Similar")
+            case .connection: return String(localized: "Connected")
+            case .alias: return String(localized: "Alias")
+            }
+        }
+    }
+
     let id: String
     let name: String
     let value: Double
     let imageURL: String?
+    let relationship: String?
+    let kind: Kind
+
+    init(
+        id: String,
+        name: String,
+        value: Double,
+        imageURL: String?,
+        relationship: String? = nil,
+        kind: Kind = .similarity
+    ) {
+        self.id = id
+        self.name = name
+        self.value = value
+        self.imageURL = imageURL
+        self.relationship = relationship
+        self.kind = kind
+    }
 }
 
 struct SimilarArtistGraphView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let centerName: String
+    let centerImageURL: String?
     let nodes: [SimilarArtistGraphNode]
     let compact: Bool
+    let onSelect: ((SimilarArtistGraphNode) -> Void)?
+
+    @State private var selectedNodeID: String?
+    @State private var hoveredNodeID: String?
+
+    init(
+        centerName: String,
+        centerImageURL: String? = nil,
+        nodes: [SimilarArtistGraphNode],
+        compact: Bool,
+        onSelect: ((SimilarArtistGraphNode) -> Void)? = nil
+    ) {
+        self.centerName = centerName
+        self.centerImageURL = centerImageURL
+        self.nodes = nodes
+        self.compact = compact
+        self.onSelect = onSelect
+    }
 
     private var visibleNodes: [SimilarArtistGraphNode] {
-        Array(nodes.prefix(compact ? 8 : 14))
+        Array(nodes.prefix(compact ? 7 : 12))
     }
 
     var body: some View {
@@ -32,82 +84,179 @@ struct SimilarArtistGraphView: View {
                             path.move(to: layout.center)
                             path.addLine(to: point)
                         }
-                        .stroke(edgeColor(for: node).opacity(colorScheme == .dark ? 0.46 : 0.34), lineWidth: 1.25)
+                        .stroke(
+                            edgeColor(for: node).opacity(selectedNodeID == node.id ? 0.92 : 0.42),
+                            style: StrokeStyle(
+                                lineWidth: selectedNodeID == node.id ? 2.4 : edgeWidth(for: node),
+                                lineCap: .round,
+                                dash: node.kind == .alias ? [4, 5] : []
+                            )
+                        )
                     }
                 }
 
-                ForEach(clusterEdges(in: layout.nodePositions), id: \.0) { edge in
-                    if let from = layout.nodePositions[edge.0], let to = layout.nodePositions[edge.1] {
-                        Path { path in
-                            path.move(to: from)
-                            path.addLine(to: to)
-                        }
-                        .stroke(Color.secondary.opacity(0.18), lineWidth: 1)
-                    }
-                }
-
-                artistNode(
-                    title: centerName,
-                    fill: Color(red: 0.24, green: 0.20, blue: 0.50),
-                    textColor: .white,
-                    size: layout.centerSize,
-                    fontSize: compact ? 20 : 25
-                )
+                centerNode(size: layout.centerSize)
                 .position(layout.center)
 
-                ForEach(Array(visibleNodes.enumerated()), id: \.element.id) { index, node in
+                ForEach(visibleNodes) { node in
                     if let point = layout.nodePositions[node.id] {
-                        artistNode(
-                            title: node.name,
-                            fill: nodeFill(index: index, node: node),
-                            textColor: nodeTextColor(index: index),
-                            size: layout.nodeSizes[node.id] ?? 72,
-                            fontSize: compact ? 11 : 13
-                        )
+                        relationshipNode(node, size: layout.nodeSizes[node.id] ?? 66)
                         .position(point)
                     }
                 }
+
+                legend
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(14)
+
+                if let selectedNode {
+                    selectionCaption(selectedNode)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                        .padding(.bottom, 12)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: selectedNodeID)
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Artist constellation for \(centerName)")
     }
 
     private var graphBackground: some View {
-        LinearGradient(
-            colors: colorScheme == .dark
-                ? [Color.white.opacity(0.04), Color.white.opacity(0.015)]
-                : [Color.white.opacity(0.82), Color(red: 0.91, green: 0.94, blue: 0.99)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+        ZStack {
+            Rectangle().fill(.ultraThinMaterial)
+            LinearGradient(
+                colors: colorScheme == .dark
+                    ? [Color(red: 0.08, green: 0.10, blue: 0.14).opacity(0.86), Color.black.opacity(0.18)]
+                    : [Color.white.opacity(0.72), Color(red: 0.91, green: 0.94, blue: 0.98).opacity(0.74)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            RadialGradient(
+                colors: [Color.accentColor.opacity(colorScheme == .dark ? 0.16 : 0.10), .clear],
+                center: .center,
+                startRadius: 18,
+                endRadius: compact ? 190 : 310
+            )
+        }
         .overlay {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(Color.secondary.opacity(0.16), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.primary.opacity(0.09), lineWidth: 1)
         }
     }
 
-    private func artistNode(
-        title: String,
-        fill: Color,
-        textColor: Color,
-        size: CGFloat,
-        fontSize: CGFloat
-    ) -> some View {
-        ZStack {
-            Circle()
-                .fill(fill)
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.24 : 0.10), radius: 7, x: 0, y: 4)
-            Text(title)
-                .font(.custom("Avenir Next Medium", size: fontSize))
-                .foregroundStyle(textColor)
-                .multilineTextAlignment(.center)
-                .lineLimit(3)
-                .minimumScaleFactor(0.68)
+    private func centerNode(size: CGFloat) -> some View {
+        ZStack(alignment: .bottom) {
+            graphArtwork(url: centerImageURL, name: centerName, size: size, tint: .accentColor)
+                .overlay {
+                    Circle().stroke(Color.accentColor.opacity(0.88), lineWidth: 3)
+                }
+                .shadow(color: Color.accentColor.opacity(0.22), radius: 18)
+            Text("Current artist")
+                .font(.custom("Avenir Next Demi Bold", size: 9))
                 .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(.regularMaterial, in: Capsule())
+                .offset(y: 9)
+        }
+        .frame(width: size, height: size + 12)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Current artist, \(centerName)")
+    }
+
+    private func relationshipNode(_ node: SimilarArtistGraphNode, size: CGFloat) -> some View {
+        Button {
+            selectedNodeID = node.id
+            onSelect?(node)
+        } label: {
+            VStack(spacing: 5) {
+                graphArtwork(url: node.imageURL, name: node.name, size: size, tint: nodeColor(node))
+                    .overlay {
+                        Circle().stroke(
+                            nodeColor(node).opacity(selectedNodeID == node.id || hoveredNodeID == node.id ? 1 : 0.72),
+                            lineWidth: selectedNodeID == node.id ? 3 : 2
+                        )
+                    }
+                    .shadow(
+                        color: nodeColor(node).opacity(hoveredNodeID == node.id ? 0.34 : 0.14),
+                        radius: hoveredNodeID == node.id ? 12 : 6
+                    )
+                Text(node.name)
+                    .font(.custom("Avenir Next Demi Bold", size: compact ? 10 : 11))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .frame(width: max(82, size + 30))
+            }
+            .scaleEffect(hoveredNodeID == node.id && !reduceMotion ? 1.04 : 1)
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            hoveredNodeID = hovering ? node.id : nil
+        }
+        .help("\(node.name) · \(node.relationship ?? node.kind.label)")
+        .accessibilityLabel("\(node.name), \(node.relationship ?? node.kind.label)")
+    }
+
+    private func graphArtwork(url: String?, name: String, size: CGFloat, tint: Color) -> some View {
+        Group {
+            if let url, let imageURL = URL(string: url) {
+                CachedAsyncImage(url: imageURL) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    initials(name, tint: tint)
+                }
+            } else {
+                initials(name, tint: tint)
+            }
         }
         .frame(width: size, height: size)
-        .contentShape(Circle())
-        .help(title)
+        .clipShape(Circle())
+    }
+
+    private func initials(_ name: String, tint: Color) -> some View {
+        ZStack {
+            LinearGradient(
+                colors: [tint.opacity(0.82), tint.opacity(0.38)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            Text(initials(for: name))
+                .font(.custom("Avenir Next Demi Bold", size: compact ? 16 : 18))
+                .foregroundStyle(.white.opacity(0.94))
+        }
+    }
+
+    private var legend: some View {
+        HStack(spacing: 12) {
+            legendItem(kind: .similarity)
+            legendItem(kind: .connection)
+            legendItem(kind: .alias)
+        }
+        .font(.custom("Avenir Next Medium", size: 10))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(.regularMaterial, in: Capsule())
+    }
+
+    private func legendItem(kind: SimilarArtistGraphNode.Kind) -> some View {
+        HStack(spacing: 5) {
+            Circle().fill(nodeColor(kind)).frame(width: 7, height: 7)
+            Text(kind.label).foregroundStyle(.secondary)
+        }
+    }
+
+    private func selectionCaption(_ node: SimilarArtistGraphNode) -> some View {
+        HStack(spacing: 7) {
+            Circle().fill(nodeColor(node)).frame(width: 8, height: 8)
+            Text(node.name).fontWeight(.semibold)
+            Text(node.relationship ?? node.kind.label).foregroundStyle(.secondary)
+        }
+        .font(.custom("Avenir Next Medium", size: 11))
+        .padding(.horizontal, 11)
+        .padding(.vertical, 7)
+        .background(.regularMaterial, in: Capsule())
     }
 
     private struct GraphLayout {
@@ -118,56 +267,62 @@ struct SimilarArtistGraphView: View {
     }
 
     private func graphLayout(in size: CGSize) -> GraphLayout {
-        let center = CGPoint(x: size.width * 0.52, y: size.height * 0.53)
-        let centerSize = min(compact ? 108 : 136, min(size.width, size.height) * 0.34)
-        let baseRadius = max(92, min(size.width, size.height) * (compact ? 0.34 : 0.38))
+        let center = CGPoint(x: size.width * 0.50, y: size.height * 0.51)
+        let centerSize = min(compact ? 92 : 112, min(size.width, size.height) * 0.28)
+        let shortSide = min(size.width, size.height)
         let maxValue = max(1, visibleNodes.map(\.value).max() ?? 1)
         var positions: [String: CGPoint] = [:]
         var sizes: [String: CGFloat] = [:]
 
         for (index, node) in visibleNodes.enumerated() {
             let count = max(1, visibleNodes.count)
-            let spread = count > 10 ? 0.94 : 0.88
             let angle = (2 * Double.pi * (Double(index) / Double(count))) - Double.pi / 2
-            let radiusJitter = CGFloat(index % 3) * (compact ? 8 : 14)
-            let radius = baseRadius * spread + radiusJitter
+            let alternateRing = count > 8 && index.isMultiple(of: 2)
+            let radius = shortSide * (alternateRing ? 0.31 : (compact ? 0.37 : 0.40))
             let x = center.x + CGFloat(cos(angle)) * radius
-            let y = center.y + CGFloat(sin(angle)) * radius * (compact ? 0.86 : 0.92)
+            let y = center.y + CGFloat(sin(angle)) * radius * (compact ? 0.78 : 0.84)
             positions[node.id] = CGPoint(
-                x: min(max(x, 44), size.width - 44),
-                y: min(max(y, 44), size.height - 44)
+                x: min(max(x, 54), size.width - 54),
+                y: min(max(y, 62), size.height - 64)
             )
             let normalized = CGFloat(node.value / maxValue)
-            sizes[node.id] = (compact ? 62 : 76) + normalized * (compact ? 18 : 26)
+            sizes[node.id] = (compact ? 48 : 54) + normalized * (compact ? 10 : 16)
         }
 
         return GraphLayout(center: center, centerSize: centerSize, nodePositions: positions, nodeSizes: sizes)
     }
 
-    private func clusterEdges(in positions: [String: CGPoint]) -> [(String, String)] {
-        guard visibleNodes.count >= 6 else { return [] }
-        return stride(from: 1, to: visibleNodes.count, by: 4).compactMap { index in
-            guard index + 1 < visibleNodes.count else { return nil }
-            return (visibleNodes[index].id, visibleNodes[index + 1].id)
+    private var selectedNode: SimilarArtistGraphNode? {
+        visibleNodes.first { $0.id == selectedNodeID }
+    }
+
+    private func nodeColor(_ node: SimilarArtistGraphNode) -> Color {
+        nodeColor(node.kind)
+    }
+
+    private func nodeColor(_ kind: SimilarArtistGraphNode.Kind) -> Color {
+        switch kind {
+        case .similarity: return Color(red: 0.35, green: 0.66, blue: 0.92)
+        case .connection: return Color(red: 0.96, green: 0.38, blue: 0.34)
+        case .alias: return Color(red: 0.70, green: 0.52, blue: 0.91)
         }
     }
 
-    private func nodeFill(index: Int, node: SimilarArtistGraphNode) -> Color {
-        let palette: [Color] = [
-            Color(red: 0.48, green: 0.59, blue: 0.82),
-            Color(red: 0.50, green: 0.54, blue: 0.64),
-            Color(red: 0.54, green: 0.52, blue: 0.44),
-            Color(red: 0.42, green: 0.52, blue: 0.77)
-        ]
-        return palette[index % palette.count].opacity(node.imageURL == nil ? 0.92 : 1)
-    }
-
-    private func nodeTextColor(index: Int) -> Color {
-        index % 4 == 0 ? Color.primary.opacity(colorScheme == .dark ? 0.95 : 0.78) : .white
-    }
-
     private func edgeColor(for node: SimilarArtistGraphNode) -> Color {
-        node.imageURL == nil ? .secondary : Color(red: 0.48, green: 0.58, blue: 0.82)
+        nodeColor(node).opacity(colorScheme == .dark ? 0.86 : 0.72)
+    }
+
+    private func edgeWidth(for node: SimilarArtistGraphNode) -> CGFloat {
+        switch node.kind {
+        case .connection: return 1.7
+        case .alias: return 1.2
+        case .similarity: return 1.35
+        }
+    }
+
+    private func initials(for name: String) -> String {
+        let words = name.split(separator: " ").filter { !$0.isEmpty }
+        return words.prefix(2).compactMap(\.first).map(String.init).joined().uppercased()
     }
 }
 
@@ -188,7 +343,7 @@ struct ListenBrainzRecommendationComposerView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(recommendation.title)
                     .font(.custom("Avenir Next Demi Bold", size: 16))
-                Text(recommendation.artistName ?? "Unknown artist")
+                Text(recommendation.artistName ?? String(localized: "Unknown artist"))
                     .font(.custom("Avenir Next Medium", size: 13))
                     .foregroundStyle(.secondary)
                 if let releaseName = recommendation.releaseName {
@@ -238,7 +393,7 @@ struct ListenBrainzRecommendationComposerView: View {
 
                 Spacer()
 
-                Button(isSending ? "Sending..." : "Send") {
+                Button {
                     Task {
                         isSending = true
                         let sent = await scrobbleService.shareListenBrainzRecommendation(
@@ -251,6 +406,12 @@ struct ListenBrainzRecommendationComposerView: View {
                             onComplete()
                             dismiss()
                         }
+                    }
+                } label: {
+                    if isSending {
+                        Text("Sending...")
+                    } else {
+                        Text("Send")
                     }
                 }
                 .buttonStyle(.borderedProminent)

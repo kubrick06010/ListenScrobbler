@@ -67,7 +67,7 @@ public struct MobileWidgetSnapshot: Codable, Equatable {
 
     public static var empty: MobileWidgetSnapshot {
         MobileWidgetSnapshot(
-            connectionStatus: "Open ListenScrobbler to connect ListenBrainz",
+            connectionStatus: String(localized: "Open ListenScrobbler to connect ListenBrainz"),
             username: nil,
             recentListen: nil,
             currentPin: nil,

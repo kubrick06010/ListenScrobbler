@@ -132,7 +132,7 @@ struct ObsessionsVaultView: View {
             Text(store.status)
                 .font(.custom("Avenir Next Medium", size: 12))
                 .foregroundStyle(.secondary)
-            if scrobbleService.listenBrainzPinsStatus != "Not loaded" {
+            if scrobbleService.listenBrainzPinsStatus != String(localized: "Not loaded") {
                 Label(scrobbleService.listenBrainzPinsStatus, systemImage: "pin")
                     .font(.custom("Avenir Next Medium", size: 12))
                     .foregroundStyle(.secondary)

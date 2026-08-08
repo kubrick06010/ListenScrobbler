@@ -11,7 +11,7 @@ struct NowPlayingView: View {
                     .font(.custom("Avenir Next Medium", size: compact ? 16 : 24))
                 Spacer()
                 StatusChip(
-                    title: scrobbleService.playbackState,
+                    title: scrobbleService.localizedPlaybackState,
                     color: scrobbleService.playbackState == "Playing" ? .green : .secondary
                 )
             }
@@ -30,7 +30,9 @@ struct NowPlayingView: View {
                     }
                     .buttonStyle(.plain)
                     .disabled(scrobbleService.isUpdatingListenBrainzFeedback)
-                    .help(scrobbleService.listenBrainzCurrentTrackLoved ? "Unlove on ListenBrainz" : "Love on ListenBrainz")
+                    .help(scrobbleService.listenBrainzCurrentTrackLoved
+                        ? String(localized: "Unlove on ListenBrainz")
+                        : String(localized: "Love on ListenBrainz"))
                 }
                 Text(track.artist)
                     .font(.custom("Avenir Next Medium", size: compact ? 12 : 14))

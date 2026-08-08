@@ -4,11 +4,14 @@ import XCTest
 final class CompatibilityAPIErrorTests: XCTestCase {
     func testInvalidSessionHasReauthHint() {
         let error = CompatibilityAPIError.invalidSession
-        XCTAssertEqual(error.recoverySuggestion, "Sign in again to refresh your compatibility session.")
+        XCTAssertEqual(error.recoverySuggestion, String(localized: "Sign in again to refresh your compatibility session."))
     }
 
     func testNetworkUnavailableMentionsAutoRetry() {
         let error = CompatibilityAPIError.networkUnavailable
-        XCTAssertTrue(error.recoverySuggestion.contains("retry automatically"))
+        XCTAssertEqual(
+            error.recoverySuggestion,
+            String(localized: "Check network connectivity. Queued listens will retry automatically.")
+        )
     }
 }

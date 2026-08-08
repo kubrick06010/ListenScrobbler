@@ -10,6 +10,14 @@ struct FriendsView: View {
         case all = "All"
 
         var id: String { rawValue }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .nowPlaying: "Now Playing"
+            case .hybrid: "Hybrid"
+            case .all: "All"
+            }
+        }
     }
 
     @EnvironmentObject private var scrobbleService: ScrobbleService
@@ -46,7 +54,7 @@ struct FriendsView: View {
 
                 Picker("Activity", selection: $activityFilter) {
                     ForEach(ActivityFilter.allCases) { option in
-                        Text(option.rawValue).tag(option)
+                        Text(option.title).tag(option)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -87,7 +95,7 @@ struct FriendsView: View {
     }
 
     private func time(_ value: Date?) -> String {
-        value?.formatted(date: .omitted, time: .shortened) ?? "-"
+        value.map { AppLocalization.date($0, date: .omitted, time: .shortened) } ?? "-"
     }
 
     @ViewBuilder
@@ -181,7 +189,7 @@ struct FriendsView: View {
         return age >= 0 && age <= recentNowPlayingWindow
     }
 
-    private func sectionHeader(_ title: String, count: Int) -> some View {
+    private func sectionHeader(_ title: LocalizedStringKey, count: Int) -> some View {
         HStack {
             Text(title)
                 .font(.custom("Avenir Next Medium", size: 12))
@@ -207,7 +215,7 @@ struct FriendsView: View {
                         badgeView(badge, fontSize: 9, horizontal: 6, vertical: 2)
                     }
                 }
-                Text(friend.country ?? "Unknown location")
+                Text(friend.country ?? String(localized: "Unknown location"))
                     .font(.custom("Avenir Next Regular", size: 11))
                     .foregroundStyle(.secondary)
                 if let track = friend.track, let artist = friend.artist {
@@ -227,7 +235,7 @@ struct FriendsView: View {
                 separationChip(for: friend.user)
             }
             .buttonStyle(.plain)
-            Text(nowPlaying ? "Now" : time(friend.playedAt))
+            Text(nowPlaying ? String(localized: "Now") : time(friend.playedAt))
                 .font(.custom("Avenir Next Regular", size: 11))
                 .foregroundStyle(.secondary)
         }

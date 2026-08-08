@@ -10,25 +10,25 @@ enum ReportPeriod: CaseIterable {
 
     var label: String {
         switch self {
-        case .week: return "Last.week"
-        case .month: return "Last.month"
-        case .year: return "Last.year"
+        case .week: return String(localized: "Last.week")
+        case .month: return String(localized: "Last.month")
+        case .year: return String(localized: "Last.year")
         }
     }
 
     var currentLabel: String {
         switch self {
-        case .week: return "week"
-        case .month: return "month"
-        case .year: return "year"
+        case .week: return String(localized: "week")
+        case .month: return String(localized: "month")
+        case .year: return String(localized: "year")
         }
     }
 
     var previousLabel: String {
         switch self {
-        case .week: return "last week"
-        case .month: return "last month"
-        case .year: return "last year"
+        case .week: return String(localized: "last week")
+        case .month: return String(localized: "last month")
+        case .year: return String(localized: "last year")
         }
     }
 
@@ -143,7 +143,7 @@ struct ListeningClockView: View {
             .offset(x: x, y: y)
     }
 
-    private func legendSwatch(color: Color, label: String) -> some View {
+    private func legendSwatch(color: Color, label: LocalizedStringKey) -> some View {
         HStack(spacing: 6) {
             RoundedRectangle(cornerRadius: 2, style: .continuous)
                 .fill(color)

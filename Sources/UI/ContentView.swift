@@ -16,10 +16,30 @@ enum WorkspaceTab: String, CaseIterable, Hashable, Identifiable {
         "sidebar.\(String(describing: self))"
     }
 
+    var title: LocalizedStringKey {
+        switch self {
+        case .dashboard: "Dashboard"
+        case .queue: "Queue"
+        case .scrobbles: "Listens"
+        case .charts: "Charts"
+        case .social: "Social"
+        case .shared: "Shared"
+        case .obsessions: "Obsessions"
+        }
+    }
+
     enum Group: String, CaseIterable {
         case listening = "Listening"
         case discover = "Discover"
         case library = "Library"
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .listening: "Listening"
+            case .discover: "Discover"
+            case .library: "Library"
+            }
+        }
     }
 
     var group: Group {
@@ -109,9 +129,9 @@ struct ObsessionDraft: Identifiable, Equatable {
 func accountBadgeLabel(for normalizedType: String) -> String {
     switch normalizedType {
     case "alum":
-        return "ALUM"
+        return String(localized: "ALUM")
     case "subscriber":
-        return "SUPPORTER"
+        return String(localized: "SUPPORTER")
     default:
         return normalizedType.uppercased()
     }
@@ -145,13 +165,15 @@ struct ContentView: View {
                 ForEach(WorkspaceTab.Group.allCases, id: \.self) { group in
                     let tabs = availableTabs.filter { $0.group == group }
                     if !tabs.isEmpty {
-                        Section(group.rawValue) {
+                        Section {
                             ForEach(tabs) { tab in
-                    Label(tab.rawValue, systemImage: tab.symbol)
-                        .tag(tab)
-                        .font(.custom("Avenir Next Medium", size: 13))
-                        .accessibilityIdentifier(tab.accessibilityIdentifier)
+                                Label(tab.title, systemImage: tab.symbol)
+                                    .tag(tab)
+                                    .font(.custom("Avenir Next Medium", size: 13))
+                                    .accessibilityIdentifier(tab.accessibilityIdentifier)
                             }
+                        } header: {
+                            Text(group.title)
                         }
                     }
                 }
@@ -240,14 +262,14 @@ struct ContentView: View {
                                 onOpenRecommendation: { recommendation in
                                     openDeepLink(
                                         track: recommendation.title,
-                                        artist: recommendation.artistName ?? "Unknown Artist",
+                                        artist: recommendation.artistName ?? String(localized: "Unknown Artist"),
                                         imageURL: nil
                                     )
                                 },
                                 onShareRecommendation: { recommendation in
                                     shareDraft = ShareDraft(
                                         kind: .track,
-                                        artist: recommendation.artistName ?? "Unknown Artist",
+                                        artist: recommendation.artistName ?? String(localized: "Unknown Artist"),
                                         track: recommendation.title,
                                         album: recommendation.releaseName,
                                         sourceURL: nil,
@@ -511,7 +533,7 @@ struct ContentView: View {
         if let current = scrobbleService.currentTrack {
             return "\(current.artist) - \(current.title)"
         }
-        return "No track playing"
+        return String(localized: "No track playing")
     }
 
     private var appBarBackground: Color {
@@ -567,12 +589,15 @@ struct ContentView: View {
             Divider()
                 .frame(height: 16)
 
-            Label(
-                scrobbleService.scrobblingEnabled ? "Submissions on" : "Submissions off",
-                systemImage: scrobbleService.scrobblingEnabled ? "waveform.badge.checkmark" : "waveform.slash"
-            )
-            .foregroundStyle(scrobbleService.scrobblingEnabled ? .green : .secondary)
-            .accessibilityLabel(scrobbleService.scrobblingEnabled ? "Listening submissions enabled" : "Listening submissions disabled")
+            if scrobbleService.scrobblingEnabled {
+                Label("Submissions on", systemImage: "waveform.badge.checkmark")
+                    .foregroundStyle(.green)
+                    .accessibilityLabel("Listening submissions enabled")
+            } else {
+                Label("Submissions off", systemImage: "waveform.slash")
+                    .foregroundStyle(.secondary)
+                    .accessibilityLabel("Listening submissions disabled")
+            }
 
             Button {
                 selectedTab = .queue

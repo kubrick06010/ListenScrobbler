@@ -20,13 +20,22 @@ private enum PreferencesSection: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .general:
-            return "Startup and app behaviour"
+            return String(localized: "Startup and app behaviour")
         case .listenBrainz:
-            return "Token, now playing, listens, and charts"
+            return String(localized: "Token, now playing, listens, and charts")
         case .network:
-            return "Proxy and connectivity"
+            return String(localized: "Proxy and connectivity")
         case .advanced:
-            return "Operational status"
+            return String(localized: "Operational status")
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .general: return String(localized: "General")
+        case .listenBrainz: return "ListenBrainz"
+        case .network: return String(localized: "Network")
+        case .advanced: return String(localized: "Advanced")
         }
     }
 }
@@ -50,7 +59,7 @@ struct SettingsView: View {
             List(PreferencesSection.allCases, selection: $selectedSection) { section in
                 Label {
                     VStack(alignment: .leading, spacing: 1) {
-                        Text(section.rawValue)
+                        Text(section.title)
                             .font(.custom("Avenir Next Demi Bold", size: 13))
                         Text(section.subtitle)
                             .font(.custom("Avenir Next Regular", size: 11))
@@ -294,12 +303,17 @@ struct SettingsView: View {
 
             GroupBox("Status") {
                 VStack(alignment: .leading, spacing: 8) {
-                    LabeledContent("Backend", value: scrobbleService.backendName)
-                    LabeledContent("Auth State", value: scrobbleService.isAuthenticated ? "Authenticated" : "Not authenticated")
+                    LabeledContent("Backend", value: scrobbleService.localizedBackendName)
+                    LabeledContent(
+                        "Auth State",
+                        value: scrobbleService.isAuthenticated
+                            ? String(localized: "Authenticated")
+                            : String(localized: "Not authenticated")
+                    )
                     LabeledContent("Session", value: scrobbleService.sessionStatus)
                     LabeledContent("ListenBrainz", value: scrobbleService.listenBrainzStatus)
                     LabeledContent("Capabilities", value: scrobbleService.capabilitiesStatus)
-                    LabeledContent("Validation", value: scrobbleService.validationSource)
+                    LabeledContent("Validation", value: scrobbleService.localizedValidationSource)
                 }
                 .font(.custom("Avenir Next Medium", size: 12))
                 .padding(.top, 2)
@@ -315,7 +329,7 @@ struct SettingsView: View {
         }
     }
 
-    private func preferencesHeader(title: String, subtitle: String) -> some View {
+    private func preferencesHeader(title: LocalizedStringKey, subtitle: LocalizedStringKey) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.custom("Avenir Next Demi Bold", size: 24))

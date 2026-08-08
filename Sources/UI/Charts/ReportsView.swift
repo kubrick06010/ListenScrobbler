@@ -23,9 +23,9 @@ struct ReportsView: View {
                 .appPanelStyle()
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("\(currentCount.formatted()) Listens")
+                    Text("\(AppLocalization.integer(currentCount)) Listens")
                         .font(.custom("Avenir Next Demi Bold", size: 34))
-                    Text("vs. \(comparisonCount.formatted()) \(comparisonTitle)")
+                    Text("vs. \(AppLocalization.integer(comparisonCount)) \(comparisonTitle)")
                         .font(.custom("Avenir Next Medium", size: 20))
                     Text("\(periodTitle) trend: \(trendPercentString)")
                         .font(.custom("Avenir Next Medium", size: 15))
@@ -36,7 +36,11 @@ struct ReportsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Avg. listens per day")
                         .font(.custom("Avenir Next Demi Bold", size: 28))
-                    reportBar("This \(periodTitle)", value: currentAvg, max: max(currentAvg, comparisonAvg))
+                    reportBar(
+                        String.localizedStringWithFormat(String(localized: "This %@"), periodTitle),
+                        value: currentAvg,
+                        max: max(currentAvg, comparisonAvg)
+                    )
                     reportBar(period.previousLabel, value: comparisonAvg, max: max(currentAvg, comparisonAvg))
                 }
                 .appPanelStyle()
@@ -76,7 +80,7 @@ struct ReportsView: View {
                     Text("With a \(mainstreamScore)% mainstream score, you are \(mainstreamTone) compared to your recent baseline.")
                         .font(.custom("Avenir Next Medium", size: 15))
                         .foregroundStyle(.secondary)
-                    reportBar("Mainstream", value: mainstreamScore, max: 100)
+                    reportBar(String(localized: "Mainstream"), value: mainstreamScore, max: 100)
                     Text("vs. \(mainstreamBaseline)% baseline")
                         .font(.custom("Avenir Next Medium", size: 13))
                         .foregroundStyle(.secondary)
@@ -92,10 +96,10 @@ struct ReportsView: View {
                                 .font(.custom("Avenir Next Medium", size: 13))
                                 .frame(width: 42, alignment: .leading)
                             reportBarInline(value: point.current, max: weekdayMax)
-                            Text(point.current.formatted())
+                            Text(AppLocalization.integer(point.current))
                                 .font(.custom("Avenir Next Medium", size: 12))
                                 .foregroundStyle(.secondary)
-                            Text("vs \(point.previous.formatted())")
+                            Text("vs \(AppLocalization.integer(point.previous))")
                                 .font(.custom("Avenir Next Medium", size: 12))
                                 .foregroundStyle(.secondary)
                         }
@@ -113,7 +117,7 @@ struct ReportsView: View {
                 Text(label)
                     .font(.custom("Avenir Next Medium", size: 15))
                 Spacer()
-                Text(value.formatted())
+                Text(AppLocalization.integer(value))
                     .font(.custom("Avenir Next Medium", size: 15))
             }
             RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -155,7 +159,7 @@ struct ReportsView: View {
     }
 
     private var trendPercentString: String {
-        guard comparisonCount > 0 else { return "Not enough historical data" }
+        guard comparisonCount > 0 else { return String(localized: "Not enough historical data") }
         let delta = Double(currentCount - comparisonCount) / Double(comparisonCount)
         let pct = Int((delta * 100).rounded())
         return pct >= 0 ? "+\(pct)%" : "\(pct)%"
@@ -230,8 +234,13 @@ struct ReportsView: View {
 
     private var peakHourLabel: String {
         let counts = hourlyCountsCurrent
-        guard let max = counts.max(), max > 0, let idx = counts.firstIndex(of: max) else { return "00:00" }
-        return String(format: "%02d:00", idx)
+        guard let max = counts.max(), max > 0, let idx = counts.firstIndex(of: max) else {
+            return String(localized: "No listening peak yet")
+        }
+        var components = DateComponents()
+        components.hour = idx
+        let date = Calendar.current.date(from: components) ?? .now
+        return AppLocalization.date(date, date: .omitted, time: .shortened)
     }
 
     private var mainstreamScore: Int {
@@ -275,9 +284,9 @@ struct ReportsView: View {
     }
 
     private var mainstreamTone: String {
-        if mainstreamScore >= 55 { return "more mainstream" }
-        if mainstreamScore <= 25 { return "more adventurous" }
-        return "balanced"
+        if mainstreamScore >= 55 { return String(localized: "more mainstream") }
+        if mainstreamScore <= 25 { return String(localized: "more adventurous") }
+        return String(localized: "balanced")
     }
 
     private var mainstreamReferenceArtists: Set<String> {

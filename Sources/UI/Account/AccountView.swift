@@ -47,8 +47,8 @@ struct AccountView: View {
                 .appPanelStyle()
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Backend: \(scrobbleService.backendName)")
-                    Text("Auth State: \(scrobbleService.isAuthenticated ? "Authenticated" : "Not authenticated")")
+                    Text("Backend: \(scrobbleService.localizedBackendName)")
+                    Text("Auth State: \(scrobbleService.isAuthenticated ? String(localized: "Authenticated") : String(localized: "Not authenticated"))")
                     Text("Session: \(scrobbleService.sessionStatus)")
                     Text("Capabilities: \(scrobbleService.capabilitiesStatus)")
                     Text("Operational state: Preferences > Advanced")

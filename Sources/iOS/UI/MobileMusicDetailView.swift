@@ -120,10 +120,11 @@ struct MobileMusicDetailView: View {
                     }
                 }
             } label: {
-                Label(
-                    listeningStore.isCurrentPin(resolvedSeed) ? "Unpin" : "Pin",
-                    systemImage: listeningStore.isCurrentPin(resolvedSeed) ? "pin.slash" : "pin"
-                )
+                if listeningStore.isCurrentPin(resolvedSeed) {
+                    Label("Unpin", systemImage: "pin.slash")
+                } else {
+                    Label("Pin", systemImage: "pin")
+                }
             }
             .disabled(!canPin)
 

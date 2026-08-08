@@ -59,10 +59,17 @@ struct ListenScrobblerApp: App {
 
                 Divider()
 
-                Button(showDockIcon ? "Switch To Menu Bar Only" : "Show Dock Icon") {
-                    toggleDockIconVisibility()
+                if showDockIcon {
+                    Button("Switch To Menu Bar Only") {
+                        toggleDockIconVisibility()
+                    }
+                    .keyboardShortcut("m", modifiers: [.command, .option])
+                } else {
+                    Button("Show Dock Icon") {
+                        toggleDockIconVisibility()
+                    }
+                    .keyboardShortcut("m", modifiers: [.command, .option])
                 }
-                .keyboardShortcut("m", modifiers: [.command, .option])
             }
 
             CommandGroup(replacing: .help) {
@@ -182,7 +189,9 @@ private struct MenuBarStatusIcon: View {
         // changes reliably instead of depending on template tint handling.
         Image(nsImage: menuBarStatusImage(isEnabled: isEnabled))
             .frame(width: 18, height: 18)
-            .accessibilityLabel(isEnabled ? "Listening submissions enabled" : "Listening submissions disabled")
+            .accessibilityLabel(Text(isEnabled
+                ? String(localized: "Listening submissions enabled")
+                : String(localized: "Listening submissions disabled")))
     }
 
     private func menuBarStatusImage(isEnabled: Bool) -> NSImage {
@@ -216,6 +225,8 @@ private struct MenuBarPanel: View {
         VStack(alignment: .leading, spacing: 14) {
             nowPlayingHeader
 
+            loveButton
+
             Divider()
 
             Toggle(isOn: Binding(
@@ -229,7 +240,9 @@ private struct MenuBarPanel: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Listening Submissions")
                         .font(.custom("Avenir Next Demi Bold", size: 13))
-                    Text(scrobbleService.scrobblingEnabled ? "Enabled" : "Disabled")
+                    Text(scrobbleService.scrobblingEnabled
+                        ? String(localized: "Enabled")
+                        : String(localized: "Disabled"))
                         .font(.custom("Avenir Next Regular", size: 11))
                         .foregroundStyle(.secondary)
                 }
@@ -241,8 +254,14 @@ private struct MenuBarPanel: View {
             }
 
             LazyVGrid(columns: gridColumns, spacing: 8) {
-                commandButton(showDockIcon ? "Menu Bar Only" : "Show Dock", systemImage: "rectangle.on.rectangle") {
-                    toggleDockIconVisibility()
+                if showDockIcon {
+                    commandButton("Menu Bar Only", systemImage: "rectangle.on.rectangle") {
+                        toggleDockIconVisibility()
+                    }
+                } else {
+                    commandButton("Show Dock", systemImage: "rectangle.on.rectangle") {
+                        toggleDockIconVisibility()
+                    }
                 }
                 commandButton("Open App", systemImage: "macwindow") {
                     openMainWindow()
@@ -255,6 +274,73 @@ private struct MenuBarPanel: View {
         }
         .padding(14)
         .frame(width: 320)
+    }
+
+    private var loveButton: some View {
+        Button {
+            Task { await scrobbleService.toggleCurrentTrackLove() }
+        } label: {
+            HStack(spacing: 10) {
+                Group {
+                    if scrobbleService.isUpdatingListenBrainzFeedback {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Image(systemName: scrobbleService.listenBrainzCurrentTrackLoved ? "heart.fill" : "heart")
+                            .foregroundStyle(scrobbleService.listenBrainzCurrentTrackLoved ? Color.accentColor : .primary)
+                    }
+                }
+                .frame(width: 18, height: 18)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(loveButtonTitle)
+                        .font(.custom("Avenir Next Demi Bold", size: 13))
+                    Text(loveButtonStatus)
+                        .font(.custom("Avenir Next Regular", size: 10))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .disabled(!canToggleCurrentTrackLove)
+        .accessibilityIdentifier("menuBar.loveButton")
+        .accessibilityLabel(loveButtonTitle)
+        .help(loveButtonStatus)
+    }
+
+    private var canToggleCurrentTrackLove: Bool {
+        scrobbleService.currentTrack != nil &&
+            scrobbleService.listenBrainzEnabled &&
+            !scrobbleService.isUpdatingListenBrainzFeedback
+    }
+
+    private var loveButtonTitle: String {
+        guard scrobbleService.currentTrack != nil else { return String(localized: "Love current track") }
+        return scrobbleService.listenBrainzCurrentTrackLoved
+            ? String(localized: "Unlove")
+            : String(localized: "Love")
+    }
+
+    private var loveButtonStatus: String {
+        if scrobbleService.isUpdatingListenBrainzFeedback {
+            return scrobbleService.listenBrainzFeedbackStatus
+        }
+        guard scrobbleService.currentTrack != nil else {
+            return String(localized: "Waiting for playback")
+        }
+        guard scrobbleService.listenBrainzEnabled else {
+            return String(localized: "Connect ListenBrainz to use feedback")
+        }
+        return scrobbleService.listenBrainzCurrentTrackLoved
+            ? String(localized: "Synced as loved on ListenBrainz")
+            : String(localized: "Ready to love on ListenBrainz")
     }
 
     private var nowPlayingHeader: some View {
@@ -333,7 +419,7 @@ private struct MenuBarPanel: View {
         }
     }
 
-    private func commandButton(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
+    private func commandButton(_ title: LocalizedStringKey, systemImage: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             commandLabel(title: title, systemImage: systemImage)
         }
@@ -358,7 +444,7 @@ private struct MenuBarPanel: View {
         }
     }
 
-    private func commandLabel(title: String, systemImage: String) -> some View {
+    private func commandLabel(title: LocalizedStringKey, systemImage: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: systemImage)
                 .font(.system(size: 12, weight: .semibold))
@@ -373,14 +459,16 @@ private struct MenuBarPanel: View {
     }
 
     private var trackTitle: String {
-        scrobbleService.currentTrackDetails?.name ?? scrobbleService.currentTrack?.title ?? "No track playing"
+        scrobbleService.currentTrackDetails?.name
+            ?? scrobbleService.currentTrack?.title
+            ?? String(localized: "No track playing")
     }
 
     private var trackSubtitle: String {
         guard let currentTrack = scrobbleService.currentTrack else {
-            return scrobbleService.sessionUsername.map { "Signed in as \($0)" }
+            return scrobbleService.sessionUsername.map { String(localized: "Signed in as \($0)") }
                 ?? scrobbleService.listenBrainzUsername.map { "ListenBrainz: \($0)" }
-                ?? "Waiting for playback"
+                ?? String(localized: "Waiting for playback")
         }
 
         let artist = scrobbleService.currentTrackDetails?.artist ?? currentTrack.artist
@@ -433,13 +521,18 @@ struct DiagnosticsView: View {
 
                 GroupBox("Session") {
                     VStack(alignment: .leading, spacing: 8) {
-                        diagnosticsRow("Backend", scrobbleService.backendName)
-                        diagnosticsRow("Auth", scrobbleService.isAuthenticated ? "Authenticated" : "Not authenticated")
+                        diagnosticsRow("Backend", scrobbleService.localizedBackendName)
+                        diagnosticsRow(
+                            "Auth",
+                            scrobbleService.isAuthenticated
+                                ? String(localized: "Authenticated")
+                                : String(localized: "Not authenticated")
+                        )
                         diagnosticsRow("Session", scrobbleService.sessionStatus)
                         diagnosticsRow("ListenBrainz", scrobbleService.listenBrainzStatus)
                         diagnosticsRow("ListenBrainz Charts", scrobbleService.listenBrainzStatsStatus)
                         diagnosticsRow("Capabilities", scrobbleService.capabilitiesStatus)
-                        diagnosticsRow("Validation Source", scrobbleService.validationSource)
+                        diagnosticsRow("Validation Source", scrobbleService.localizedValidationSource)
                     }
                     .font(.custom("Avenir Next Medium", size: 12))
                     .padding(.top, 2)
@@ -448,7 +541,7 @@ struct DiagnosticsView: View {
                 GroupBox("Playback") {
                     VStack(alignment: .leading, spacing: 8) {
                         diagnosticsRow("Monitor", scrobbleService.monitorStatus)
-                        diagnosticsRow("State", scrobbleService.playbackState)
+                        diagnosticsRow("State", scrobbleService.localizedPlaybackState)
                         diagnosticsRow("Elapsed", "\(Int(scrobbleService.elapsedForCurrentTrack))s")
                         diagnosticsRow("Threshold", "\(Int(scrobbleService.scrobbleThreshold))s")
                         diagnosticsRow("Now Playing Delay", "\(scrobbleService.nowPlayingDelaySeconds)s")
@@ -465,13 +558,24 @@ struct DiagnosticsView: View {
                         diagnosticsRow("Submit Attempts", "\(scrobbleService.queueSubmitAttempts)")
                         diagnosticsRow("Submit Failures", "\(scrobbleService.queueSubmitFailures)")
                         diagnosticsRow("Retry Delay", "\(scrobbleService.retryDelaySeconds)s")
-                        diagnosticsRow("Retry Scheduled", scrobbleService.isRetryScheduled ? "Yes" : "No")
+                        diagnosticsRow(
+                            "Retry Scheduled",
+                            scrobbleService.isRetryScheduled
+                                ? String(localized: "Yes")
+                                : String(localized: "No")
+                        )
                         diagnosticsRow("Queue File", scrobbleService.queueFilePath)
                         if let lastSubmittedAt = scrobbleService.lastSubmittedAt {
-                            diagnosticsRow("Last Submit", lastSubmittedAt.formatted())
+                            diagnosticsRow(
+                                "Last Submit",
+                                AppLocalization.date(lastSubmittedAt, date: .abbreviated, time: .shortened)
+                            )
                         }
                         if let nextRetryAt = scrobbleService.nextRetryAt {
-                            diagnosticsRow("Next Retry", nextRetryAt.formatted())
+                            diagnosticsRow(
+                                "Next Retry",
+                                AppLocalization.date(nextRetryAt, date: .abbreviated, time: .shortened)
+                            )
                         }
 
                         HStack(spacing: 10) {
@@ -512,7 +616,7 @@ struct DiagnosticsView: View {
         }
     }
 
-    private func diagnosticsRow(_ key: String, _ value: String) -> some View {
+    private func diagnosticsRow(_ key: LocalizedStringKey, _ value: String) -> some View {
         HStack(alignment: .top) {
             Text(key)
                 .foregroundStyle(.secondary)

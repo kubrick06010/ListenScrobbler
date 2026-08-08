@@ -51,7 +51,7 @@ struct QueueView: View {
                                         .padding(.horizontal, 7)
                                         .padding(.vertical, 3)
                                         .background(Color.accentColor.opacity(0.12), in: Capsule())
-                                    Text(job.track.startedAt.formatted(date: .omitted, time: .shortened))
+                                    Text(AppLocalization.date(job.track.startedAt, date: .omitted, time: .shortened))
                                         .font(.custom("Avenir Next Regular", size: 11))
                                         .foregroundStyle(.secondary)
                                     if job.attempts > 0 {

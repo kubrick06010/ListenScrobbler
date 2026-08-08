@@ -70,7 +70,10 @@ struct MobileAccountView: View {
                 }
 
                 if let lastScanAt = musicLibraryScanner.lastScanAt {
-                    LabeledContent("Last Scan", value: lastScanAt.formatted(date: .abbreviated, time: .shortened))
+                    LabeledContent(
+                        "Last Scan",
+                        value: AppLocalization.date(lastScanAt, date: .abbreviated, time: .shortened)
+                    )
                 }
 
                 LabeledContent("Pending Retry", value: "\(musicLibraryScanner.pendingRetryCount)")
@@ -647,8 +650,14 @@ struct MobileOpenMusicOnboardingView: View {
                     complete()
                 }
             } label: {
-                Label(selectedPage < 2 ? "Continue" : "Start Scrobbling", systemImage: selectedPage < 2 ? "arrow.right" : "checkmark")
-                    .frame(maxWidth: .infinity)
+                Group {
+                    if selectedPage < 2 {
+                        Label("Continue", systemImage: "arrow.right")
+                    } else {
+                        Label("Start Scrobbling", systemImage: "checkmark")
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
         }
@@ -788,12 +797,12 @@ private struct MobilePendingScrobbleRow: View {
                 GridRow {
                     Text("Listened")
                         .foregroundStyle(.secondary)
-                    Text(item.candidate.listenedAt.formatted(date: .abbreviated, time: .shortened))
+                    Text(AppLocalization.date(item.candidate.listenedAt, date: .abbreviated, time: .shortened))
                 }
                 GridRow {
                     Text("Updated")
                         .foregroundStyle(.secondary)
-                    Text(item.updatedAt.formatted(date: .abbreviated, time: .shortened))
+                    Text(AppLocalization.date(item.updatedAt, date: .abbreviated, time: .shortened))
                 }
             }
             .font(.caption)

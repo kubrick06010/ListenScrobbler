@@ -40,7 +40,7 @@ struct ChartsView: View {
                                         .font(.custom("Avenir Next Medium", size: metrics.cardTitleFont))
                                         .lineLimit(2)
                                         .fixedSize(horizontal: false, vertical: true)
-                                    Text("\((artist.playcount ?? 0).formatted()) listens")
+                                    Text("\(AppLocalization.integer(artist.playcount ?? 0)) listens")
                                         .font(.custom("Avenir Next Regular", size: metrics.cardMetaFont))
                                         .foregroundStyle(.secondary)
                                 }
@@ -67,7 +67,7 @@ struct ChartsView: View {
                                     .font(.custom("Avenir Next Regular", size: metrics.cardMetaFont))
                                     .foregroundStyle(.secondary)
                                     .lineLimit(2)
-                                Text("\(album.count.formatted()) listens")
+                                Text("\(AppLocalization.integer(album.count)) listens")
                                     .font(.custom("Avenir Next Regular", size: metrics.cardMetaFont - 1))
                                     .foregroundStyle(.secondary)
                             }
@@ -95,7 +95,7 @@ struct ChartsView: View {
                                         .lineLimit(metrics.isCompact ? 2 : 1)
                                 }
                                 Spacer(minLength: 8)
-                                Text("\(track.count.formatted())")
+                                Text(AppLocalization.integer(track.count))
                                     .font(.custom("Avenir Next Medium", size: metrics.trackCountFont))
                                     .foregroundStyle(.secondary)
                                     .fixedSize()
@@ -121,82 +121,74 @@ struct ChartsView: View {
 
     @ViewBuilder
     private func listenBrainzCharts(metrics: ChartsMetrics) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .center) {
+        VStack(alignment: .leading, spacing: 18) {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .center, spacing: 20) {
+                    archiveTitle
+                    Spacer(minLength: 24)
+                    archiveControls(maxWidth: 430)
+                }
+
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("ListenBrainz Archive")
-                        .font(.custom("Avenir Next Demi Bold", size: metrics.sectionCountFont))
-                    Text(scrobbleService.listenBrainzStatsStatus)
-                        .font(.custom("Avenir Next Medium", size: 12))
-                        .foregroundStyle(.secondary)
+                    archiveTitle
+                    archiveControls(maxWidth: .infinity)
+                        .padding(.top, 10)
                 }
-                Spacer()
-                Picker("Range", selection: $listenBrainzRange) {
-                    ForEach(ListenBrainzStatsRange.allCases) { range in
-                        Text(range.title).tag(range)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .frame(maxWidth: 360)
-                .onChange(of: listenBrainzRange) { range in
-                    Task { await refreshListenBrainzArchive(range: range) }
-                }
-                Button {
-                    Task { await refreshListenBrainzArchive() }
-                } label: {
-                    Image(systemName: "arrow.clockwise")
-                }
-                .buttonStyle(.bordered)
             }
 
             if let snapshot = scrobbleService.listenBrainzStats {
-                HStack(spacing: 12) {
+                LazyVGrid(columns: metrics.metricColumns, alignment: .leading, spacing: 10) {
                     metricPill("User", snapshot.username)
                     metricPill("Range", snapshot.range.title)
-                    metricPill("Listens", snapshot.totalListenCount?.formatted() ?? "Pending")
-                    metricPill("Fetched", snapshot.fetchedAt.formatted(date: .omitted, time: .shortened))
+                    metricPill("Listens", snapshot.totalListenCount.map { AppLocalization.integer($0) } ?? String(localized: "Pending"))
+                    metricPill("Fetched", AppLocalization.date(snapshot.fetchedAt, date: .omitted, time: .shortened))
                 }
 
                 if !snapshot.listeningActivity.isEmpty {
-                    Text("Listening Activity")
-                        .font(.custom("Avenir Next Demi Bold", size: metrics.sectionCountFont - 4))
-                    listeningActivityChart(snapshot.listeningActivity, range: snapshot.range)
-                }
-
-                if !snapshot.topRecordings.isEmpty {
-                    Text("\(snapshot.topRecordings.count) ListenBrainz Tracks")
-                        .font(.custom("Avenir Next Demi Bold", size: metrics.sectionCountFont - 4))
-                    VStack(spacing: 8) {
-                        ForEach(snapshot.topRecordings.prefix(10)) { recording in
-                            chartRow(
-                                title: recording.trackName,
-                                subtitle: recordingSubtitle(recording),
-                                count: recording.listenCount
-                            )
-                            .contentShape(Rectangle())
-                            .onTapGesture { onOpenTrack(recording.trackName, recording.artistName) }
-                        }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Listening Activity")
+                            .font(.custom("Avenir Next Demi Bold", size: metrics.sectionCountFont - 4))
+                        Text(activitySubtitle(snapshot.listeningActivity))
+                            .font(.custom("Avenir Next Medium", size: 11))
+                            .foregroundStyle(.secondary)
                     }
+                    ListeningActivityChartView(activity: snapshot.listeningActivity, range: snapshot.range)
                 }
 
-                if !snapshot.topArtists.isEmpty {
-                    Text("\(snapshot.topArtists.count) ListenBrainz Artists")
-                        .font(.custom("Avenir Next Demi Bold", size: metrics.sectionCountFont - 4))
-                    VStack(spacing: 8) {
-                        ForEach(snapshot.topArtists.prefix(8)) { artist in
-                            chartRow(
-                                title: artist.name,
-                                subtitle: "Artist",
-                                count: artist.listenCount
-                            )
-                            .contentShape(Rectangle())
-                            .onTapGesture { onOpenArtist(artist.name) }
+                if !snapshot.topRecordings.isEmpty || !snapshot.topArtists.isEmpty {
+                    LazyVGrid(columns: metrics.rankingColumns, alignment: .leading, spacing: 14) {
+                        if !snapshot.topRecordings.isEmpty {
+                            rankingPanel(title: listenBrainzCountTitle(snapshot.topRecordings.count, kind: .tracks)) {
+                                ForEach(snapshot.topRecordings.prefix(metrics.rankingItemLimit)) { recording in
+                                    chartRow(
+                                        title: recording.trackName,
+                                        subtitle: recordingSubtitle(recording),
+                                        count: recording.listenCount
+                                    )
+                                    .contentShape(Rectangle())
+                                    .onTapGesture { onOpenTrack(recording.trackName, recording.artistName) }
+                                }
+                            }
+                        }
+
+                        if !snapshot.topArtists.isEmpty {
+                            rankingPanel(title: listenBrainzCountTitle(snapshot.topArtists.count, kind: .artists)) {
+                                ForEach(snapshot.topArtists.prefix(metrics.rankingItemLimit)) { artist in
+                                    chartRow(
+                                        title: artist.name,
+                                        subtitle: "Artist",
+                                        count: artist.listenCount
+                                    )
+                                    .contentShape(Rectangle())
+                                    .onTapGesture { onOpenArtist(artist.name) }
+                                }
+                            }
                         }
                     }
                 }
 
                 if !snapshot.topReleases.isEmpty {
-                    Text("\(snapshot.topReleases.count) ListenBrainz Releases")
+                    Text(listenBrainzCountTitle(snapshot.topReleases.count, kind: .releases))
                         .font(.custom("Avenir Next Demi Bold", size: metrics.sectionCountFont - 4))
                     LazyVGrid(columns: metrics.cardColumns, alignment: .leading, spacing: 16) {
                         ForEach(snapshot.topReleases.prefix(8)) { release in
@@ -208,7 +200,7 @@ struct ChartsView: View {
                                 Text(release.artistName)
                                     .font(.custom("Avenir Next Regular", size: metrics.cardMetaFont))
                                     .foregroundStyle(.secondary)
-                                Text("\(release.listenCount.formatted()) listens")
+                                Text("\(AppLocalization.integer(release.listenCount)) listens")
                                     .font(.custom("Avenir Next Regular", size: metrics.cardMetaFont - 1))
                                     .foregroundStyle(.secondary)
                             }
@@ -276,6 +268,96 @@ struct ChartsView: View {
         .appPanelStyle()
     }
 
+    private var archiveTitle: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("ListenBrainz Archive")
+                .font(.custom("Avenir Next Demi Bold", size: 28))
+            Text(scrobbleService.listenBrainzStatsStatus)
+                .font(.custom("Avenir Next Medium", size: 12))
+                .foregroundStyle(.secondary)
+        }
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    private func archiveControls(maxWidth: CGFloat) -> some View {
+        HStack(spacing: 10) {
+            Picker("Range", selection: $listenBrainzRange) {
+                ForEach(ListenBrainzStatsRange.allCases) { range in
+                    Text(range.title).tag(range)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.segmented)
+            .frame(maxWidth: maxWidth)
+            .onChange(of: listenBrainzRange) { range in
+                Task { await refreshListenBrainzArchive(range: range) }
+            }
+
+            Button {
+                Task { await refreshListenBrainzArchive() }
+            } label: {
+                Image(systemName: "arrow.clockwise")
+                    .frame(width: 18, height: 18)
+            }
+            .buttonStyle(.bordered)
+            .help("Refresh ListenBrainz charts")
+        }
+    }
+
+    private func rankingPanel<Content: View>(
+        title: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.custom("Avenir Next Demi Bold", size: 20))
+            VStack(spacing: 8) {
+                content()
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .background(Color.white.opacity(0.025), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private func activitySubtitle(_ activity: [ListenBrainzListeningActivity]) -> String {
+        guard let peak = activity.max(by: { $0.listenCount < $1.listenCount }) else { return "" }
+        let peakLabel = peak.from.map {
+            $0.formatted(
+                .dateTime
+                    .weekday(.wide)
+                    .day()
+                    .month(.wide)
+                    .year()
+                    .locale(preferredAppLocale())
+            )
+        } ?? peak.label
+        return String.localizedStringWithFormat(
+            String(localized: "Peak: %@ listens on %@"),
+            AppLocalization.integer(peak.listenCount),
+            peakLabel
+        )
+    }
+
+    private enum ListenBrainzCountKind {
+        case tracks
+        case artists
+        case releases
+    }
+
+    private func listenBrainzCountTitle(_ count: Int, kind: ListenBrainzCountKind) -> String {
+        let format: String
+        switch kind {
+        case .tracks:
+            format = String(localized: "%d ListenBrainz Tracks")
+        case .artists:
+            format = String(localized: "%d ListenBrainz Artists")
+        case .releases:
+            format = String(localized: "%d ListenBrainz Releases")
+        }
+        return String.localizedStringWithFormat(format, count)
+    }
+
     @ViewBuilder
     private func listenBrainzArtistOrigins(metrics: ChartsMetrics) -> some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -339,7 +421,7 @@ struct ChartsView: View {
         .appPanelStyle()
     }
 
-    private func metricPill(_ label: String, _ value: String) -> some View {
+    private func metricPill(_ label: LocalizedStringKey, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.custom("Avenir Next Medium", size: 10))
@@ -376,71 +458,12 @@ struct ChartsView: View {
                     .lineLimit(1)
             }
             Spacer()
-            Text(count.formatted())
+            Text(AppLocalization.integer(count))
                 .font(.custom("Avenir Next Demi Bold", size: 14))
                 .foregroundStyle(.secondary)
         }
         .padding(8)
         .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-    }
-
-    private func listeningActivityChart(_ activity: [ListenBrainzListeningActivity], range: ListenBrainzStatsRange) -> some View {
-        let visible = Array(activity.suffix(28))
-        let maxCount = max(visible.map(\.listenCount).max() ?? 1, 1)
-
-        return VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .bottom, spacing: 5) {
-                ForEach(visible) { entry in
-                    VStack(spacing: 4) {
-                        RoundedRectangle(cornerRadius: 3, style: .continuous)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.accentColor.opacity(0.9), Color.cyan.opacity(0.72)],
-                                    startPoint: .bottom,
-                                    endPoint: .top
-                                )
-                            )
-                            .frame(height: max(8, CGFloat(entry.listenCount) / CGFloat(maxCount) * 118))
-                            .help("\(entry.label): \(entry.listenCount.formatted()) listens")
-                        Text(shortActivityLabel(entry, range: range))
-                            .font(.custom("Avenir Next Medium", size: 9))
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .frame(width: 30)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .bottom)
-                }
-            }
-            .frame(height: 152)
-            HStack {
-                Text("X-axis: \(activityAxisLabel(for: range))")
-                Spacer()
-                Text("Y-axis: listens")
-            }
-            .font(.custom("Avenir Next Medium", size: 10))
-            .foregroundStyle(.secondary)
-        }
-        .padding(10)
-        .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-    }
-
-    private func shortActivityLabel(_ activity: ListenBrainzListeningActivity, range: ListenBrainzStatsRange) -> String {
-        if let from = activity.from {
-            if range == .year || range == .allTime {
-                return from.formatted(.dateTime.month(.abbreviated))
-            }
-            return from.formatted(.dateTime.day())
-        }
-        return String(activity.label.prefix(3))
-    }
-
-    private func activityAxisLabel(for range: ListenBrainzStatsRange) -> String {
-        switch range {
-        case .week, .month:
-            return "days"
-        case .year, .allTime:
-            return "months"
-        }
     }
 
     private func artistOriginRow(_ entry: ListenBrainzArtistMapEntry, max: Int) -> some View {
@@ -475,7 +498,7 @@ struct ChartsView: View {
                 }
                 .frame(height: 12)
 
-            Text(entry.artistCount.formatted())
+            Text(AppLocalization.integer(entry.artistCount))
                 .font(.custom("Avenir Next Demi Bold", size: 14))
                 .foregroundStyle(.secondary)
                 .frame(width: 54, alignment: .trailing)
@@ -486,7 +509,7 @@ struct ChartsView: View {
 
     private func countryLabel(for code: String?) -> String {
         guard let code = code?.trimmingCharacters(in: .whitespacesAndNewlines), !code.isEmpty else {
-            return "Unknown"
+            return String(localized: "Unknown")
         }
         return code
     }
@@ -520,6 +543,16 @@ struct ChartsView: View {
         var cardColumns: [GridItem] {
             [GridItem(.adaptive(minimum: isNarrow ? 144 : 160), spacing: 16, alignment: .topLeading)]
         }
+        var metricColumns: [GridItem] {
+            [GridItem(.adaptive(minimum: isNarrow ? 112 : 132), spacing: 10, alignment: .leading)]
+        }
+        var rankingColumns: [GridItem] {
+            if width >= 900 {
+                return Array(repeating: GridItem(.flexible(minimum: 280), spacing: 14, alignment: .topLeading), count: 2)
+            }
+            return [GridItem(.flexible(minimum: 260), alignment: .topLeading)]
+        }
+        var rankingItemLimit: Int { width >= 900 ? 8 : 10 }
     }
 
     @ViewBuilder
@@ -577,7 +610,7 @@ struct ChartsView: View {
 
     private var topAlbums: [ChartEntry] {
         groupedEntries { item in
-            let title = item.album ?? "Unknown Album"
+            let title = item.album ?? String(localized: "Unknown Album")
             return (title: title, artist: item.artist, imageURL: item.imageURL)
         }
     }

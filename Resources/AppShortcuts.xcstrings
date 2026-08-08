@@ -1,0 +1,144 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Manual scrobble with ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Manual scrobble with ${applicationName}",
+              "Add a listen with ${applicationName}"
+            ]
+          }
+        },
+        "es" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Scrobble manual con ${applicationName}",
+              "Añade una escucha con ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Open ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Open ${applicationName}",
+              "Open ${destination} in ${applicationName}"
+            ]
+          }
+        },
+        "es" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Abre ${applicationName}",
+              "Abre ${destination} en ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Refresh ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Refresh ${applicationName}",
+              "Refresh ListenBrainz with ${applicationName}"
+            ]
+          }
+        },
+        "es" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Actualiza ${applicationName}",
+              "Actualiza ListenBrainz con ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Refresh ListenScrobbler widgets with ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Refresh ListenScrobbler widgets with ${applicationName}",
+              "Update ListenScrobbler widgets with ${applicationName}"
+            ]
+          }
+        },
+        "es" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Actualiza los widgets de ListenScrobbler con ${applicationName}",
+              "Pon al día los widgets de ListenScrobbler con ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Repeat recent listen with ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Repeat recent listen with ${applicationName}",
+              "Scrobble the last listen with ${applicationName}"
+            ]
+          }
+        },
+        "es" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Repite la escucha reciente con ${applicationName}",
+              "Scrobblea la última escucha con ${applicationName}"
+            ]
+          }
+        }
+      }
+    },
+    "Submit a listen with ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Submit a listen with ${applicationName}",
+              "Add a scrobble with ${applicationName}"
+            ]
+          }
+        },
+        "es" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Envía una escucha con ${applicationName}",
+              "Añade un scrobble con ${applicationName}"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

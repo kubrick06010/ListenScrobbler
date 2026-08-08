@@ -38,10 +38,10 @@ enum ListenBrainzStatsRange: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .week: return "Week"
-        case .month: return "Month"
-        case .year: return "Year"
-        case .allTime: return "All Time"
+        case .week: return String(localized: "Week")
+        case .month: return String(localized: "Month")
+        case .year: return String(localized: "Year")
+        case .allTime: return String(localized: "All Time")
         }
     }
 }
@@ -236,16 +236,19 @@ enum ListenBrainzError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .missingToken:
-            return "ListenBrainz token is missing."
+            return String(localized: "ListenBrainz token is missing.")
         case .invalidToken:
-            return "ListenBrainz token is invalid."
+            return String(localized: "ListenBrainz token is invalid.")
         case .invalidResponse:
-            return "Unexpected response from ListenBrainz."
+            return String(localized: "Unexpected response from ListenBrainz.")
         case let .rateLimited(retryAfter):
             if let retryAfter {
-                return "ListenBrainz rate limited the request. Retry after \(Int(retryAfter.rounded())) seconds."
+                return String.localizedStringWithFormat(
+                    String(localized: "ListenBrainz rate limited the request. Retry after %lld seconds."),
+                    Int64(retryAfter.rounded())
+                )
             }
-            return "ListenBrainz rate limited the request."
+            return String(localized: "ListenBrainz rate limited the request.")
         case let .api(message):
             return message
         case let .transport(message):
