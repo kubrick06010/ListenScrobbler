@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+## 1.1.4 - 2026-08-12
+
+### Added
+
+- Resilient artwork retrieval with provider-aware fallback resolution across
+  artist, track, album, and EP levels.
+- Artwork propagation to the dashboard, listening history, track detail, and
+  submission queue, with consistent image sizing and placeholders.
+
+### Fixed
+
+- Empty artwork URLs now correctly fall back to the next available artwork
+  source instead of suppressing the image.
+- All-time listening charts now show month and year labels so the selected
+  range remains distinguishable across locales.
+
+### Changed
+
+- Stabilized macOS UI test startup and coverage for artwork-bearing listening
+  surfaces.
+- Advanced macOS to version `1.1.4` build `10`.
+
 ## 1.1.3 - 2026-08-11
 
 ### Added
