@@ -114,7 +114,7 @@ public enum AppLocalization {
             return String(
                 localized: resource.defaultValue,
                 table: resource.table,
-                bundle: bundle,
+                bundle: processContext.localizedBundle,
                 locale: processContext.effectiveLocale
             )
         }
@@ -130,6 +130,11 @@ public enum AppLocalization {
             languageCode: identifier,
             regionLocale: regionLocale ?? .current
         )
+        let resolvedBundle = resolveLocalizedBundle(
+            in: bundle,
+            languageIdentifier: identifier,
+            availableLanguages: languages
+        )
 
         // The default value carries the localization key plus all typed format
         // arguments for normal literals/interpolations. Supplying the bundle and
@@ -138,7 +143,7 @@ public enum AppLocalization {
         return String(
             localized: resource.defaultValue,
             table: resource.table,
-            bundle: bundle,
+            bundle: resolvedBundle,
             locale: resolvedLocale
         )
     }

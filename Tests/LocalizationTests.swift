@@ -158,7 +158,13 @@ final class LocalizationTests: XCTestCase {
     }
 
     private var applicationBundle: Bundle {
-        Bundle(identifier: "org.listenscrobbler.app") ?? Bundle.main
+        var appURL = Bundle.main.bundleURL
+        while appURL.pathExtension != "app" && appURL.path != "/" {
+            appURL.deleteLastPathComponent()
+        }
+        return Bundle(url: appURL)
+            ?? Bundle(identifier: "org.listenscrobbler.app")
+            ?? Bundle.main
     }
 
     func testAppLocaleUsesSelectedLanguageAndKeepsRegionalConventions() {
