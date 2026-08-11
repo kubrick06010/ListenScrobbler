@@ -139,7 +139,7 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(
             AppLocalization.string(
                 "Account",
-                bundle: .main,
+                bundle: applicationBundle,
                 language: AppLanguage(rawValue: "es"),
                 regionLocale: Locale(identifier: "es_ES")
             ),
@@ -149,12 +149,16 @@ final class LocalizationTests: XCTestCase {
         let recommendationCount = 3
         let localized = AppLocalization.string(
             "Loaded \(recommendationCount) recommendations",
-            bundle: .main,
+            bundle: applicationBundle,
             language: AppLanguage(rawValue: "es"),
             regionLocale: Locale(identifier: "es_ES")
         )
         XCTAssertTrue(localized.contains("3"))
         XCTAssertNotEqual(localized, "Loaded 3 recommendations")
+    }
+
+    private var applicationBundle: Bundle {
+        Bundle(identifier: "org.listenscrobbler.app") ?? Bundle.main
     }
 
     func testAppLocaleUsesSelectedLanguageAndKeepsRegionalConventions() {
