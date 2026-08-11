@@ -184,6 +184,7 @@ struct ArtistExperienceData: Identifiable {
 struct ArtistSummaryCard: View {
     let data: ArtistExperienceData
     let compact: Bool
+    let artworkSize: CGFloat
     let onShowArtist: () -> Void
 
     var body: some View {
@@ -227,7 +228,7 @@ struct ArtistSummaryCard: View {
     private var compactLayout: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 14) {
-                ArtistArtwork(url: data.imageURL, name: data.name, size: 98)
+                ArtistArtwork(url: data.imageURL, name: data.name, size: artworkSize)
                 identity
             }
             if let summary = data.summary {
@@ -250,7 +251,7 @@ struct ArtistSummaryCard: View {
                 .font(.custom("Avenir Next Demi Bold", size: 10))
                 .tracking(1.4)
                 .foregroundStyle(.secondary)
-            ArtistArtwork(url: data.imageURL, name: data.name, size: 154)
+            ArtistArtwork(url: data.imageURL, name: data.name, size: artworkSize)
             identity
             if let summary = data.summary {
                 Text(summary)

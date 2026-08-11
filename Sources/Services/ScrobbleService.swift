@@ -183,6 +183,7 @@ final class ScrobbleService: ObservableObject {
     @Published private(set) var inspectStatus = AppLocalization.string("Select a listen to inspect")
     @Published private(set) var profile: CompatibilityUserProfile?
     @Published private(set) var latestScrobbles: [CompatibilityRecentScrobble] = []
+    private var listenArtworkCache: [String: String] = [:]
     @Published private(set) var friendsListening: [CompatibilityFriendListening] = []
     @Published private(set) var neighbours: [CompatibilityNeighbour] = []
     @Published private(set) var separationByUser: [String: Int] = [:]
@@ -1306,6 +1307,32 @@ final class ScrobbleService: ObservableObject {
         await refreshScrobblesData()
     }
 
+    func artworkURL(for scrobble: CompatibilityRecentScrobble) async -> String? {
+        if let imageURL = scrobble.imageURL?.nilIfBlank {
+            return imageURL
+        }
+        let key = [scrobble.artist, scrobble.track, scrobble.album ?? ""].joined(separator: "::")
+        if let cached = listenArtworkCache[key] {
+            return cached
+        }
+        if apiConfigured,
+           let trackDetails = try? await api.fetchTrackDetails(artist: scrobble.artist, track: scrobble.track),
+           let imageURL = trackDetails.imageURL?.nilIfBlank {
+            listenArtworkCache[key] = imageURL
+            return imageURL
+        }
+        let details = try? await musicBrainz.lookup(
+            track: scrobble.track,
+            artist: scrobble.artist,
+            release: scrobble.album
+        )
+        let imageURL = details?.imageURL?.nilIfBlank ?? details?.artistImageURL?.nilIfBlank
+        if let imageURL {
+            listenArtworkCache[key] = imageURL
+        }
+        return imageURL
+    }
+
     func refreshFriends() async {
         await refreshFriendsData()
     }
@@ -2364,8 +2391,6 @@ final class ScrobbleService: ObservableObject {
         enrichment: OpenListeningEnrichment?
     ) -> OpenArtistFallback {
         let fallbackImageURL = details.artistImageURL
-            ?? enrichment?.topArtistRecordings.first { $0.imageURL?.nilIfBlank != nil }?.imageURL
-            ?? details.imageURL
         return OpenArtistFallback(
             name: details.artistName,
             imageURL: fallbackImageURL,

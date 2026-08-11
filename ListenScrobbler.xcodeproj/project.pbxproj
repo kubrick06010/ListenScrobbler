@@ -28,6 +28,7 @@
 		25384ECAFDB49226211CD764 /* MobileListeningStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6360B73733FEBD26E721AEC /* MobileListeningStore.swift */; };
 		25A96CDA66E5E38CA0B1A532 /* ListenBrainzSetupGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77667BCE591AEB961FC6DA3A /* ListenBrainzSetupGuide.swift */; };
 		26A4DC846C987A0780A64370 /* MusicBrainzServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEB5A5DCF01391045BC3048 /* MusicBrainzServiceTests.swift */; };
+		6D4F1A9C8B2E4F7D0A6C3B55 /* ArtworkResolutionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5A2C7B1D4F6A9E0B3C5D66 /* ArtworkResolutionTests.swift */; };
 		27D207DA72BEE9BFADC7C893 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E3B5BA114B11FD3450A1E0 /* AppLanguage.swift */; };
 		292B500D27667B3EF0417D62 /* ShareComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 964FEDE06979D76DB8E15BE2 /* ShareComposerView.swift */; };
 		2A8431E613DDF2A21A1B5B48 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DA35C05A986A9D098E697B /* ContentView.swift */; };
@@ -52,6 +53,7 @@
 		63481027A0FC12CFAACEFB1E /* ListeningActivityChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13D9EDD04B4AE21DD2B23893 /* ListeningActivityChartView.swift */; };
 		6504F831E411A0002059624D /* PlayerNormalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBF2BCDB98C86F6A47D4FA9E /* PlayerNormalization.swift */; };
 		66AEF602EA12408ACF304BFE /* MusicBrainzService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7C93F12247BF446030C2D0 /* MusicBrainzService.swift */; };
+		6B3B2F8A7E2A4C1D9F0B6E11 /* ArtworkProviderCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D9E2A1F5B4D6C8A0E3F22 /* ArtworkProviderCatalog.swift */; };
 		68558446636B73AD912D4E07 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D536D0DC3F7D6FA59353313 /* Track.swift */; };
 		68ABAE88F03A55FAE6E577F8 /* playlist-jspf-openapi.json in Resources */ = {isa = PBXBuildFile; fileRef = EA50EE98AACDF0D928E3863A /* playlist-jspf-openapi.json */; };
 		69441CE2457198345CC886CF /* MobileAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02134F596559B3C5113D337A /* MobileAccountView.swift */; };
@@ -231,6 +233,7 @@
 		44A8C083134F6ADBCBF021F3 /* ArtistExperienceDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistExperienceDataTests.swift; sourceTree = "<group>"; };
 		46D7BAC37367AE7C21A940A5 /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppShortcuts.xcstrings; sourceTree = "<group>"; };
 		4A7C93F12247BF446030C2D0 /* MusicBrainzService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicBrainzService.swift; sourceTree = "<group>"; };
+		7C4D9E2A1F5B4D6C8A0E3F22 /* ArtworkProviderCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkProviderCatalog.swift; sourceTree = "<group>"; };
 		4ABF8E57D22F8CD0956DD70B /* QueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueView.swift; sourceTree = "<group>"; };
 		4C0E819758E3F3C11F5B962A /* MobileDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileDiscoverView.swift; sourceTree = "<group>"; };
 		4C1EBC4E2F9030DCB11253F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -258,6 +261,7 @@
 		88FA6CE69EB1E701756182B4 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		897E61C78A9FEBC19092A2A7 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8BEB5A5DCF01391045BC3048 /* MusicBrainzServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicBrainzServiceTests.swift; sourceTree = "<group>"; };
+		8E5A2C7B1D4F6A9E0B3C5D66 /* ArtworkResolutionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkResolutionTests.swift; sourceTree = "<group>"; };
 		8D08F190CB7EE586328850B7 /* AppKitRepresentables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppKitRepresentables.swift; sourceTree = "<group>"; };
 		8DD6AE7A8BBC09A0F9C407F0 /* MobileRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileRouting.swift; sourceTree = "<group>"; };
 		920A2B4A87CD60F8374883D1 /* ListenScrobblerAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenScrobblerAppIntents.swift; sourceTree = "<group>"; };
@@ -372,6 +376,7 @@
 		2016A3B54D68F8CCC65856D9 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				7C4D9E2A1F5B4D6C8A0E3F22 /* ArtworkProviderCatalog.swift */,
 				E8E1000A4B3975C98808345A /* CompatibilityAccountsStore.swift */,
 				A78A11E59B47320FA1BDBD51 /* CompatibilityAPI.swift */,
 				E1D4488A8F8016AAC1758D35 /* LaunchAtLoginController.swift */,
@@ -588,6 +593,7 @@
 		C546C681A209E2A292FE5D27 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				8E5A2C7B1D4F6A9E0B3C5D66 /* ArtworkResolutionTests.swift */,
 				44A8C083134F6ADBCBF021F3 /* ArtistExperienceDataTests.swift */,
 				B03CCF1CF7F208D9E0F001E9 /* CompatibilityAPIErrorTests.swift */,
 				B4B5C0CAD1AE4F972199E9B0 /* CompatibilitySignatureTests.swift */,
@@ -953,6 +959,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D4F1A9C8B2E4F7D0A6C3B55 /* ArtworkResolutionTests.swift in Sources */,
 				92ABC18BD3CB9F28C09FE203 /* ArtistExperienceDataTests.swift in Sources */,
 				2EBAA2E8671A78E51A758AA1 /* CompatibilityAPIErrorTests.swift in Sources */,
 				81FAFB1609543B04E14653D9 /* CompatibilitySignatureTests.swift in Sources */,
@@ -975,6 +982,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6B3B2F8A7E2A4C1D9F0B6E11 /* ArtworkProviderCatalog.swift in Sources */,
 				FB5494E952C54EE8478F9F61 /* AccountView.swift in Sources */,
 				7363CA7AEF500EDE697F4472 /* AppKitRepresentables.swift in Sources */,
 				713C3CD033261BA2E23790E5 /* AppLanguage.swift in Sources */,

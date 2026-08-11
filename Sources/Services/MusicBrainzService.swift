@@ -21,9 +21,12 @@ struct OpenMusicEntityDetails: Equatable {
     let releaseMBID: String?
     let imageURL: String?
     let artistImageURL: String?
+    let artworkResolution: ArtworkResolution?
+    let artistArtworkResolution: ArtworkResolution?
     let artistSummary: String?
     let artistSummaryURL: URL?
     let artistSummaryLanguageCode: String?
+    let editorialInformation: EditorialInformation?
     let artistBeginDate: String?
     let artistEndDate: String?
     let artistEnded: Bool?
@@ -38,6 +41,55 @@ struct OpenMusicEntityDetails: Equatable {
     var hasResolvedMusicBrainzEntity: Bool {
         recordingMBID != nil || artistMBID != nil || releaseMBID != nil
     }
+}
+
+enum EditorialLevel: String, Equatable {
+    case track
+    case album
+    case artist
+}
+
+enum EditorialProvider: String, Equatable {
+    case wikipedia
+    case compatibilityAPI
+}
+
+struct EditorialInformation: Equatable {
+    let summary: String
+    let sourceURL: URL?
+    let level: EditorialLevel
+    let provider: EditorialProvider
+}
+
+/// The image can be used only for the entity level it was resolved for. In
+/// particular, an album cover must never be presented as the artist portrait.
+enum ArtworkLevel: String, Hashable {
+    case track
+    case album
+    case ep
+    case artist
+}
+
+enum ArtworkProvider: String, Hashable {
+    case player
+    case compatibilityAPI
+    case coverArtArchive
+    case wikipediaWikidata
+    case listenBrainz
+    case appleMusic
+    case spotify
+    case deezer
+    case discogs
+    case allMusic
+    case lastFM
+    case theAudioDB
+    case fanartTV
+}
+
+struct ArtworkResolution: Equatable {
+    let url: String
+    let level: ArtworkLevel
+    let provider: ArtworkProvider
 }
 
 extension OpenMusicEntityDetails {
@@ -137,8 +189,13 @@ final class MusicBrainzService {
         let releaseMBID = selectedRelease?.id
         let releaseGroupMBID = selectedRelease?.releaseGroup?.id
         let resolvedReleaseName = release?.nilIfBlank ?? selectedRelease?.title
-        let imageURL = await fetchBestCoverArt(releaseMBID: releaseMBID, releaseGroupMBID: releaseGroupMBID)
+        let artworkResolution = await fetchBestCoverArt(
+            releaseMBID: releaseMBID,
+            releaseGroupMBID: releaseGroupMBID,
+            releaseType: selectedRelease?.releaseGroup?.primaryType
+        )
         let artistSupplement = await fetchArtistSupplement(from: artistIdentity)
+        let releaseGroupWithRelations = await fetchReleaseGroupWithRelations(id: releaseGroupMBID)
         var resolvedTags: [MusicBrainzTag] = []
         if let recordingTags = resolvedRecording?.tags {
             resolvedTags.append(contentsOf: recordingTags)
@@ -161,11 +218,20 @@ final class MusicBrainzService {
             recordingMBID: recordingMBID,
             artistMBID: artistMBID,
             releaseMBID: releaseMBID,
-            imageURL: imageURL,
+            imageURL: artworkResolution?.url,
             artistImageURL: artistSupplement.imageURL,
+            artworkResolution: artworkResolution,
+            artistArtworkResolution: artistSupplement.imageURL.map {
+                ArtworkResolution(url: $0, level: .artist, provider: .wikipediaWikidata)
+            },
             artistSummary: artistSupplement.summary,
             artistSummaryURL: artistSupplement.summaryURL,
             artistSummaryLanguageCode: artistSupplement.summaryLanguageCode,
+            editorialInformation: await fetchEditorialInformation(
+                recording: resolvedRecording,
+                release: selectedRelease,
+                releaseGroup: releaseGroupWithRelations ?? selectedRelease?.releaseGroup
+            ),
             artistBeginDate: artistIdentity?.lifeSpan?.begin?.nilIfBlank,
             artistEndDate: artistIdentity?.lifeSpan?.end?.nilIfBlank,
             artistEnded: artistIdentity?.lifeSpan?.ended,
@@ -178,7 +244,9 @@ final class MusicBrainzService {
                 recordingMBID: recordingMBID,
                 artistMBID: artistMBID,
                 releaseMBID: releaseMBID,
-                artistRelations: artistIdentity?.relations ?? []
+                artistRelations: artistIdentity?.relations ?? [],
+                recordingRelations: resolvedRecording?.relations ?? [],
+                releaseRelations: selectedRelease?.relations ?? []
             ),
             artistConnections: artistConnections(from: artistIdentity?.relations ?? [])
         )
@@ -244,14 +312,47 @@ final class MusicBrainzService {
         return bestCoverArtURL(from: responsePayload)
     }
 
-    private func fetchBestCoverArt(releaseMBID: String?, releaseGroupMBID: String?) async -> String? {
-        if let releaseMBID, let image = try? await fetchCoverArt(releaseMBID: releaseMBID) {
-            return image
+    private func fetchBestCoverArt(
+        releaseMBID: String?,
+        releaseGroupMBID: String?,
+        releaseType: String?
+    ) async -> ArtworkResolution? {
+        if let releaseMBID {
+            if let image = try? await fetchCoverArt(releaseMBID: releaseMBID) {
+                return ArtworkResolution(
+                    url: image,
+                    level: artworkLevel(for: releaseType),
+                    provider: .coverArtArchive
+                )
+            }
+            // The CAA index can fail independently of its stable front-image
+            // endpoint. Keep the release MBID correlation and let the image
+            // loader validate the direct resource.
+            return ArtworkResolution(
+                url: "https://coverartarchive.org/release/\(releaseMBID)/front-500",
+                level: artworkLevel(for: releaseType),
+                provider: .coverArtArchive
+            )
         }
-        if let releaseGroupMBID, let image = try? await fetchReleaseGroupCoverArt(releaseGroupMBID: releaseGroupMBID) {
-            return image
+        if let releaseGroupMBID {
+            if let image = try? await fetchReleaseGroupCoverArt(releaseGroupMBID: releaseGroupMBID) {
+                return ArtworkResolution(
+                    url: image,
+                    level: artworkLevel(for: releaseType),
+                    provider: .coverArtArchive
+                )
+            }
+            return ArtworkResolution(
+                url: "https://coverartarchive.org/release-group/\(releaseGroupMBID)/front-500",
+                level: artworkLevel(for: releaseType),
+                provider: .coverArtArchive
+            )
         }
         return nil
+    }
+
+    private func artworkLevel(for releaseType: String?) -> ArtworkLevel {
+        releaseType?.lowercased() == "ep" ? .ep : .album
     }
 
     private func bestCoverArtURL(from response: CoverArtArchiveResponse) -> String? {
@@ -261,14 +362,23 @@ final class MusicBrainzService {
         for image in images {
             for key in ["1200", "large", "500", "250", "small"] {
                 if let candidate = image.thumbnails?[key]?.nilIfBlank {
-                    return candidate
+                    return secureArtworkURL(candidate)
                 }
             }
             if let candidate = image.image?.nilIfBlank {
-                return candidate
+                return secureArtworkURL(candidate)
             }
         }
         return nil
+    }
+
+    private func secureArtworkURL(_ value: String) -> String {
+        guard var components = URLComponents(string: value),
+              components.scheme?.lowercased() == "http" else {
+            return value
+        }
+        components.scheme = "https"
+        return components.url?.absoluteString ?? value
     }
 
     private func searchRecording(title: String, artist: String, release: String?) async throws -> MusicBrainzRecording? {
@@ -279,7 +389,7 @@ final class MusicBrainzService {
         let response: RecordingSearchResponse = try await search(
             entity: "recording",
             query: query,
-            includes: "artist-credits+releases+tags"
+            includes: "artist-credits+releases+tags+url-rels"
         )
                 if firstCandidate == nil {
                     firstCandidate = response.recordings.first
@@ -353,7 +463,7 @@ final class MusicBrainzService {
         let response: ReleaseSearchResponse = try await search(
             entity: "release",
             query: "release:\(quoted(title)) AND artist:\(quoted(artist))",
-            includes: "artist-credits+tags"
+            includes: "artist-credits+tags+url-rels"
         )
         if let release = response.releases.first {
             return release
@@ -361,7 +471,7 @@ final class MusicBrainzService {
         let fallbackResponse: ReleaseSearchResponse = try await search(
             entity: "release",
             query: "release:\(quoted(title))",
-            includes: "artist-credits+tags",
+            includes: "artist-credits+tags+url-rels",
             limit: 25
         )
         let exactMatches = fallbackResponse.releases.filter {
@@ -466,22 +576,103 @@ final class MusicBrainzService {
         // MusicBrainz does not host artist photos or prose. Wikidata relations
         // let us discover a Commons image and Wikipedia summary while staying in
         // the open-data ecosystem.
-        guard let wikidataID = artist?.wikidataID else {
-            return .empty
-        }
-        guard let entity = try? await fetchWikidataEntity(id: wikidataID) else {
-            return .empty
+        if let wikidataID = artist?.wikidataID,
+           let entity = try? await fetchWikidataEntity(id: wikidataID) {
+            let summaryTarget = entity.wikipediaSummaryTarget(preferredLanguageCodes: preferredWikipediaLanguageCodes())
+            let summary = await fetchWikipediaSummary(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode)
+            let imageURL = summary?.imageURL ?? entity.imageFileName.flatMap(commonsImageURL(fileName:))
+            if imageURL != nil || summary?.extract?.nilIfBlank != nil {
+                return MusicBrainzArtistSupplement(
+                    imageURL: imageURL,
+                    summary: summary?.extract?.nilIfBlank,
+                    summaryURL: wikipediaURL(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode),
+                    summaryLanguageCode: summaryTarget?.languageCode
+                )
+            }
         }
 
-        let summaryTarget = entity.wikipediaSummaryTarget(preferredLanguageCodes: preferredWikipediaLanguageCodes())
-        let summary = await fetchWikipediaSummary(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode)
-        let imageURL = summary?.imageURL ?? entity.imageFileName.flatMap(commonsImageURL(fileName:))
+        // Some artists have a Wikipedia relation but no usable Wikidata
+        // response (or no Wikidata relation at all). Use that explicit
+        // MusicBrainz correlation as a resilient fallback instead of guessing
+        // from the artist name or reusing release artwork.
+        guard let relation = artist?.relations?.first(where: { $0.type?.lowercased() == "wikipedia" }),
+              let target = wikipediaTarget(from: relation.url?.resource) else {
+            return .empty
+        }
+        let summary = await fetchWikipediaSummary(title: target.title, languageCode: target.languageCode)
         return MusicBrainzArtistSupplement(
-            imageURL: imageURL,
+            imageURL: summary?.imageURL,
             summary: summary?.extract?.nilIfBlank,
-            summaryURL: wikipediaURL(title: summaryTarget?.title, languageCode: summaryTarget?.languageCode),
-            summaryLanguageCode: summaryTarget?.languageCode
+            summaryURL: wikipediaURL(title: target.title, languageCode: target.languageCode),
+            summaryLanguageCode: target.languageCode
         )
+    }
+
+    private func fetchReleaseGroupWithRelations(id: String?) async -> MusicBrainzReleaseGroup? {
+        guard let id else { return nil }
+        var components = URLComponents(
+            url: baseURL.appendingPathComponent("release-group").appendingPathComponent(id),
+            resolvingAgainstBaseURL: false
+        )
+        components?.queryItems = [
+            URLQueryItem(name: "fmt", value: "json"),
+            URLQueryItem(name: "inc", value: "url-rels")
+        ]
+        guard let url = components?.url else { return nil }
+        return try? await fetchJSON(url: url)
+    }
+
+    private func fetchEditorialInformation(
+        recording: MusicBrainzRecording?,
+        release: MusicBrainzRelease?,
+        releaseGroup: MusicBrainzReleaseGroup?
+    ) async -> EditorialInformation? {
+        // A Wikipedia relation from MusicBrainz is the correlation signal. We
+        // do not guess an article from a title, which avoids showing prose for
+        // a homonymous song or album.
+        if let relation = recording?.relations?.first(where: { $0.type?.lowercased() == "wikipedia" }),
+           let target = wikipediaTarget(from: relation.url?.resource),
+           let summary = await fetchWikipediaSummary(title: target.title, languageCode: target.languageCode)?.extract?.nilIfBlank {
+            return EditorialInformation(
+                summary: summary,
+                sourceURL: URL(string: relation.url!.resource),
+                level: .track,
+                provider: .wikipedia
+            )
+        }
+        if let relation = release?.relations?.first(where: { $0.type?.lowercased() == "wikipedia" }),
+           let target = wikipediaTarget(from: relation.url?.resource),
+           let summary = await fetchWikipediaSummary(title: target.title, languageCode: target.languageCode)?.extract?.nilIfBlank {
+            return EditorialInformation(
+                summary: summary,
+                sourceURL: URL(string: relation.url!.resource),
+                level: .album,
+                provider: .wikipedia
+            )
+        }
+        if let releaseGroup,
+           let relation = releaseGroup.relations?.first(where: { $0.type?.lowercased() == "wikipedia" }),
+           let target = wikipediaTarget(from: relation.url?.resource),
+           let summary = await fetchWikipediaSummary(title: target.title, languageCode: target.languageCode)?.extract?.nilIfBlank {
+            return EditorialInformation(
+                summary: summary,
+                sourceURL: URL(string: relation.url!.resource),
+                level: .album,
+                provider: .wikipedia
+            )
+        }
+        return nil
+    }
+
+    private func wikipediaTarget(from resource: String?) -> (languageCode: String, title: String)? {
+        guard let resource, let url = URL(string: resource),
+              url.host?.hasSuffix("wikipedia.org") == true else { return nil }
+        let languageCode = url.host?.split(separator: ".").first.map(String.init)
+        let title = url.pathComponents.drop { $0 != "wiki" }.dropFirst().joined(separator: " ")
+            .removingPercentEncoding?.replacingOccurrences(of: "_", with: " ")
+        guard let languageCode, !languageCode.isEmpty,
+              let title, !title.isEmpty else { return nil }
+        return (languageCode, title)
     }
 
     private func fetchWikidataEntity(id: String) async throws -> WikidataEntitySummary {
@@ -677,7 +868,9 @@ final class MusicBrainzService {
         recordingMBID: String?,
         artistMBID: String?,
         releaseMBID: String?,
-        artistRelations: [MusicBrainzRelation] = []
+        artistRelations: [MusicBrainzRelation] = [],
+        recordingRelations: [MusicBrainzRelation] = [],
+        releaseRelations: [MusicBrainzRelation] = []
     ) -> [OpenMusicEntityDetails.Link] {
         var output: [OpenMusicEntityDetails.Link] = []
         if let recordingMBID {
@@ -706,15 +899,17 @@ final class MusicBrainzService {
                 url: URL(string: "https://musicbrainz.org/release/\(releaseMBID)")!
             ))
         }
-        for relation in artistRelations {
+        for (prefix, relations) in [("artist", artistRelations), ("track", recordingRelations), ("release", releaseRelations)] {
+            for relation in relations {
             guard let resource = relation.url?.resource,
                   let url = URL(string: resource),
                   let title = relation.displayTitle else { continue }
             output.append(.init(
-                id: "artist-relation-\(relation.type ?? "link")-\(resource)",
+                id: "\(prefix)-relation-\(relation.type ?? "link")-\(resource)",
                 title: title,
                 url: url
             ))
+            }
         }
         return output
     }
@@ -776,6 +971,7 @@ private struct MusicBrainzRecording: Decodable {
     let artistCredit: [MusicBrainzArtistCredit]?
     let releases: [MusicBrainzRelease]?
     let tags: [MusicBrainzTag]?
+    let relations: [MusicBrainzRelation]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -784,6 +980,7 @@ private struct MusicBrainzRecording: Decodable {
         case artistCredit = "artist-credit"
         case releases
         case tags
+        case relations
     }
 }
 
@@ -834,6 +1031,7 @@ private struct MusicBrainzRelease: Decodable {
     let tags: [MusicBrainzTag]?
     let releaseGroup: MusicBrainzReleaseGroup?
     let coverArtArchive: MusicBrainzCoverArtArchive?
+    let relations: [MusicBrainzRelation]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -843,11 +1041,20 @@ private struct MusicBrainzRelease: Decodable {
         case tags
         case releaseGroup = "release-group"
         case coverArtArchive = "cover-art-archive"
+        case relations
     }
 }
 
 private struct MusicBrainzReleaseGroup: Decodable {
     let id: String
+    let primaryType: String?
+    let relations: [MusicBrainzRelation]?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case primaryType = "primary-type"
+        case relations
+    }
 }
 
 private struct MusicBrainzCoverArtArchive: Decodable {
