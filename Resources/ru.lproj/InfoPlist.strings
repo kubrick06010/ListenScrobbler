@@ -1,0 +1,4 @@
+CFBundleDisplayName = "ListenScrobbler";
+CFBundleName = "ListenScrobbler";
+NSAppleMusicUsageDescription = "ListenScrobbler проверяет счётчики воспроизведений в медиатеке, чтобы отправлять новые прослушивания в ListenBrainz.";
+NSAppleEventsUsageDescription = "ListenScrobbler считывает текущий трек и позицию воспроизведения из поддерживаемых музыкальных проигрывателей, чтобы записывать прослушивания.";

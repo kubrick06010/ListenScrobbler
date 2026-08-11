@@ -250,45 +250,45 @@ enum CompatibilityAPIError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingSession:
-            return String(localized: "Compatibility session is missing. Please sign in.")
+            return AppLocalization.string("Compatibility session is missing. Please sign in.")
         case .invalidResponse:
-            return String(localized: "Unexpected response from the compatibility service.")
+            return AppLocalization.string("Unexpected response from the compatibility service.")
         case .invalidCredentials:
-            return String(localized: "Invalid compatibility credentials.")
+            return AppLocalization.string("Invalid compatibility credentials.")
         case .invalidSession:
-            return String(localized: "Compatibility session expired or invalid.")
+            return AppLocalization.string("Compatibility session expired or invalid.")
         case let .rateLimited(retryAfter):
             if let retryAfter {
-                return String.localizedStringWithFormat(
-                    String(localized: "Rate limited by the compatibility service. Retry in about %lld seconds."),
+                return AppLocalization.localizedStringWithFormat(
+                    AppLocalization.string("Rate limited by the compatibility service. Retry in about %lld seconds."),
                     Int64(retryAfter)
                 )
             }
-            return String(localized: "Rate limited by the compatibility service.")
+            return AppLocalization.string("Rate limited by the compatibility service.")
         case .networkUnavailable:
-            return String(localized: "Network is unavailable.")
+            return AppLocalization.string("Network is unavailable.")
         case .transport:
-            return String(localized: "Could not reach the compatibility service.")
+            return AppLocalization.string("Could not reach the compatibility service.")
         case let .api(code, message):
-            return String.localizedStringWithFormat(String(localized: "Compatibility API error %lld: %@"), Int64(code), message)
+            return AppLocalization.localizedStringWithFormat(AppLocalization.string("Compatibility API error %lld: %@"), Int64(code), message)
         }
     }
 
     var recoverySuggestion: String {
         switch self {
         case .missingSession, .invalidSession:
-            return String(localized: "Sign in again to refresh your compatibility session.")
+            return AppLocalization.string("Sign in again to refresh your compatibility session.")
         case .invalidCredentials:
-            return String(localized: "Verify your compatibility credentials and try again.")
+            return AppLocalization.string("Verify your compatibility credentials and try again.")
         case let .rateLimited(retryAfter):
             if let retryAfter {
-                return String.localizedStringWithFormat(String(localized: "Wait %lld seconds, then retry."), Int64(retryAfter))
+                return AppLocalization.localizedStringWithFormat(AppLocalization.string("Wait %lld seconds, then retry."), Int64(retryAfter))
             }
-            return String(localized: "Wait a few minutes before retrying.")
+            return AppLocalization.string("Wait a few minutes before retrying.")
         case .networkUnavailable, .transport:
-            return String(localized: "Check network connectivity. Queued listens will retry automatically.")
+            return AppLocalization.string("Check network connectivity. Queued listens will retry automatically.")
         case .invalidResponse, .api:
-            return String(localized: "Retry later. If this persists, inspect compatibility API status and credentials.")
+            return AppLocalization.string("Retry later. If this persists, inspect compatibility API status and credentials.")
         }
     }
 }
@@ -456,7 +456,7 @@ final class CompatibilityAPIClient: CompatibilityAPI {
                 playcount: nil,
                 userPlaycount: nil,
                 url: nil,
-                summary: String(localized: "No detailed metadata available for this track."),
+                summary: AppLocalization.string("No detailed metadata available for this track."),
                 tags: []
             )
         } catch {
@@ -511,7 +511,7 @@ final class CompatibilityAPIClient: CompatibilityAPI {
                 playcount: nil,
                 userPlaycount: nil,
                 url: nil,
-                summary: String(localized: "No detailed metadata available for this artist."),
+                summary: AppLocalization.string("No detailed metadata available for this artist."),
                 tags: [],
                 similarArtists: []
             )
@@ -1941,13 +1941,13 @@ final class CompatibilityAPIStub: CompatibilityAPI {
         CompatibilityTrackDetails(
             name: track,
             artist: artist,
-            album: String(localized: "Unknown Album"),
+            album: AppLocalization.string("Unknown Album"),
             imageURL: nil,
             listeners: 0,
             playcount: 0,
             userPlaycount: 0,
             url: nil,
-            summary: String(localized: "Track details are unavailable in stub mode."),
+            summary: AppLocalization.string("Track details are unavailable in stub mode."),
             tags: []
         )
     }
@@ -1960,7 +1960,7 @@ final class CompatibilityAPIStub: CompatibilityAPI {
             playcount: 0,
             userPlaycount: 0,
             url: nil,
-            summary: String(localized: "Artist details are unavailable in stub mode."),
+            summary: AppLocalization.string("Artist details are unavailable in stub mode."),
             tags: [],
             similarArtists: []
         )
@@ -2113,13 +2113,13 @@ final class CompatibilityAPIStub: CompatibilityAPI {
     private func periodLabel(_ period: CompatibilityTopArtistPeriod) -> String {
         switch period {
         case .week:
-            return String(localized: "Weekly")
+            return AppLocalization.string("Weekly")
         case .month:
-            return String(localized: "Monthly")
+            return AppLocalization.string("Monthly")
         case .year:
-            return String(localized: "Yearly")
+            return AppLocalization.string("Yearly")
         case .overall:
-            return String(localized: "Overall")
+            return AppLocalization.string("Overall")
         }
     }
 

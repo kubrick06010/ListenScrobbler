@@ -124,7 +124,7 @@ struct MobileManualScrobbleView: View {
 
         do {
             try await listeningStore.submitScrobble(candidate)
-            result = SubmissionResult(message: String(localized: "Submitted to ListenBrainz."), symbol: "checkmark.circle", tint: .green)
+            result = SubmissionResult(message: AppLocalization.string("Submitted to ListenBrainz."), symbol: "checkmark.circle", tint: .green)
             title = ""
             artist = ""
             album = ""

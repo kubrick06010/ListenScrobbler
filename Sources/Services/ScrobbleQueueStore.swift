@@ -9,7 +9,7 @@ enum ScrobbleBackend: String, Codable, CaseIterable, Hashable, Identifiable {
     var displayName: String {
         switch self {
         case .compatibility:
-            return String(localized: "Compatibility Adapter")
+            return AppLocalization.string("Compatibility Adapter")
         case .listenBrainz:
             return "ListenBrainz"
         }

@@ -1,0 +1,4 @@
+CFBundleDisplayName = "ListenScrobbler";
+CFBundleName = "ListenScrobbler";
+NSAppleMusicUsageDescription = "ListenScrobbler 会扫描音乐资料库中的播放次数，以便向 ListenBrainz 提交新的收听记录。";
+NSAppleEventsUsageDescription = "ListenScrobbler 会从受支持的音乐播放器读取当前曲目和播放位置，以记录你的收听。";

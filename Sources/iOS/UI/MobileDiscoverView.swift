@@ -159,7 +159,7 @@ struct MobileDiscoverView: View {
         MobileMusicDetailSeed(
             kind: .track,
             trackName: recommendation.title,
-            artistName: recommendation.artistName ?? String(localized: "Unknown artist"),
+            artistName: recommendation.artistName ?? AppLocalization.string("Unknown artist"),
             releaseName: recommendation.releaseName,
             recordingMBID: recommendation.recordingMBID
         )
@@ -334,7 +334,7 @@ private struct MobileDiscoverRadioView: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(artist.name)
                                 .font(.headline)
-                            Text(String.localizedStringWithFormat(String(localized: "%d listens in radio graph"), artist.totalListenCount))
+                            Text(AppLocalization.localizedStringWithFormat(AppLocalization.string("%d listens in radio graph"), artist.totalListenCount))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -470,14 +470,14 @@ private struct MobileSocialSummaryView: View {
 }
 
 private struct MobileSocialMetric: View {
-    let title: String
+    let title: LocalizedStringKey
     let value: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(AppLocalization.integer(value))
                 .font(.headline.monospacedDigit())
-            Text(LocalizedStringKey(title))
+            Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

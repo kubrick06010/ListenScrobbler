@@ -50,7 +50,7 @@ final class MultiPlayerMonitor: PlayerMonitor {
 final class DistributedPlayerMonitor: PlayerMonitor {
     var onEvent: ((PlayerEvent) -> Void)?
     var statusDescription: String {
-        String(localized: "\(sourceApp) notifications + AppleScript fallback")
+        AppLocalization.string("\(sourceApp) notifications + AppleScript fallback")
     }
 
     private let notificationName: String
@@ -198,7 +198,7 @@ final class AppleScriptMetadataProvider: PlayerMetadataProviding {
 
 final class PlayerMonitorStub: PlayerMonitor {
     var onEvent: ((PlayerEvent) -> Void)?
-    let statusDescription = String(localized: "Stub monitor")
+    let statusDescription = AppLocalization.string("Stub monitor")
 
     func start() {
         onEvent?(.trackStarted(Track.preview))

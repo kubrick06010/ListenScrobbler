@@ -28,6 +28,7 @@
 		25384ECAFDB49226211CD764 /* MobileListeningStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6360B73733FEBD26E721AEC /* MobileListeningStore.swift */; };
 		25A96CDA66E5E38CA0B1A532 /* ListenBrainzSetupGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77667BCE591AEB961FC6DA3A /* ListenBrainzSetupGuide.swift */; };
 		26A4DC846C987A0780A64370 /* MusicBrainzServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BEB5A5DCF01391045BC3048 /* MusicBrainzServiceTests.swift */; };
+		27D207DA72BEE9BFADC7C893 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E3B5BA114B11FD3450A1E0 /* AppLanguage.swift */; };
 		292B500D27667B3EF0417D62 /* ShareComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 964FEDE06979D76DB8E15BE2 /* ShareComposerView.swift */; };
 		2A8431E613DDF2A21A1B5B48 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DA35C05A986A9D098E697B /* ContentView.swift */; };
 		2EBAA2E8671A78E51A758AA1 /* CompatibilityAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03CCF1CF7F208D9E0F001E9 /* CompatibilityAPIErrorTests.swift */; };
@@ -58,6 +59,7 @@
 		6A5A067784A4EFC2D70BFCEE /* ListenBrainzSetupGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77667BCE591AEB961FC6DA3A /* ListenBrainzSetupGuide.swift */; };
 		6EE216577DB0FBD2EB31A869 /* AppVisualComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12C27420A506973155185D55 /* AppVisualComponents.swift */; };
 		70B70A74E34A798A544AB926 /* MobileLibraryScanEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4391C3271D3C994F0020FD6E /* MobileLibraryScanEngine.swift */; };
+		713C3CD033261BA2E23790E5 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E3B5BA114B11FD3450A1E0 /* AppLanguage.swift */; };
 		7363CA7AEF500EDE697F4472 /* AppKitRepresentables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D08F190CB7EE586328850B7 /* AppKitRepresentables.swift */; };
 		74C1CDA572960905EDB35726 /* ReportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4449C115AD1E3CA199E465BF /* ReportsView.swift */; };
 		75F6465566E8FA3CDD13B19C /* ListenScrobbleriOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96CE2D0E64E49DABC2981835 /* ListenScrobbleriOSApp.swift */; };
@@ -205,7 +207,9 @@
 		1345D947A497167E8ECF7F3F /* AppLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLocalization.swift; sourceTree = "<group>"; };
 		13D9EDD04B4AE21DD2B23893 /* ListeningActivityChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningActivityChartView.swift; sourceTree = "<group>"; };
 		175B757CA375FCD02D5F1C73 /* PlayerNormalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerNormalizationTests.swift; sourceTree = "<group>"; };
+		1C35EA809146C9C19234FABE /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1C707192BF66A2D13E80C3C9 /* ListenScrobblerMacUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenScrobblerMacUITests.swift; sourceTree = "<group>"; };
+		1FD9D03C50D0B3655ABA6268 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		204448155C47E7282ED0AF4F /* ArtistExperienceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistExperienceView.swift; sourceTree = "<group>"; };
 		220C364DF93E2F3F8C6F298F /* ListenBrainzSetupGuideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenBrainzSetupGuideTests.swift; sourceTree = "<group>"; };
 		248EA21F1BFE2BD33EE8D6AB /* MobileRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileRootView.swift; sourceTree = "<group>"; };
@@ -242,14 +246,17 @@
 		6FB7BA6913C2FAB76C7F74FF /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		70EA16B4738DE1243A803733 /* VaultHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultHelpers.swift; sourceTree = "<group>"; };
 		718482FF1E3CEB57B8825CA6 /* MobilePendingScrobbleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilePendingScrobbleStore.swift; sourceTree = "<group>"; };
+		72505D19817CAE388AC4795A /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		739D0E7BCDE4D501A8E4DD51 /* AppPanelStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPanelStyle.swift; sourceTree = "<group>"; };
 		77667BCE591AEB961FC6DA3A /* ListenBrainzSetupGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenBrainzSetupGuide.swift; sourceTree = "<group>"; };
+		777CD1DDAE7AAA52D9EE9155 /* pt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt; path = pt.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		785B1C828B693E77D4AB23A3 /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
 		7B27FA11325EE296D50DC039 /* ObsessionComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsessionComposerView.swift; sourceTree = "<group>"; };
 		7E6F53F46EA842C6F99A6F15 /* ChartEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartEntry.swift; sourceTree = "<group>"; };
 		7FC2790A5BA1A6531F009952 /* ScrobbleDetailPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleDetailPanel.swift; sourceTree = "<group>"; };
 		88DAFE329058577F5C5FFCAE /* InspectorResizeHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorResizeHandle.swift; sourceTree = "<group>"; };
 		88FA6CE69EB1E701756182B4 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		897E61C78A9FEBC19092A2A7 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8BEB5A5DCF01391045BC3048 /* MusicBrainzServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicBrainzServiceTests.swift; sourceTree = "<group>"; };
 		8D08F190CB7EE586328850B7 /* AppKitRepresentables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppKitRepresentables.swift; sourceTree = "<group>"; };
 		8DD6AE7A8BBC09A0F9C407F0 /* MobileRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileRouting.swift; sourceTree = "<group>"; };
@@ -257,8 +264,10 @@
 		920AF8C83ADAC19D67CC3BED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		964FEDE06979D76DB8E15BE2 /* ShareComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareComposerView.swift; sourceTree = "<group>"; };
 		96CE2D0E64E49DABC2981835 /* ListenScrobbleriOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenScrobbleriOSApp.swift; sourceTree = "<group>"; };
+		96E3B5BA114B11FD3450A1E0 /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLanguage.swift; sourceTree = "<group>"; };
 		9A25F9A579777AE22781727A /* ListenScrobblerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ListenScrobblerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DFB8006F0633B63C5AC1376 /* MacOpenMusicOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOpenMusicOnboardingView.swift; sourceTree = "<group>"; };
+		9F0CD467799157CE070869C1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		A70FB52EB407281BEFE65457 /* ListenScrobblerWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenScrobblerWidgets.swift; sourceTree = "<group>"; };
 		A78A11E59B47320FA1BDBD51 /* CompatibilityAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatibilityAPI.swift; sourceTree = "<group>"; };
 		A9D4AE885C650165754E9EFE /* MobileLibraryScrobbleDiffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLibraryScrobbleDiffer.swift; sourceTree = "<group>"; };
@@ -269,6 +278,7 @@
 		B6360B73733FEBD26E721AEC /* MobileListeningStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileListeningStore.swift; sourceTree = "<group>"; };
 		B93D19E52C42E685D4707D53 /* MoodPaletteEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodPaletteEngine.swift; sourceTree = "<group>"; };
 		BA3928D6CE9E23D4B9E0276B /* MobileMusicDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileMusicDetailView.swift; sourceTree = "<group>"; };
+		BA6CA4FD9463254CB0B430A9 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		BBB6C53DF6359BEFE0EAEAF0 /* ListenBrainzSocialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenBrainzSocialView.swift; sourceTree = "<group>"; };
 		BCBB63A8F4557114FD683119 /* ListenScrobblerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenScrobblerApp.swift; sourceTree = "<group>"; };
 		BD688D8453F92987E5D99192 /* LocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationTests.swift; sourceTree = "<group>"; };
@@ -279,12 +289,14 @@
 		C84E7DC5282C57ACC74B50D9 /* ScrobbleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleService.swift; sourceTree = "<group>"; };
 		CBA7E62C0DBB6CF9FC742CEF /* MobileLibraryScrobbleDifferTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLibraryScrobbleDifferTests.swift; sourceTree = "<group>"; };
 		CF338D8BE2085E586E2FC0DA /* MobileListensView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileListensView.swift; sourceTree = "<group>"; };
+		D054629E2E9A2531061971C1 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D086F958D19E999F74D89A5D /* VaultStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultStoreTests.swift; sourceTree = "<group>"; };
 		D162A09A810C0C1E18F1CCBD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D19ADE0D530B92C88625CD3C /* similar-users-openapi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "similar-users-openapi.json"; sourceTree = "<group>"; };
 		D5794F3EF015EA79BBA742D0 /* ListenScrobbleriOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenScrobbleriOSUITests.swift; sourceTree = "<group>"; };
 		D969FD3EC8D7CDDE69783B7F /* PlayerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerMonitor.swift; sourceTree = "<group>"; };
 		E1D4488A8F8016AAC1758D35 /* LaunchAtLoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginController.swift; sourceTree = "<group>"; };
+		E2933C1E0C46D60518701A61 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E7B99D9102A477CEC8A32AD8 /* ScrobbleQueueStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleQueueStoreTests.swift; sourceTree = "<group>"; };
 		E8E1000A4B3975C98808345A /* CompatibilityAccountsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatibilityAccountsStore.swift; sourceTree = "<group>"; };
 		EA50EE98AACDF0D928E3863A /* playlist-jspf-openapi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "playlist-jspf-openapi.json"; sourceTree = "<group>"; };
@@ -295,6 +307,7 @@
 		F4F5646C8B174FB3CFE5488C /* similarity-openapi.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "similarity-openapi.json"; sourceTree = "<group>"; };
 		F67CE4248E5ABABD8A03333C /* VaultComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultComponents.swift; sourceTree = "<group>"; };
 		FC17F6BF546A73A54A9C220B /* SimilarArtistGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimilarArtistGraphView.swift; sourceTree = "<group>"; };
+		FDA1554007CE2A99A2646146 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		FFB107E8D0273EB4956733F0 /* MobileWidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileWidgetSnapshot.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -542,6 +555,7 @@
 		B3681B54616775733A98E512 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				96E3B5BA114B11FD3450A1E0 /* AppLanguage.swift */,
 				1345D947A497167E8ECF7F3F /* AppLocalization.swift */,
 				77667BCE591AEB961FC6DA3A /* ListenBrainzSetupGuide.swift */,
 				31E9F680F1EDE8F76D6939E8 /* Mobile */,
@@ -831,8 +845,18 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
+				de,
 				en,
 				es,
+				fr,
+				it,
+				ja,
+				pl,
+				pt,
+				ru,
+				sv,
+				tr,
+				"zh-Hans",
 			);
 			mainGroup = 61350D6D004522F488C28C4A;
 			minimizedProjectReferenceProxies = 1;
@@ -902,6 +926,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27D207DA72BEE9BFADC7C893 /* AppLanguage.swift in Sources */,
 				E9BA33547D42F334B15FCD2D /* AppLocalization.swift in Sources */,
 				E3830D51024297E8BC50A85F /* ListenBrainzService.swift in Sources */,
 				6A5A067784A4EFC2D70BFCEE /* ListenBrainzSetupGuide.swift in Sources */,
@@ -952,6 +977,7 @@
 			files = (
 				FB5494E952C54EE8478F9F61 /* AccountView.swift in Sources */,
 				7363CA7AEF500EDE697F4472 /* AppKitRepresentables.swift in Sources */,
+				713C3CD033261BA2E23790E5 /* AppLanguage.swift in Sources */,
 				896BF9155E36D03E47454250 /* AppLocalization.swift in Sources */,
 				B82322A6CA5D5CA43D8D1223 /* AppPanelStyle.swift in Sources */,
 				6EE216577DB0FBD2EB31A869 /* AppVisualComponents.swift in Sources */,
@@ -1082,8 +1108,18 @@
 		90D842B25E8C49CC6C2FCCB6 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
+				1FD9D03C50D0B3655ABA6268 /* de */,
 				D162A09A810C0C1E18F1CCBD /* en */,
 				2F4732E8E20260917F2C935D /* es */,
+				D054629E2E9A2531061971C1 /* fr */,
+				1C35EA809146C9C19234FABE /* it */,
+				72505D19817CAE388AC4795A /* ja */,
+				897E61C78A9FEBC19092A2A7 /* pl */,
+				777CD1DDAE7AAA52D9EE9155 /* pt */,
+				E2933C1E0C46D60518701A61 /* ru */,
+				BA6CA4FD9463254CB0B430A9 /* sv */,
+				FDA1554007CE2A99A2646146 /* tr */,
+				9F0CD467799157CE070869C1 /* zh-Hans */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -1185,7 +1221,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1199,7 +1235,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 1.1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = org.listenscrobbler.app;
@@ -1333,7 +1369,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1353,7 +1389,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 1.1.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

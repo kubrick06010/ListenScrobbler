@@ -4,6 +4,18 @@ ListenScrobbler submits listens to ListenBrainz and enriches them with
 MusicBrainz-aware context. It uses a ListenBrainz user token; it never needs your
 MusicBrainz password.
 
+## Choose the App Language
+
+ListenScrobbler can follow the device language or use a language selected
+inside the app. On macOS, open Settings > General > Language. On iOS, open the
+Account tab and use the Language section.
+
+The language list is generated from the translations included in the installed
+version. The selected language is applied throughout ListenScrobbler the next
+time the app opens. On macOS, the app offers to restart immediately. Siri,
+permission prompts, and other operating-system-owned text continue to follow
+the device language.
+
 ## Connect ListenBrainz
 
 1. Create or sign in to a MusicBrainz account.

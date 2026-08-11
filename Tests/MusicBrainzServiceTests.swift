@@ -85,7 +85,7 @@ final class MusicBrainzServiceTests: XCTestCase {
         XCTAssertEqual(details.artistArea, "Sheffield")
         XCTAssertEqual(details.artistSummary(forAppLanguageCode: "en"), "English composer, musician and producer.")
         XCTAssertNil(details.artistSummary(forAppLanguageCode: "es"))
-        XCTAssertTrue(details.links.contains { $0.title == String(localized: "Official website") })
+        XCTAssertTrue(details.links.contains { $0.title == AppLocalization.string("Official website") })
         XCTAssertTrue(details.links.contains { $0.title == "Discogs" })
         XCTAssertEqual(details.artistConnections.first?.name, "Cabaret Voltaire")
         XCTAssertEqual(details.artistConnections.first?.relationship, "Member of")

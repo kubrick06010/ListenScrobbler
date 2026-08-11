@@ -1,5 +1,13 @@
 import Foundation
 
+public enum MobileWidgetConnectionState: String, Codable, Equatable {
+    case requiresAppOpen
+    case disconnected
+    case connected
+    case loading
+    case failed
+}
+
 public struct MobileWidgetListen: Codable, Equatable {
     public let trackName: String
     public let artistName: String
@@ -40,6 +48,7 @@ public struct MobileWidgetRecommendation: Codable, Equatable {
 
 public struct MobileWidgetSnapshot: Codable, Equatable {
     public let connectionStatus: String
+    public let connectionState: MobileWidgetConnectionState?
     public let username: String?
     public let recentListen: MobileWidgetListen?
     public let currentPin: MobileWidgetPin?
@@ -49,6 +58,7 @@ public struct MobileWidgetSnapshot: Codable, Equatable {
 
     public init(
         connectionStatus: String,
+        connectionState: MobileWidgetConnectionState? = nil,
         username: String?,
         recentListen: MobileWidgetListen?,
         currentPin: MobileWidgetPin?,
@@ -57,6 +67,7 @@ public struct MobileWidgetSnapshot: Codable, Equatable {
         updatedAt: Date
     ) {
         self.connectionStatus = connectionStatus
+        self.connectionState = connectionState
         self.username = username
         self.recentListen = recentListen
         self.currentPin = currentPin
@@ -67,7 +78,8 @@ public struct MobileWidgetSnapshot: Codable, Equatable {
 
     public static var empty: MobileWidgetSnapshot {
         MobileWidgetSnapshot(
-            connectionStatus: String(localized: "Open ListenScrobbler to connect ListenBrainz"),
+            connectionStatus: AppLocalization.string("Open ListenScrobbler to connect ListenBrainz"),
+            connectionState: .requiresAppOpen,
             username: nil,
             recentListen: nil,
             currentPin: nil,

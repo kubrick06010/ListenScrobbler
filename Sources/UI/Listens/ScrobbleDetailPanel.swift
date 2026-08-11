@@ -106,11 +106,11 @@ struct ScrobbleDetailPanel: View {
     private var panelTitle: String {
         switch kind {
         case .track:
-            return String(localized: "Track Detail")
+            return AppLocalization.string("Track Detail")
         case .artist:
-            return String(localized: "Artist Detail")
+            return AppLocalization.string("Artist Detail")
         case .album:
-            return String(localized: "Album Detail")
+            return AppLocalization.string("Album Detail")
         }
     }
 
@@ -281,11 +281,11 @@ struct ScrobbleDetailPanel: View {
     private var headerSecondaryText: String {
         switch kind {
         case .track:
-            return String(localized: "by \(item.artist)")
+            return AppLocalization.string("by \(item.artist)")
         case .artist:
-            return String(localized: "Artist overview")
+            return AppLocalization.string("Artist overview")
         case .album:
-            return String(localized: "by \(item.artist)")
+            return AppLocalization.string("by \(item.artist)")
         }
     }
 
@@ -293,7 +293,7 @@ struct ScrobbleDetailPanel: View {
         switch kind {
         case .track:
             if let album = scrobbleService.inspectedTrackDetails?.album ?? item.album {
-                return String(localized: "from \(album)")
+                return AppLocalization.string("from \(album)")
             }
             return nil
         case .artist:
@@ -308,13 +308,13 @@ struct ScrobbleDetailPanel: View {
         if metrics.isCompact {
             VStack(alignment: .leading, spacing: metrics.stackSpacing) {
                 artistArt(artist.imageURL, size: metrics.artworkSize)
-                HTMLSummaryText(rawHTML: artist.summary ?? String(localized: "No artist biography available."), fontSize: 14)
+                HTMLSummaryText(rawHTML: artist.summary ?? AppLocalization.string("No artist biography available."), fontSize: 14)
                     .fixedSize(horizontal: false, vertical: true)
             }
         } else {
             HStack(alignment: .top, spacing: metrics.stackSpacing) {
                 artistArt(artist.imageURL)
-                HTMLSummaryText(rawHTML: artist.summary ?? String(localized: "No artist biography available."), fontSize: 14)
+                HTMLSummaryText(rawHTML: artist.summary ?? AppLocalization.string("No artist biography available."), fontSize: 14)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }

@@ -1,0 +1,4 @@
+CFBundleDisplayName = "ListenScrobbler";
+CFBundleName = "ListenScrobbler";
+NSAppleMusicUsageDescription = "ListenScrobbler, yeni dinlemeleri ListenBrainz’e göndermek için müzik arşivinizdeki çalma sayılarını tarar.";
+NSAppleEventsUsageDescription = "ListenScrobbler, dinlemelerinizi kaydetmek için desteklenen müzik çalarlardan geçerli parçayı ve çalma konumunu okur.";

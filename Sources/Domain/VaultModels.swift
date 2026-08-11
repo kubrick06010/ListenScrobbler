@@ -10,9 +10,9 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
 
         var displayName: String {
             switch self {
-            case .track: return String(localized: "Track")
-            case .artist: return String(localized: "Artist")
-            case .album: return String(localized: "Album")
+            case .track: return AppLocalization.string("Track")
+            case .artist: return AppLocalization.string("Artist")
+            case .album: return AppLocalization.string("Album")
             }
         }
     }
@@ -26,9 +26,9 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
 
         var displayName: String {
             switch self {
-            case .sent: return String(localized: "Sent")
-            case .received: return String(localized: "Received")
-            case .imported: return String(localized: "Imported")
+            case .sent: return AppLocalization.string("Sent")
+            case .received: return AppLocalization.string("Received")
+            case .imported: return AppLocalization.string("Imported")
             }
         }
     }
@@ -41,10 +41,10 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
 
         var displayName: String {
             switch self {
-            case .appLocal: return String(localized: "Local")
-            case .legacyServiceImport: return String(localized: "Legacy import")
-            case .webImport: return String(localized: "Web import")
-            case .fileImport: return String(localized: "File import")
+            case .appLocal: return AppLocalization.string("Local")
+            case .legacyServiceImport: return AppLocalization.string("Legacy import")
+            case .webImport: return AppLocalization.string("Web import")
+            case .fileImport: return AppLocalization.string("File import")
             }
         }
     }
@@ -104,10 +104,10 @@ struct ObsessionEntry: Codable, Identifiable, Equatable {
 
         var displayName: String {
             switch self {
-            case .userCaptured: return String(localized: "Local")
-            case .webImport: return String(localized: "Web import")
-            case .manualImport: return String(localized: "File import")
-            case .listenBrainzPin: return String(localized: "ListenBrainz pin")
+            case .userCaptured: return AppLocalization.string("Local")
+            case .webImport: return AppLocalization.string("Web import")
+            case .manualImport: return AppLocalization.string("File import")
+            case .listenBrainzPin: return AppLocalization.string("ListenBrainz pin")
             }
         }
     }

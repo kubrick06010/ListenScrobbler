@@ -267,11 +267,11 @@ private enum SubmitManualScrobbleIntentError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingTitle:
-            return String(localized: "Add a track title before submitting.")
+            return AppLocalization.systemString("Add a track title before submitting.")
         case .missingArtist:
-            return String(localized: "Add an artist before submitting.")
+            return AppLocalization.systemString("Add an artist before submitting.")
         case .shortDuration:
-            return String(localized: "Use a duration of at least 30 seconds.")
+            return AppLocalization.systemString("Use a duration of at least 30 seconds.")
         }
     }
 }
@@ -283,9 +283,9 @@ private enum RepeatRecentListenIntentError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noRecentListen:
-            return String(localized: "Connect ListenBrainz and refresh recent listens before repeating one.")
+            return AppLocalization.systemString("Connect ListenBrainz and refresh recent listens before repeating one.")
         case .shortDuration:
-            return String(localized: "Use a duration of at least 30 seconds.")
+            return AppLocalization.systemString("Use a duration of at least 30 seconds.")
         }
     }
 }

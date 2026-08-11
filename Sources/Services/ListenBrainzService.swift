@@ -38,10 +38,10 @@ enum ListenBrainzStatsRange: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .week: return String(localized: "Week")
-        case .month: return String(localized: "Month")
-        case .year: return String(localized: "Year")
-        case .allTime: return String(localized: "All Time")
+        case .week: return AppLocalization.string("Week")
+        case .month: return AppLocalization.string("Month")
+        case .year: return AppLocalization.string("Year")
+        case .allTime: return AppLocalization.string("All Time")
         }
     }
 }
@@ -236,19 +236,19 @@ enum ListenBrainzError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .missingToken:
-            return String(localized: "ListenBrainz token is missing.")
+            return AppLocalization.string("ListenBrainz token is missing.")
         case .invalidToken:
-            return String(localized: "ListenBrainz token is invalid.")
+            return AppLocalization.string("ListenBrainz token is invalid.")
         case .invalidResponse:
-            return String(localized: "Unexpected response from ListenBrainz.")
+            return AppLocalization.string("Unexpected response from ListenBrainz.")
         case let .rateLimited(retryAfter):
             if let retryAfter {
-                return String.localizedStringWithFormat(
-                    String(localized: "ListenBrainz rate limited the request. Retry after %lld seconds."),
+                return AppLocalization.localizedStringWithFormat(
+                    AppLocalization.string("ListenBrainz rate limited the request. Retry after %lld seconds."),
                     Int64(retryAfter.rounded())
                 )
             }
-            return String(localized: "ListenBrainz rate limited the request.")
+            return AppLocalization.string("ListenBrainz rate limited the request.")
         case let .api(message):
             return message
         case let .transport(message):

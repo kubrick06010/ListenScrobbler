@@ -8,6 +8,15 @@ private enum ListenScrobblerWidgetKind {
     static let discovery = "ListenScrobblerDiscoveryWidget"
 }
 
+private enum WidgetLocalization {
+    static var selectedLanguage: AppLanguage { AppLanguageStore.shared.load() }
+    static var locale: Locale { AppLocalization.resolveEffectiveLocale(store: .shared) }
+
+    static func string(_ resource: LocalizedStringResource) -> String {
+        AppLocalization.string(resource, language: selectedLanguage)
+    }
+}
+
 private struct ListenScrobblerWidgetEntry: TimelineEntry {
     let date: Date
     let snapshot: MobileWidgetSnapshot
@@ -35,6 +44,7 @@ struct ListenScrobblerStatusWidget: Widget {
             provider: ListenScrobblerWidgetProvider()
         ) { entry in
             ListenScrobblerStatusWidgetView(snapshot: entry.snapshot)
+                .environment(\.locale, WidgetLocalization.locale)
         }
         .configurationDisplayName("ListenScrobbler Status")
         .description("Show ListenBrainz connection state and queued mobile listens.")
@@ -49,6 +59,7 @@ struct ListenScrobblerRecentListenWidget: Widget {
             provider: ListenScrobblerWidgetProvider()
         ) { entry in
             ListenScrobblerRecentListenWidgetView(snapshot: entry.snapshot)
+                .environment(\.locale, WidgetLocalization.locale)
         }
         .configurationDisplayName("Recent Listen")
         .description("Show the latest ListenBrainz listen captured by ListenScrobbler.")
@@ -63,6 +74,7 @@ struct ListenScrobblerDiscoveryWidget: Widget {
             provider: ListenScrobblerWidgetProvider()
         ) { entry in
             ListenScrobblerDiscoveryWidgetView(snapshot: entry.snapshot)
+                .environment(\.locale, WidgetLocalization.locale)
         }
         .configurationDisplayName("Open Discovery")
         .description("Show the current pin or first ListenBrainz recommendation.")
@@ -92,7 +104,7 @@ private struct ListenScrobblerStatusWidgetView: View {
                 .font(.headline)
                 .lineLimit(1)
 
-            Text(snapshot.connectionStatus)
+            Text(localizedConnectionStatus)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
@@ -110,6 +122,27 @@ private struct ListenScrobblerStatusWidgetView: View {
 
     private var pendingSymbol: String {
         snapshot.pendingCount > 0 ? "tray.full" : "checkmark.circle"
+    }
+
+    private var localizedConnectionStatus: String {
+        switch snapshot.connectionState {
+        case .requiresAppOpen:
+            return WidgetLocalization.string("Open ListenScrobbler to connect ListenBrainz")
+        case .disconnected:
+            return WidgetLocalization.string("Connect ListenBrainz")
+        case .connected:
+            guard let username = snapshot.username else {
+                return WidgetLocalization.string("Connected to ListenBrainz")
+            }
+            return WidgetLocalization.string("\(username) on ListenBrainz")
+        case .loading:
+            return WidgetLocalization.string("Loading ListenBrainz")
+        case .failed, nil:
+            // Failed responses and snapshots written by older versions carry a
+            // displayable fallback because their server message is not a stable
+            // localization key.
+            return snapshot.connectionStatus
+        }
     }
 }
 
@@ -217,7 +250,7 @@ private struct WidgetPanel<Content: View>: View {
 }
 
 private struct WidgetHeader: View {
-    let title: String
+    let title: LocalizedStringKey
     let imageName: String
 
     var body: some View {
@@ -228,7 +261,7 @@ private struct WidgetHeader: View {
                 .frame(width: 24, height: 24)
                 .accessibilityHidden(true)
 
-            Text(LocalizedStringKey(title))
+            Text(title)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
@@ -237,15 +270,15 @@ private struct WidgetHeader: View {
 }
 
 private struct EmptyWidgetState: View {
-    let title: String
-    let detail: String
+    let title: LocalizedStringKey
+    let detail: LocalizedStringKey
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(LocalizedStringKey(title))
+            Text(title)
                 .font(.headline)
                 .lineLimit(2)
-            Text(LocalizedStringKey(detail))
+            Text(detail)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(3)

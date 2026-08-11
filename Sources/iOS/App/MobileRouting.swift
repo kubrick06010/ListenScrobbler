@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import ListenScrobblerCore
 
 enum MobileTab: String, CaseIterable, Hashable, Identifiable {
     case home
@@ -12,13 +13,13 @@ enum MobileTab: String, CaseIterable, Hashable, Identifiable {
     var title: String {
         switch self {
         case .home:
-            return String(localized: "Home")
+            return AppLocalization.string("Home")
         case .listens:
-            return String(localized: "Listens")
+            return AppLocalization.string("Listens")
         case .discover:
-            return String(localized: "Discover")
+            return AppLocalization.string("Discover")
         case .account:
-            return String(localized: "Account")
+            return AppLocalization.string("Account")
         }
     }
 

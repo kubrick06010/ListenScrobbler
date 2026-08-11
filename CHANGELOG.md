@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+## 1.1.3 - 2026-08-11
+
+### Added
+
+- Complete multilingual localization across macOS, iOS, widgets, services,
+  App Shortcuts, and system permission prompts.
+- Runtime language selection with a system-language option, shared persistence,
+  BCP-47 locale resolution, and plural-aware catalogs for all supported locales.
+
+### Changed
+
+- Language changes apply atomically on the next app launch so every surface
+  uses the same locale.
+- Expanded localization coverage to English, German, Spanish, French, Italian,
+  Japanese, Polish, Portuguese, Russian, Swedish, Turkish, and Simplified Chinese.
+- Advanced macOS to version `1.1.3` build `9`.
+
 ## 1.1.2 - 2026-08-08
 
 ### Added

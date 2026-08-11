@@ -1,0 +1,4 @@
+CFBundleDisplayName = "ListenScrobbler";
+CFBundleName = "ListenScrobbler";
+NSAppleMusicUsageDescription = "ListenScrobbler durchsucht die Wiedergabezähler deiner Musikmediathek, um neue Wiedergaben an ListenBrainz zu senden.";
+NSAppleEventsUsageDescription = "ListenScrobbler liest den aktuellen Titel und die Wiedergabeposition unterstützter Musikplayer, um deine Wiedergaben aufzuzeichnen.";

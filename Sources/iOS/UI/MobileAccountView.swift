@@ -3,12 +3,14 @@ import SwiftUI
 
 struct MobileAccountView: View {
     @EnvironmentObject private var listeningStore: MobileListeningStore
+    @EnvironmentObject private var localizationController: LocalizationController
     @EnvironmentObject private var musicLibraryScanner: MusicLibraryScrobbleScanner
     let showOnboarding: () -> Void
     @State private var token = ""
     @State private var isPendingQueuePresented = false
     @State private var diagnosticsSnapshot: MobileDiagnosticsSnapshot?
     @State private var listenExportSnapshot: MobileScrobbleExportSnapshot?
+    @State private var isLanguageChangeNoticePresented = false
 
     var body: some View {
         Form {
@@ -17,6 +19,33 @@ struct MobileAccountView: View {
                     connectionState: listeningStore.connectionState,
                     showOnboarding: showOnboarding
                 )
+            }
+
+            Section {
+                Picker("Language", selection: $localizationController.selectedLanguage) {
+                    HStack(spacing: 5) {
+                        Text("System Language")
+                        Text(verbatim: "— \(localizationController.systemLanguageName)")
+                            .foregroundStyle(.secondary)
+                    }
+                    .tag(AppLanguage.system)
+
+                    ForEach(localizationController.availableLanguages) { language in
+                        Text(verbatim: language.nativeName)
+                            .tag(AppLanguage(rawValue: language.identifier))
+                    }
+                }
+                .onChange(of: localizationController.selectedLanguage) {
+                    isLanguageChangeNoticePresented = true
+                }
+            } header: {
+                Text("App")
+            } footer: {
+                if localizationController.selectedLanguage.isSystem {
+                    Text("Follow the language selected for this device.")
+                } else {
+                    Text("Some system-provided features follow the device language.")
+                }
             }
 
             Section("ListenBrainz") {
@@ -161,6 +190,11 @@ struct MobileAccountView: View {
             }
         }
         .navigationTitle("Account")
+        .alert("Language Changed", isPresented: $isLanguageChangeNoticePresented) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("The selected language will be applied throughout ListenScrobbler the next time you open the app.")
+        }
         .sheet(isPresented: $isPendingQueuePresented) {
             MobilePendingQueueView()
                 .environmentObject(musicLibraryScanner)

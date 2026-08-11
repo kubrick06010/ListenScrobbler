@@ -116,7 +116,7 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(store.statsSnapshot?.topRecordings.map(\.trackName), ["French Disko"])
         XCTAssertEqual(
             store.statsStatus,
-            String.localizedStringWithFormat(String(localized: "Loaded %@ stats"), MobileStatsRange.month.title.lowercased())
+            AppLocalization.localizedStringWithFormat(AppLocalization.string("Loaded %@ stats"), MobileStatsRange.month.title.lowercased())
         )
         XCTAssertEqual(client.statsRefreshes.map(\.username), ["open-user"])
         XCTAssertEqual(client.statsRefreshes.map(\.range), [.month])
@@ -143,7 +143,7 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(store.recommendedRecordings.map(\.recordingMBID), ["mbid-1"])
         XCTAssertEqual(
             store.recommendationsStatus,
-            String.localizedStringWithFormat(String(localized: "%d recommendations loaded"), 1)
+            AppLocalization.localizedStringWithFormat(AppLocalization.string("%d recommendations loaded"), 1)
         )
         XCTAssertEqual(client.recommendationRefreshes.map(\.username), ["open-user"])
         XCTAssertEqual(client.recommendationRefreshes.map(\.count), [12])
@@ -319,8 +319,9 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(snapshot.username, "open-user")
         XCTAssertEqual(
             snapshot.connectionStatus,
-            String.localizedStringWithFormat(String(localized: "%@ on ListenBrainz"), "open-user")
+            AppLocalization.localizedStringWithFormat(AppLocalization.string("%@ on ListenBrainz"), "open-user")
         )
+        XCTAssertEqual(snapshot.connectionState, .connected)
         XCTAssertEqual(snapshot.recentListen?.trackName, "Sketch for Summer")
         XCTAssertEqual(snapshot.currentPin?.trackName, "Otis")
         XCTAssertEqual(snapshot.recommendation?.title, "Pack Yr Romantic Mind")
@@ -367,8 +368,8 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(store.socialSnapshot?.neighborListens.map(\.trackName), ["Outdoor Miner"])
         XCTAssertEqual(
             store.socialStatus,
-            String.localizedStringWithFormat(
-                String(localized: "%d followers, %d following, and %d neighbor listens loaded"),
+            AppLocalization.localizedStringWithFormat(
+                AppLocalization.string("%d followers, %d following, and %d neighbor listens loaded"),
                 2,
                 2,
                 1

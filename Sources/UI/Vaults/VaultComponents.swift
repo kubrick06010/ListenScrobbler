@@ -138,7 +138,7 @@ struct ObsessionTimelineRow: View {
                 Text(entry.artist)
                     .font(.custom("Avenir Next Regular", size: 13))
                     .foregroundStyle(.secondary)
-                Text(entry.note ?? String(localized: "No note captured."))
+                Text(entry.note ?? AppLocalization.string("No note captured."))
                     .font(.custom("Avenir Next Regular", size: 12))
                     .lineLimit(2)
             }
@@ -184,7 +184,7 @@ struct SharedDetailView: View {
                 Label(entry.apiStatus ?? entry.source.displayName, systemImage: "checkmark.seal")
                     .font(.custom("Avenir Next Medium", size: 13))
                 Divider()
-                Text(entry.message ?? String(localized: "No message attached."))
+                Text(entry.message ?? AppLocalization.string("No message attached."))
                     .font(.custom("Avenir Next Regular", size: 13))
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
@@ -222,7 +222,12 @@ struct ObsessionDetailView: View {
                 .font(.custom("Avenir Next Demi Bold", size: 16))
 
             if let entry {
-                VaultHeroCard(title: entry.track, subtitle: entry.artist, label: "Track", tint: .purple)
+                VaultHeroCard(
+                    title: entry.track,
+                    subtitle: entry.artist,
+                    label: AppLocalization.string("Track"),
+                    tint: .purple
+                )
                 Label(vaultDate(entry.setAt ?? entry.firstSeenAt), systemImage: "calendar")
                     .font(.custom("Avenir Next Medium", size: 13))
                 Label(entry.source.displayName, systemImage: "archivebox")
@@ -233,7 +238,7 @@ struct ObsessionDetailView: View {
                         .foregroundStyle(.green)
                 }
                 Divider()
-                Text(entry.note ?? String(localized: "No note captured."))
+                Text(entry.note ?? AppLocalization.string("No note captured."))
                     .font(.custom("Avenir Next Regular", size: 13))
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)

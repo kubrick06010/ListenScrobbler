@@ -28,8 +28,8 @@ struct ListeningActivityChartView: View {
                     )
                 )
                 .accessibilityLabel(entry.label)
-                .accessibilityValue(String.localizedStringWithFormat(
-                    String(localized: "%@ listens"),
+                .accessibilityValue(AppLocalization.localizedStringWithFormat(
+                    AppLocalization.string("%@ listens"),
                     AppLocalization.integer(entry.listenCount)
                 ))
 

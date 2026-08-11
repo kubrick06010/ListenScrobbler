@@ -1,144 +1,684 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "Manual scrobble with ${applicationName}" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+  "sourceLanguage": "en",
+  "strings": {
+    "Manual scrobble with ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Manual scrobble with ${applicationName}",
               "Add a listen with ${applicationName}"
             ]
           }
         },
-        "es" : {
-          "stringSet" : {
-            "state" : "translated",
-            "values" : [
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
               "Scrobble manual con ${applicationName}",
               "Añade una escucha con ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Manuelles Scrobble mit ${applicationName}",
+              "Hören Sie mit ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Scrobble manuel avec ${applicationName}",
+              "Ajouter une écoute avec ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Schiacciatura manuale con ${applicationName}",
+              "Aggiungi un ascolto con ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "マニュアルスクルーブル${applicationName}",
+              "${applicationName}でリスニングを追加する"
+            ]
+          }
+        },
+        "pl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Ręczne przewijanie z ${applicationName}",
+              "Dodaj słuchanie z ${applicationName}"
+            ]
+          }
+        },
+        "pt": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Scrobble manual com ${applicationName}",
+              "Adicionar uma escuta com ${applicationName}"
+            ]
+          }
+        },
+        "ru": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Ручной скроббл с ${applicationName}",
+              "Добавить прослушивание с ${applicationName}"
+            ]
+          }
+        },
+        "sv": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Manuell skruv med ${applicationName}",
+              "Lägg till ett lyssnande med ${applicationName}"
+            ]
+          }
+        },
+        "tr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Kılavuz ${applicationName} ile scrobble",
+              "${applicationName} ile bir dinleme ekleyin"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "手动用 ${applicationName} 拼写",
+              "用 ${applicationName} 添加监听"
             ]
           }
         }
       }
     },
-    "Open ${applicationName}" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+    "Open ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Open ${applicationName}",
               "Open ${destination} in ${applicationName}"
             ]
           }
         },
-        "es" : {
-          "stringSet" : {
-            "state" : "translated",
-            "values" : [
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
               "Abre ${applicationName}",
               "Abre ${destination} en ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Offenes ${applicationName}",
+              "${destination} öffnen in ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Ouvrir ${applicationName}",
+              "Ouvrir ${destination} dans ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Apri${applicationName}",
+              "Aprire ${destination} in ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}を開く",
+              "${applicationName}で${destination}を開く"
+            ]
+          }
+        },
+        "pl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Otwórz ${applicationName}",
+              "Otwórz ${destination} w ${applicationName}"
+            ]
+          }
+        },
+        "pt": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Abrir ${applicationName}",
+              "Abrir ${destination} em ${applicationName}"
+            ]
+          }
+        },
+        "ru": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Открытый ${applicationName}",
+              "Открытый ${destination} в ${applicationName}"
+            ]
+          }
+        },
+        "sv": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Öppna ${applicationName}",
+              "Open ${destination} i ${applicationName}"
+            ]
+          }
+        },
+        "tr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Açık ${applicationName}",
+              "${applicationName}'da Açık ${destination}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "打开 ${applicationName}",
+              "在 ${applicationName} 中打开 ${destination}"
             ]
           }
         }
       }
     },
-    "Refresh ${applicationName}" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+    "Refresh ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Refresh ${applicationName}",
               "Refresh ListenBrainz with ${applicationName}"
             ]
           }
         },
-        "es" : {
-          "stringSet" : {
-            "state" : "translated",
-            "values" : [
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
               "Actualiza ${applicationName}",
               "Actualiza ListenBrainz con ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Erfrischendes ${applicationName}",
+              "ListenBrainz mit ${applicationName} auffrischen"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Rafraîchir ${applicationName}",
+              "Rafraîchir ListenBrainz avec ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}",
+              "Aggiornare ListenBrainz con ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "リフレッシュ${applicationName}",
+              "${applicationName}でListenBrainzをリフレッシュ"
+            ]
+          }
+        },
+        "pl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Odśwież ${applicationName}",
+              "Odśwież ListenBrainz z ${applicationName}"
+            ]
+          }
+        },
+        "pt": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Atualizar ${applicationName}",
+              "Atualizar ListenBrainz com ${applicationName}"
+            ]
+          }
+        },
+        "ru": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Обновить ${applicationName}",
+              "Обновить ListenBrainz с помощью ${applicationName}"
+            ]
+          }
+        },
+        "sv": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Redigera ${applicationName}",
+              "Hämta ListenBrainz med ${applicationName}"
+            ]
+          }
+        },
+        "tr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Yenileme${applicationName}",
+              "${applicationName} ile ListenBrainz"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "刷新 ${applicationName}",
+              "用 ${applicationName} 刷新 ListenBrainz"
             ]
           }
         }
       }
     },
-    "Refresh ListenScrobbler widgets with ${applicationName}" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+    "Refresh ListenScrobbler widgets with ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Refresh ListenScrobbler widgets with ${applicationName}",
               "Update ListenScrobbler widgets with ${applicationName}"
             ]
           }
         },
-        "es" : {
-          "stringSet" : {
-            "state" : "translated",
-            "values" : [
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
               "Actualiza los widgets de ListenScrobbler con ${applicationName}",
               "Pon al día los widgets de ListenScrobbler con ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "ListenScrobbler-Widgets mit ${applicationName} aktualisieren",
+              "Aktualisieren Sie ListenScrobbler Widgets mit ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Rafraîchir les widgets ListenScrobbler avec ${applicationName}",
+              "Mettre à jour les widgets ListenScrobbler avec ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Refresh widgets ListenScrobbler con ${applicationName}",
+              "ListenScrobbler widgets con ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}でListenScrobblerウィジェットを更新",
+              "${applicationName}でListenScrobblerウィジェットを更新"
+            ]
+          }
+        },
+        "pl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Odśwież widżety ListenScrobbler z ${applicationName}",
+              "Aktualizuj widżety ListenScrobbler za pomocą ${applicationName}"
+            ]
+          }
+        },
+        "pt": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Atualizar widgets ListenScrobbler com ${applicationName}",
+              "Atualizar widgets ListenScrobbler com ${applicationName}"
+            ]
+          }
+        },
+        "ru": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Обновление ListenScrobbler виджетов с помощью ${applicationName}",
+              "Обновление ListenScrobbler виджетов с помощью ${applicationName}"
+            ]
+          }
+        },
+        "sv": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Uppdatera ListenScrobbler-widgetar med ${applicationName}",
+              "Uppdatera ListenScrobbler-widgetar med ${applicationName}"
+            ]
+          }
+        },
+        "tr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} ile yeni ListenScrobbler pencereleri",
+              "Update ListenScrobbler widgets with ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "用 ${applicationName} 刷新 ListenScrobbler 部件",
+              "用 ${applicationName} 更新 ListenScrobbler 部件"
             ]
           }
         }
       }
     },
-    "Repeat recent listen with ${applicationName}" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+    "Repeat recent listen with ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Repeat recent listen with ${applicationName}",
               "Scrobble the last listen with ${applicationName}"
             ]
           }
         },
-        "es" : {
-          "stringSet" : {
-            "state" : "translated",
-            "values" : [
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
               "Repite la escucha reciente con ${applicationName}",
               "Scrobblea la última escucha con ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Wiederholen Sie das aktuelle Hören mit ${applicationName}",
+              "Scrobble das letzte Hören mit ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Répéter l'écoute récente avec ${applicationName}",
+              "Scrobble la dernière écoute avec ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Ripetere l'ascolto recente con ${applicationName}",
+              "Scrobbare l'ultimo ascolto con ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "最近の${applicationName}を再生する",
+              "最後の${applicationName}で聴く"
+            ]
+          }
+        },
+        "pl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Powtórzyć ostatnio słuchać z ${applicationName}",
+              "Przewiń ostatni dźwięk z ${applicationName}"
+            ]
+          }
+        },
+        "pt": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Repetir escuta recente com ${applicationName}",
+              "Role a última escuta com ${applicationName}"
+            ]
+          }
+        },
+        "ru": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Повторите недавний прослушивание с помощью ${applicationName}",
+              "Скроббл последний прослушивание с ${applicationName}"
+            ]
+          }
+        },
+        "sv": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Upprepa nyligen lyssna med ${applicationName}",
+              "Skräp den sista lyssna med ${applicationName}"
+            ]
+          }
+        },
+        "tr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Son zamanlarda ${applicationName} ile dinlemek",
+              "${applicationName} ile son dinlemek"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "最近用 ${applicationName} 重播",
+              "用 ${applicationName} 拼接最后的声音"
             ]
           }
         }
       }
     },
-    "Submit a listen with ${applicationName}" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+    "Submit a listen with ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Submit a listen with ${applicationName}",
               "Add a scrobble with ${applicationName}"
             ]
           }
         },
-        "es" : {
-          "stringSet" : {
-            "state" : "translated",
-            "values" : [
+        "es": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
               "Envía una escucha con ${applicationName}",
               "Añade un scrobble con ${applicationName}"
+            ]
+          }
+        },
+        "de": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Hören Sie mit ${applicationName}",
+              "Hinzufügen eines Scrobbles mit ${applicationName}"
+            ]
+          }
+        },
+        "fr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Soumettre une écoute avec ${applicationName}",
+              "Ajouter un scrobble avec ${applicationName}"
+            ]
+          }
+        },
+        "it": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Inviare un ascolto con ${applicationName}",
+              "Aggiungere uno scrobble con ${applicationName}"
+            ]
+          }
+        },
+        "ja": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName}で聴く",
+              "${applicationName}でスクルーブルを追加"
+            ]
+          }
+        },
+        "pl": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Wyślij słuchanie z ${applicationName}",
+              "Dodaj scrobble z ${applicationName}"
+            ]
+          }
+        },
+        "pt": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Enviar uma escuta com ${applicationName}",
+              "Adicionar um scrobble com ${applicationName}"
+            ]
+          }
+        },
+        "ru": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Отправьте прослушивание с помощью ${applicationName}",
+              "Добавить scrobble с ${applicationName}"
+            ]
+          }
+        },
+        "sv": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "Skicka ett lyssnande med ${applicationName}",
+              "Lägg till en scrobble med ${applicationName}"
+            ]
+          }
+        },
+        "tr": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "${applicationName} ile bir dinleme gönderin",
+              "${applicationName} ile bir scrobble ekleyin"
+            ]
+          }
+        },
+        "zh-Hans": {
+          "stringSet": {
+            "state": "translated",
+            "values": [
+              "以 ${applicationName} 提交监听",
+              "添加带有 ${applicationName} 的拼音"
             ]
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

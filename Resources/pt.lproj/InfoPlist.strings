@@ -1,0 +1,4 @@
+CFBundleDisplayName = "ListenScrobbler";
+CFBundleName = "ListenScrobbler";
+NSAppleMusicUsageDescription = "O ListenScrobbler analisa as contagens de reprodução da biblioteca de música para enviar novas audições ao ListenBrainz.";
+NSAppleEventsUsageDescription = "O ListenScrobbler lê a faixa atual e a posição de reprodução dos leitores de música compatíveis para registar as suas audições.";

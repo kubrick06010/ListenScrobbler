@@ -129,9 +129,9 @@ struct ObsessionDraft: Identifiable, Equatable {
 func accountBadgeLabel(for normalizedType: String) -> String {
     switch normalizedType {
     case "alum":
-        return String(localized: "ALUM")
+        return AppLocalization.string("ALUM")
     case "subscriber":
-        return String(localized: "SUPPORTER")
+        return AppLocalization.string("SUPPORTER")
     default:
         return normalizedType.uppercased()
     }
@@ -262,14 +262,14 @@ struct ContentView: View {
                                 onOpenRecommendation: { recommendation in
                                     openDeepLink(
                                         track: recommendation.title,
-                                        artist: recommendation.artistName ?? String(localized: "Unknown Artist"),
+                                        artist: recommendation.artistName ?? AppLocalization.string("Unknown Artist"),
                                         imageURL: nil
                                     )
                                 },
                                 onShareRecommendation: { recommendation in
                                     shareDraft = ShareDraft(
                                         kind: .track,
-                                        artist: recommendation.artistName ?? String(localized: "Unknown Artist"),
+                                        artist: recommendation.artistName ?? AppLocalization.string("Unknown Artist"),
                                         track: recommendation.title,
                                         album: recommendation.releaseName,
                                         sourceURL: nil,
@@ -533,7 +533,7 @@ struct ContentView: View {
         if let current = scrobbleService.currentTrack {
             return "\(current.artist) - \(current.title)"
         }
-        return String(localized: "No track playing")
+        return AppLocalization.string("No track playing")
     }
 
     private var appBarBackground: Color {

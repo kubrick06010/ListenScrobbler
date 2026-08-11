@@ -37,7 +37,7 @@ struct ReportsView: View {
                     Text("Avg. listens per day")
                         .font(.custom("Avenir Next Demi Bold", size: 28))
                     reportBar(
-                        String.localizedStringWithFormat(String(localized: "This %@"), periodTitle),
+                        AppLocalization.localizedStringWithFormat(AppLocalization.string("This %@"), periodTitle),
                         value: currentAvg,
                         max: max(currentAvg, comparisonAvg)
                     )
@@ -80,7 +80,7 @@ struct ReportsView: View {
                     Text("With a \(mainstreamScore)% mainstream score, you are \(mainstreamTone) compared to your recent baseline.")
                         .font(.custom("Avenir Next Medium", size: 15))
                         .foregroundStyle(.secondary)
-                    reportBar(String(localized: "Mainstream"), value: mainstreamScore, max: 100)
+                    reportBar(AppLocalization.string("Mainstream"), value: mainstreamScore, max: 100)
                     Text("vs. \(mainstreamBaseline)% baseline")
                         .font(.custom("Avenir Next Medium", size: 13))
                         .foregroundStyle(.secondary)
@@ -159,7 +159,7 @@ struct ReportsView: View {
     }
 
     private var trendPercentString: String {
-        guard comparisonCount > 0 else { return String(localized: "Not enough historical data") }
+        guard comparisonCount > 0 else { return AppLocalization.string("Not enough historical data") }
         let delta = Double(currentCount - comparisonCount) / Double(comparisonCount)
         let pct = Int((delta * 100).rounded())
         return pct >= 0 ? "+\(pct)%" : "\(pct)%"
@@ -235,7 +235,7 @@ struct ReportsView: View {
     private var peakHourLabel: String {
         let counts = hourlyCountsCurrent
         guard let max = counts.max(), max > 0, let idx = counts.firstIndex(of: max) else {
-            return String(localized: "No listening peak yet")
+            return AppLocalization.string("No listening peak yet")
         }
         var components = DateComponents()
         components.hour = idx
@@ -284,9 +284,9 @@ struct ReportsView: View {
     }
 
     private var mainstreamTone: String {
-        if mainstreamScore >= 55 { return String(localized: "more mainstream") }
-        if mainstreamScore <= 25 { return String(localized: "more adventurous") }
-        return String(localized: "balanced")
+        if mainstreamScore >= 55 { return AppLocalization.string("more mainstream") }
+        if mainstreamScore <= 25 { return AppLocalization.string("more adventurous") }
+        return AppLocalization.string("balanced")
     }
 
     private var mainstreamReferenceArtists: Set<String> {

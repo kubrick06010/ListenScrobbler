@@ -140,7 +140,7 @@ struct ChartsView: View {
                 LazyVGrid(columns: metrics.metricColumns, alignment: .leading, spacing: 10) {
                     metricPill("User", snapshot.username)
                     metricPill("Range", snapshot.range.title)
-                    metricPill("Listens", snapshot.totalListenCount.map { AppLocalization.integer($0) } ?? String(localized: "Pending"))
+                    metricPill("Listens", snapshot.totalListenCount.map { AppLocalization.integer($0) } ?? AppLocalization.string("Pending"))
                     metricPill("Fetched", AppLocalization.date(snapshot.fetchedAt, date: .omitted, time: .shortened))
                 }
 
@@ -332,8 +332,8 @@ struct ChartsView: View {
                     .locale(preferredAppLocale())
             )
         } ?? peak.label
-        return String.localizedStringWithFormat(
-            String(localized: "Peak: %@ listens on %@"),
+        return AppLocalization.localizedStringWithFormat(
+            AppLocalization.string("Peak: %@ listens on %@"),
             AppLocalization.integer(peak.listenCount),
             peakLabel
         )
@@ -349,13 +349,13 @@ struct ChartsView: View {
         let format: String
         switch kind {
         case .tracks:
-            format = String(localized: "%d ListenBrainz Tracks")
+            format = AppLocalization.string("%d ListenBrainz Tracks")
         case .artists:
-            format = String(localized: "%d ListenBrainz Artists")
+            format = AppLocalization.string("%d ListenBrainz Artists")
         case .releases:
-            format = String(localized: "%d ListenBrainz Releases")
+            format = AppLocalization.string("%d ListenBrainz Releases")
         }
-        return String.localizedStringWithFormat(format, count)
+        return AppLocalization.localizedStringWithFormat(format, count)
     }
 
     @ViewBuilder
@@ -509,7 +509,7 @@ struct ChartsView: View {
 
     private func countryLabel(for code: String?) -> String {
         guard let code = code?.trimmingCharacters(in: .whitespacesAndNewlines), !code.isEmpty else {
-            return String(localized: "Unknown")
+            return AppLocalization.string("Unknown")
         }
         return code
     }
@@ -610,7 +610,7 @@ struct ChartsView: View {
 
     private var topAlbums: [ChartEntry] {
         groupedEntries { item in
-            let title = item.album ?? String(localized: "Unknown Album")
+            let title = item.album ?? AppLocalization.string("Unknown Album")
             return (title: title, artist: item.artist, imageURL: item.imageURL)
         }
     }

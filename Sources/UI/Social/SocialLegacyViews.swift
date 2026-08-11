@@ -215,7 +215,7 @@ struct FriendsView: View {
                         badgeView(badge, fontSize: 9, horizontal: 6, vertical: 2)
                     }
                 }
-                Text(friend.country ?? String(localized: "Unknown location"))
+                Text(friend.country ?? AppLocalization.string("Unknown location"))
                     .font(.custom("Avenir Next Regular", size: 11))
                     .foregroundStyle(.secondary)
                 if let track = friend.track, let artist = friend.artist {
@@ -235,7 +235,7 @@ struct FriendsView: View {
                 separationChip(for: friend.user)
             }
             .buttonStyle(.plain)
-            Text(nowPlaying ? String(localized: "Now") : time(friend.playedAt))
+            Text(nowPlaying ? AppLocalization.string("Now") : time(friend.playedAt))
                 .font(.custom("Avenir Next Regular", size: 11))
                 .foregroundStyle(.secondary)
         }

@@ -57,11 +57,11 @@ extension OpenMusicEntityDetails {
 }
 
 func preferredAppLanguageCode(bundle: Bundle = .main) -> String {
-    AppLocalization.languageCode(bundle: bundle)
+    AppLocalization.resolveEffectiveLanguageIdentifier(bundle: bundle)
 }
 
 func preferredAppLocale(bundle: Bundle = .main, regionLocale: Locale = .current) -> Locale {
-    AppLocalization.locale(bundle: bundle, regionLocale: regionLocale)
+    AppLocalization.resolveEffectiveLocale(bundle: bundle, regionLocale: regionLocale)
 }
 
 private func appLanguageCode(_ identifier: String) -> String {
@@ -102,7 +102,9 @@ final class MusicBrainzService {
         baseURL: URL = URL(string: "https://musicbrainz.org/ws/2")!,
         coverArtBaseURL: URL = URL(string: "https://coverartarchive.org/release")!,
         urlSession: URLSession = .shared,
-        preferredAppLanguageCodes: @escaping () -> [String] = { Bundle.main.preferredLocalizations }
+        preferredAppLanguageCodes: @escaping () -> [String] = {
+            AppLocalization.effectiveLanguageIdentifiers
+        }
     ) {
         self.baseURL = baseURL
         self.coverArtBaseURL = coverArtBaseURL
@@ -455,7 +457,7 @@ final class MusicBrainzService {
             throw MusicBrainzError.invalidResponse
         }
         guard (200..<300).contains(http.statusCode) else {
-            throw MusicBrainzError.api(message: String(localized: "Open metadata endpoint returned HTTP \(http.statusCode)."))
+            throw MusicBrainzError.api(message: AppLocalization.string("Open metadata endpoint returned HTTP \(http.statusCode)."))
         }
         return try JSONDecoder().decode(T.self, from: data)
     }
@@ -748,7 +750,7 @@ enum MusicBrainzError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .invalidResponse:
-            return String(localized: "Unexpected response from MusicBrainz.")
+            return AppLocalization.string("Unexpected response from MusicBrainz.")
         case let .api(message):
             return message
         }
@@ -875,15 +877,15 @@ private struct MusicBrainzRelation: Decodable {
 
     var displayTitle: String? {
         switch type?.lowercased() {
-        case "official homepage": return String(localized: "Official website")
+        case "official homepage": return AppLocalization.string("Official website")
         case "wikipedia": return "Wikipedia"
         case "wikidata": return "Wikidata"
         case "discogs": return "Discogs"
         case "allmusic": return "AllMusic"
         case "last.fm": return "Last.fm"
-        case "free streaming": return String(localized: "Listen")
+        case "free streaming": return AppLocalization.string("Listen")
         case "youtube": return "YouTube"
-        case "social network": return String(localized: "Social")
+        case "social network": return AppLocalization.string("Social")
         default: return nil
         }
     }

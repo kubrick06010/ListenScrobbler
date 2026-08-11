@@ -277,12 +277,12 @@ struct MobileMusicDetailView: View {
 }
 
 private struct MobileMetadataChip: View {
-    let title: String
+    let title: LocalizedStringKey
     let value: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
-            Text(LocalizedStringKey(title))
+            Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text(value?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? value! : "-")

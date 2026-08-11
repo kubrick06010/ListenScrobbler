@@ -5,7 +5,7 @@ import ServiceManagement
 final class LaunchAtLoginController: ObservableObject {
     @Published private(set) var isEnabled = false
     @Published private(set) var isApplyingChange = false
-    @Published private(set) var statusDescription = String(localized: "Not registered")
+    @Published private(set) var statusDescription = AppLocalization.string("Not registered")
     @Published var lastErrorMessage: String?
 
     private let defaults = UserDefaults.standard
@@ -53,15 +53,15 @@ final class LaunchAtLoginController: ObservableObject {
     private func describe(_ status: SMAppService.Status) -> String {
         switch status {
         case .enabled:
-            return String(localized: "Registered")
+            return AppLocalization.string("Registered")
         case .notRegistered:
-            return String(localized: "Not registered")
+            return AppLocalization.string("Not registered")
         case .requiresApproval:
-            return String(localized: "Requires approval in Login Items")
+            return AppLocalization.string("Requires approval in Login Items")
         case .notFound:
-            return String(localized: "App service not found")
+            return AppLocalization.string("App service not found")
         @unknown default:
-            return String(localized: "Unknown")
+            return AppLocalization.string("Unknown")
         }
     }
 }

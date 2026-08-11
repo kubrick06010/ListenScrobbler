@@ -114,9 +114,22 @@ struct SharedVaultView: View {
             GridItem(.flexible(minimum: 220), spacing: 10),
             GridItem(.flexible(minimum: 220), spacing: 10)
         ], spacing: 10) {
-            VaultMetricCard(title: "Archived shares", value: "\(store.entries.count)", detail: "\(sentCount) sent, \(receivedCount) received, \(importedCount) imported")
-            VaultMetricCard(title: "People", value: "\(peopleCount)", detail: topPerson.map { "Most shared with \($0)" } ?? "No shared history yet")
-            VaultMetricCard(title: "Formats", value: "JSON + JSPF", detail: "\(jspfReadyCount) track shares ready for open playlist export")
+            VaultMetricCard(
+                title: AppLocalization.string("Archived shares"),
+                value: "\(store.entries.count)",
+                detail: AppLocalization.string("\(sentCount) sent, \(receivedCount) received, \(importedCount) imported")
+            )
+            VaultMetricCard(
+                title: AppLocalization.string("People"),
+                value: "\(peopleCount)",
+                detail: topPerson.map { AppLocalization.string("Most shared with \($0)") }
+                    ?? AppLocalization.string("No shared history yet")
+            )
+            VaultMetricCard(
+                title: AppLocalization.string("Formats"),
+                value: "JSON + JSPF",
+                detail: AppLocalization.string("\(jspfReadyCount) track shares ready for open playlist export")
+            )
         }
     }
 
@@ -136,7 +149,10 @@ struct SharedVaultView: View {
                 }
 
                 if filteredEntries.isEmpty {
-                    VaultEmptyState(title: "No shared music archived", detail: "Create a share or import a bundle from another ListenScrobbler user.")
+                    VaultEmptyState(
+                        title: AppLocalization.string("No shared music archived"),
+                        detail: AppLocalization.string("Create a share or import a bundle from another ListenScrobbler user.")
+                    )
                 } else {
                     ForEach(filteredEntries) { entry in
                         SharedTimelineRow(entry: entry, isSelected: selectedEntry?.id == entry.id)

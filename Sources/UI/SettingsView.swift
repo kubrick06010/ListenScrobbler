@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 private enum PreferencesSection: String, CaseIterable, Identifiable {
@@ -20,22 +21,22 @@ private enum PreferencesSection: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .general:
-            return String(localized: "Startup and app behaviour")
+            return AppLocalization.string("Startup and app behaviour")
         case .listenBrainz:
-            return String(localized: "Token, now playing, listens, and charts")
+            return AppLocalization.string("Token, now playing, listens, and charts")
         case .network:
-            return String(localized: "Proxy and connectivity")
+            return AppLocalization.string("Proxy and connectivity")
         case .advanced:
-            return String(localized: "Operational status")
+            return AppLocalization.string("Operational status")
         }
     }
 
     var title: String {
         switch self {
-        case .general: return String(localized: "General")
+        case .general: return AppLocalization.string("General")
         case .listenBrainz: return "ListenBrainz"
-        case .network: return String(localized: "Network")
-        case .advanced: return String(localized: "Advanced")
+        case .network: return AppLocalization.string("Network")
+        case .advanced: return AppLocalization.string("Advanced")
         }
     }
 }
@@ -43,6 +44,7 @@ private enum PreferencesSection: String, CaseIterable, Identifiable {
 struct SettingsView: View {
     @EnvironmentObject private var scrobbleService: ScrobbleService
     @EnvironmentObject private var launchAtLoginController: LaunchAtLoginController
+    @EnvironmentObject private var localizationController: LocalizationController
     @EnvironmentObject private var proxySettingsController: ProxySettingsController
 
     @State private var selectedSection: PreferencesSection? = .listenBrainz
@@ -53,6 +55,8 @@ struct SettingsView: View {
     @State private var listenBrainzSubmitNowPlaying = true
     @State private var listenBrainzSubmitListens = true
     @State private var isOpenMusicOnboardingPresented = false
+    @State private var isLanguageRestartPromptPresented = false
+    @State private var hasLoadedInitialSettings = false
 
     var body: some View {
         NavigationSplitView {
@@ -98,11 +102,20 @@ struct SettingsView: View {
             }
             .frame(width: 760, height: 620)
         }
+        .alert("Restart ListenScrobbler?", isPresented: $isLanguageRestartPromptPresented) {
+            Button("Restart Now") {
+                restartApplication()
+            }
+            Button("Later", role: .cancel) {}
+        } message: {
+            Text("The selected language will be applied throughout ListenScrobbler after it restarts.")
+        }
         .task {
             launchAtLoginController.refreshStatus()
             proxySettingsController.reload()
             proxyPortText = proxySettingsController.settings.port.map(String.init) ?? ""
             reloadListenBrainzForm()
+            hasLoadedInitialSettings = true
         }
     }
 
@@ -112,6 +125,41 @@ struct SettingsView: View {
                 title: "General",
                 subtitle: "Core app behavior that should stay easy to reach."
             )
+
+            GroupBox("Language") {
+                VStack(alignment: .leading, spacing: 10) {
+                    Picker("App Language", selection: $localizationController.selectedLanguage) {
+                        HStack(spacing: 5) {
+                            Text("System Language")
+                            Text(verbatim: "— \(localizationController.systemLanguageName)")
+                                .foregroundStyle(.secondary)
+                        }
+                        .tag(AppLanguage.system)
+
+                        ForEach(localizationController.availableLanguages) { language in
+                            Text(verbatim: language.nativeName)
+                                .tag(AppLanguage(rawValue: language.identifier))
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .onChange(of: localizationController.selectedLanguage) { _ in
+                        guard hasLoadedInitialSettings else { return }
+                        isLanguageRestartPromptPresented = true
+                    }
+
+                    if localizationController.selectedLanguage.isSystem {
+                        Text("Follow the language selected for this device.")
+                            .font(.custom("Avenir Next Regular", size: 12))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Some system-provided features follow the device language.")
+                            .font(.custom("Avenir Next Regular", size: 12))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .font(.custom("Avenir Next Medium", size: 12))
+                .padding(.top, 2)
+            }
 
             GroupBox("Listening Submissions") {
                 VStack(alignment: .leading, spacing: 12) {
@@ -307,8 +355,8 @@ struct SettingsView: View {
                     LabeledContent(
                         "Auth State",
                         value: scrobbleService.isAuthenticated
-                            ? String(localized: "Authenticated")
-                            : String(localized: "Not authenticated")
+                            ? AppLocalization.string("Authenticated")
+                            : AppLocalization.string("Not authenticated")
                     )
                     LabeledContent("Session", value: scrobbleService.sessionStatus)
                     LabeledContent("ListenBrainz", value: scrobbleService.listenBrainzStatus)
@@ -360,5 +408,21 @@ struct SettingsView: View {
         }
         listenBrainzToken = ""
         reloadListenBrainzForm()
+    }
+
+    private func restartApplication() {
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.activates = true
+        configuration.createsNewApplicationInstance = true
+
+        NSWorkspace.shared.openApplication(
+            at: Bundle.main.bundleURL,
+            configuration: configuration
+        ) { _, error in
+            guard error == nil else { return }
+            DispatchQueue.main.async {
+                NSApp.terminate(nil)
+            }
+        }
     }
 }

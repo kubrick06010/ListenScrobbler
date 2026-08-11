@@ -1,3 +1,4 @@
 CFBundleDisplayName = "ListenScrobbler";
 CFBundleName = "ListenScrobbler";
 NSAppleMusicUsageDescription = "ListenScrobbler analiza los recuentos de reproducción de tu biblioteca musical para enviar nuevas escuchas a ListenBrainz.";
+NSAppleEventsUsageDescription = "ListenScrobbler lee la pista actual y la posición de reproducción de los reproductores de música compatibles para registrar tus escuchas.";

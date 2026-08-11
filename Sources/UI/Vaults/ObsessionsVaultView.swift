@@ -132,7 +132,7 @@ struct ObsessionsVaultView: View {
             Text(store.status)
                 .font(.custom("Avenir Next Medium", size: 12))
                 .foregroundStyle(.secondary)
-            if scrobbleService.listenBrainzPinsStatus != String(localized: "Not loaded") {
+            if scrobbleService.listenBrainzPinsStatus != AppLocalization.string("Not loaded") {
                 Label(scrobbleService.listenBrainzPinsStatus, systemImage: "pin")
                     .font(.custom("Avenir Next Medium", size: 12))
                     .foregroundStyle(.secondary)
@@ -151,9 +151,21 @@ struct ObsessionsVaultView: View {
             GridItem(.flexible(minimum: 220), spacing: 10),
             GridItem(.flexible(minimum: 220), spacing: 10)
         ], spacing: 10) {
-            VaultMetricCard(title: "Captured obsessions", value: "\(store.entries.count)", detail: "\(notesCount) with text memories")
-            VaultMetricCard(title: "Imports", value: "\(importedCount)", detail: "Recovered from portable bundle files")
-            VaultMetricCard(title: "ListenBrainz pins", value: "\(listenBrainzPinEntries.count)", detail: "Remote pins mixed into the timeline")
+            VaultMetricCard(
+                title: AppLocalization.string("Captured obsessions"),
+                value: "\(store.entries.count)",
+                detail: AppLocalization.string("\(notesCount) with text memories")
+            )
+            VaultMetricCard(
+                title: AppLocalization.string("Imports"),
+                value: "\(importedCount)",
+                detail: AppLocalization.string("Recovered from portable bundle files")
+            )
+            VaultMetricCard(
+                title: AppLocalization.string("ListenBrainz pins"),
+                value: "\(listenBrainzPinEntries.count)",
+                detail: AppLocalization.string("Remote pins mixed into the timeline")
+            )
         }
     }
 
@@ -173,7 +185,10 @@ struct ObsessionsVaultView: View {
                 }
 
                 if filteredEntries.isEmpty {
-                    VaultEmptyState(title: "No obsessions captured", detail: "Capture a track from Now Playing or import a bundle.")
+                    VaultEmptyState(
+                        title: AppLocalization.string("No obsessions captured"),
+                        detail: AppLocalization.string("Capture a track from Now Playing or import a bundle.")
+                    )
                 } else {
                     ForEach(filteredEntries) { entry in
                         ObsessionTimelineRow(entry: entry, isSelected: selectedEntry?.id == entry.id)

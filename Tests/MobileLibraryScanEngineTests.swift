@@ -118,7 +118,7 @@ final class MobileLibraryScanEngineTests: XCTestCase {
         XCTAssertEqual(result.pending.first?.lastError, TestSubmitError.offline.localizedDescription)
         XCTAssertEqual(
             result.summary.message,
-            String.localizedStringWithFormat(String(localized: "Submitted %d pending plays. %d still pending retry."), 0, 1)
+            AppLocalization.localizedStringWithFormat(AppLocalization.string("Submitted %d pending plays. %d still pending retry."), 0, 1)
         )
     }
 

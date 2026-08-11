@@ -6,7 +6,7 @@ struct ArtistExperienceData: Identifiable {
     let enrichment: OpenListeningEnrichment?
 
     var id: String { openDetails?.artistMBID ?? name }
-    var name: String { openDetails?.artistName.nilIfBlank ?? artist?.name.nilIfBlank ?? String(localized: "Unknown artist") }
+    var name: String { openDetails?.artistName.nilIfBlank ?? artist?.name.nilIfBlank ?? AppLocalization.string("Unknown artist") }
     var imageURL: String? { openDetails?.artistImageURL?.nilIfBlank ?? artist?.imageURL?.nilIfBlank }
     var summary: String? {
         if let localizedOpenSummary = openDetails?.artistSummaryForPreferredAppLanguage {
@@ -59,7 +59,7 @@ struct ArtistExperienceData: Identifiable {
                     name: related.name,
                     value: Double(max(1, related.totalListenCount)),
                     imageURL: related.imageURL,
-                    relationship: String(localized: "Similar on ListenBrainz"),
+                    relationship: AppLocalization.string("Similar on ListenBrainz"),
                     kind: .similarity
                 ))
             }
@@ -70,7 +70,7 @@ struct ArtistExperienceData: Identifiable {
                     name: related.name,
                     value: Double(max(1, compatibilitySimilarArtists.count - index)),
                     imageURL: related.imageURL,
-                    relationship: String(localized: "Similar artist"),
+                    relationship: AppLocalization.string("Similar artist"),
                     kind: .similarity
                 ))
             }
@@ -82,7 +82,7 @@ struct ArtistExperienceData: Identifiable {
                 name: connection.name,
                 value: 1,
                 imageURL: nil,
-                relationship: String(localized: "Alias"),
+                relationship: AppLocalization.string("Alias"),
                 kind: .alias
             ))
         }
@@ -95,7 +95,7 @@ struct ArtistExperienceData: Identifiable {
         let end = year(openDetails?.artistEndDate)
         if let begin, let end { return "\(begin)–\(end)" }
         if let begin, openDetails?.artistEnded == false {
-            return String.localizedStringWithFormat(String(localized: "Active since %@"), begin)
+            return AppLocalization.localizedStringWithFormat(AppLocalization.string("Active since %@"), begin)
         }
         return begin
     }
@@ -108,10 +108,10 @@ struct ArtistExperienceData: Identifiable {
 
     var semanticType: String? {
         switch (enrichment?.artistProfile?.type ?? openDetails?.type)?.lowercased() {
-        case "person": return String(localized: "Artist")
-        case "group": return String(localized: "Group")
-        case "orchestra": return String(localized: "Orchestra")
-        case "choir": return String(localized: "Choir")
+        case "person": return AppLocalization.string("Artist")
+        case "group": return AppLocalization.string("Group")
+        case "orchestra": return AppLocalization.string("Orchestra")
+        case "choir": return AppLocalization.string("Choir")
         case let value?: return value.capitalized
         case nil: return nil
         }
@@ -135,18 +135,18 @@ struct ArtistExperienceData: Identifiable {
     private var localizedMetadataSummary: String? {
         var fragments: [String] = []
         if let semanticType {
-            fragments.append(String.localizedStringWithFormat(String(localized: "%@ is listed as %@ in MusicBrainz"), name, semanticType.lowercased()))
+            fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("%@ is listed as %@ in MusicBrainz"), name, semanticType.lowercased()))
         } else {
-            fragments.append(String.localizedStringWithFormat(String(localized: "%@ is indexed in MusicBrainz"), name))
+            fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("%@ is indexed in MusicBrainz"), name))
         }
         if let lifeSpan {
             fragments.append(lifeSpan)
         }
         if let location {
-            fragments.append(String.localizedStringWithFormat(String(localized: "Area: %@"), location))
+            fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("Area: %@"), location))
         }
         if !tags.isEmpty {
-            fragments.append(String.localizedStringWithFormat(String(localized: "Tags: %@"), tags.prefix(5).joined(separator: ", ")))
+            fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("Tags: %@"), tags.prefix(5).joined(separator: ", ")))
         }
         return fragments.isEmpty ? nil : fragments.joined(separator: ". ") + "."
     }
@@ -168,14 +168,14 @@ struct ArtistExperienceData: Identifiable {
 
     func localizedRelationship(_ relationship: String) -> String {
         switch relationship.lowercased() {
-        case "alias": return String(localized: "Alias")
-        case "member": return String(localized: "Member")
-        case "member of": return String(localized: "Member of")
-        case "collaboration": return String(localized: "Collaboration")
-        case "supporting musician": return String(localized: "Supporting musician")
-        case "instrumental support": return String(localized: "Instrumental support")
-        case "vocal support": return String(localized: "Vocal support")
-        case "tribute": return String(localized: "Tribute")
+        case "alias": return AppLocalization.string("Alias")
+        case "member": return AppLocalization.string("Member")
+        case "member of": return AppLocalization.string("Member of")
+        case "collaboration": return AppLocalization.string("Collaboration")
+        case "supporting musician": return AppLocalization.string("Supporting musician")
+        case "instrumental support": return AppLocalization.string("Instrumental support")
+        case "vocal support": return AppLocalization.string("Vocal support")
+        case "tribute": return AppLocalization.string("Tribute")
         default: return relationship
         }
     }

@@ -11,6 +11,7 @@ enum AppEvents {
 
 @main
 struct ListenScrobblerApp: App {
+    @StateObject private var localizationController = LocalizationController()
     @StateObject private var scrobbleService = ScrobbleService()
     @StateObject private var launchAtLoginController = LaunchAtLoginController()
     @StateObject private var proxySettingsController = ProxySettingsController()
@@ -22,9 +23,11 @@ struct ListenScrobblerApp: App {
     var body: some Scene {
         Window("ListenScrobbler", id: "main") {
             ContentView()
+                .environmentObject(localizationController)
                 .environmentObject(scrobbleService)
                 .environmentObject(launchAtLoginController)
                 .environmentObject(proxySettingsController)
+                .environment(\.locale, localizationController.effectiveLocale)
                 .frame(minWidth: 760, minHeight: 560)
                 .onAppear {
                     applyDockIconVisibility()
@@ -34,6 +37,7 @@ struct ListenScrobblerApp: App {
                     applyDockIconVisibility()
                 }
         }
+        .environment(\.locale, localizationController.effectiveLocale)
         .defaultSize(width: 1180, height: 760)
         .commands {
             CommandMenu("Tools") {
@@ -97,18 +101,25 @@ struct ListenScrobblerApp: App {
                 openLegacySettingsWindow: openLegacySettingsWindow,
                 quitApp: quitApp
             )
+            .environmentObject(localizationController)
+            .environment(\.locale, localizationController.effectiveLocale)
         } label: {
             MenuBarStatusIcon(isEnabled: scrobbleService.scrobblingEnabled)
+                .environment(\.locale, localizationController.effectiveLocale)
         }
         .menuBarExtraStyle(.window)
+        .environment(\.locale, localizationController.effectiveLocale)
 
         Settings {
             SettingsView()
+                .environmentObject(localizationController)
                 .environmentObject(scrobbleService)
                 .environmentObject(launchAtLoginController)
                 .environmentObject(proxySettingsController)
+                .environment(\.locale, localizationController.effectiveLocale)
                 .frame(minWidth: 760, minHeight: 520)
         }
+        .environment(\.locale, localizationController.effectiveLocale)
     }
 
     private func toggleDockIconVisibility() {
@@ -190,8 +201,8 @@ private struct MenuBarStatusIcon: View {
         Image(nsImage: menuBarStatusImage(isEnabled: isEnabled))
             .frame(width: 18, height: 18)
             .accessibilityLabel(Text(isEnabled
-                ? String(localized: "Listening submissions enabled")
-                : String(localized: "Listening submissions disabled")))
+                ? AppLocalization.string("Listening submissions enabled")
+                : AppLocalization.string("Listening submissions disabled")))
     }
 
     private func menuBarStatusImage(isEnabled: Bool) -> NSImage {
@@ -241,8 +252,8 @@ private struct MenuBarPanel: View {
                     Text("Listening Submissions")
                         .font(.custom("Avenir Next Demi Bold", size: 13))
                     Text(scrobbleService.scrobblingEnabled
-                        ? String(localized: "Enabled")
-                        : String(localized: "Disabled"))
+                        ? AppLocalization.string("Enabled")
+                        : AppLocalization.string("Disabled"))
                         .font(.custom("Avenir Next Regular", size: 11))
                         .foregroundStyle(.secondary)
                 }
@@ -322,10 +333,10 @@ private struct MenuBarPanel: View {
     }
 
     private var loveButtonTitle: String {
-        guard scrobbleService.currentTrack != nil else { return String(localized: "Love current track") }
+        guard scrobbleService.currentTrack != nil else { return AppLocalization.string("Love current track") }
         return scrobbleService.listenBrainzCurrentTrackLoved
-            ? String(localized: "Unlove")
-            : String(localized: "Love")
+            ? AppLocalization.string("Unlove")
+            : AppLocalization.string("Love")
     }
 
     private var loveButtonStatus: String {
@@ -333,14 +344,14 @@ private struct MenuBarPanel: View {
             return scrobbleService.listenBrainzFeedbackStatus
         }
         guard scrobbleService.currentTrack != nil else {
-            return String(localized: "Waiting for playback")
+            return AppLocalization.string("Waiting for playback")
         }
         guard scrobbleService.listenBrainzEnabled else {
-            return String(localized: "Connect ListenBrainz to use feedback")
+            return AppLocalization.string("Connect ListenBrainz to use feedback")
         }
         return scrobbleService.listenBrainzCurrentTrackLoved
-            ? String(localized: "Synced as loved on ListenBrainz")
-            : String(localized: "Ready to love on ListenBrainz")
+            ? AppLocalization.string("Synced as loved on ListenBrainz")
+            : AppLocalization.string("Ready to love on ListenBrainz")
     }
 
     private var nowPlayingHeader: some View {
@@ -461,14 +472,14 @@ private struct MenuBarPanel: View {
     private var trackTitle: String {
         scrobbleService.currentTrackDetails?.name
             ?? scrobbleService.currentTrack?.title
-            ?? String(localized: "No track playing")
+            ?? AppLocalization.string("No track playing")
     }
 
     private var trackSubtitle: String {
         guard let currentTrack = scrobbleService.currentTrack else {
-            return scrobbleService.sessionUsername.map { String(localized: "Signed in as \($0)") }
+            return scrobbleService.sessionUsername.map { AppLocalization.string("Signed in as \($0)") }
                 ?? scrobbleService.listenBrainzUsername.map { "ListenBrainz: \($0)" }
-                ?? String(localized: "Waiting for playback")
+                ?? AppLocalization.string("Waiting for playback")
         }
 
         let artist = scrobbleService.currentTrackDetails?.artist ?? currentTrack.artist
@@ -525,8 +536,8 @@ struct DiagnosticsView: View {
                         diagnosticsRow(
                             "Auth",
                             scrobbleService.isAuthenticated
-                                ? String(localized: "Authenticated")
-                                : String(localized: "Not authenticated")
+                                ? AppLocalization.string("Authenticated")
+                                : AppLocalization.string("Not authenticated")
                         )
                         diagnosticsRow("Session", scrobbleService.sessionStatus)
                         diagnosticsRow("ListenBrainz", scrobbleService.listenBrainzStatus)
@@ -561,8 +572,8 @@ struct DiagnosticsView: View {
                         diagnosticsRow(
                             "Retry Scheduled",
                             scrobbleService.isRetryScheduled
-                                ? String(localized: "Yes")
-                                : String(localized: "No")
+                                ? AppLocalization.string("Yes")
+                                : AppLocalization.string("No")
                         )
                         diagnosticsRow("Queue File", scrobbleService.queueFilePath)
                         if let lastSubmittedAt = scrobbleService.lastSubmittedAt {

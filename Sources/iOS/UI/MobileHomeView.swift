@@ -132,8 +132,8 @@ private struct MobileStatsOverviewRow: View {
                 Spacer()
 
                 if let totalListenCount = snapshot.totalListenCount {
-                    Text(String.localizedStringWithFormat(
-                        String(localized: "%@ listens"),
+                    Text(AppLocalization.localizedStringWithFormat(
+                        AppLocalization.string("%@ listens"),
                         AppLocalization.integer(totalListenCount)
                     ))
                         .font(.caption.weight(.semibold))

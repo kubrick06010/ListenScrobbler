@@ -70,9 +70,9 @@ public enum MobileMusicEntityKind: String, Equatable, Hashable {
 
     public var title: String {
         switch self {
-        case .track: return String(localized: "Song")
-        case .release: return String(localized: "Release")
-        case .artist: return String(localized: "Artist")
+        case .track: return AppLocalization.string("Song")
+        case .release: return AppLocalization.string("Release")
+        case .artist: return AppLocalization.string("Artist")
         }
     }
 
@@ -109,7 +109,7 @@ public struct MobileMusicDetailSeed: Identifiable, Equatable, Hashable {
         imageURL: String? = nil
     ) {
         let normalizedTrackName = trackName?.nilIfBlank
-        let normalizedArtistName = artistName.nilIfBlank ?? String(localized: "Unknown artist")
+        let normalizedArtistName = artistName.nilIfBlank ?? AppLocalization.string("Unknown artist")
         let normalizedReleaseName = releaseName?.nilIfBlank
         let normalizedRecordingMBID = recordingMBID?.nilIfBlank
         let normalizedRecordingMSID = recordingMSID?.nilIfBlank
@@ -191,9 +191,9 @@ public enum MobileDiscoverySearchScope: String, CaseIterable, Identifiable {
 
     public var title: String {
         switch self {
-        case .tracks: return String(localized: "Songs")
-        case .artists: return String(localized: "Artists")
-        case .releases: return String(localized: "Releases")
+        case .tracks: return AppLocalization.string("Songs")
+        case .artists: return AppLocalization.string("Artists")
+        case .releases: return AppLocalization.string("Releases")
         }
     }
 
@@ -246,10 +246,10 @@ public enum MobileStatsRange: String, CaseIterable, Identifiable {
 
     public var title: String {
         switch self {
-        case .week: return String(localized: "Week")
-        case .month: return String(localized: "Month")
-        case .year: return String(localized: "Year")
-        case .allTime: return String(localized: "All Time")
+        case .week: return AppLocalization.string("Week")
+        case .month: return AppLocalization.string("Month")
+        case .year: return AppLocalization.string("Year")
+        case .allTime: return AppLocalization.string("All Time")
         }
     }
 }
@@ -385,11 +385,11 @@ public final class MobileListeningStore: ObservableObject {
         public var statusText: String {
             switch self {
             case .disconnected:
-                return String(localized: "Connect ListenBrainz")
+                return AppLocalization.string("Connect ListenBrainz")
             case let .connected(username):
-                return String.localizedStringWithFormat(String(localized: "%@ on ListenBrainz"), username)
+                return AppLocalization.localizedStringWithFormat(AppLocalization.string("%@ on ListenBrainz"), username)
             case .loading:
-                return String(localized: "Loading ListenBrainz")
+                return AppLocalization.string("Loading ListenBrainz")
             case let .failed(message):
                 return message
             }
@@ -400,16 +400,16 @@ public final class MobileListeningStore: ObservableObject {
     @Published public private(set) var recentListens: [MobileListenSummary] = []
     @Published public private(set) var currentPin: MobilePinnedRecording?
     @Published public private(set) var statsSnapshot: MobileStatsSnapshot?
-    @Published public private(set) var statsStatus = String(localized: "Connect ListenBrainz to load stats")
+    @Published public private(set) var statsStatus = AppLocalization.string("Connect ListenBrainz to load stats")
     @Published public private(set) var recommendedRecordings: [MobileRecommendedRecording] = []
-    @Published public private(set) var recommendationsStatus = String(localized: "Connect ListenBrainz to load recommendations")
+    @Published public private(set) var recommendationsStatus = AppLocalization.string("Connect ListenBrainz to load recommendations")
     @Published public private(set) var socialSnapshot: MobileSocialSnapshot?
-    @Published public private(set) var socialStatus = String(localized: "Connect ListenBrainz to load social activity")
+    @Published public private(set) var socialStatus = AppLocalization.string("Connect ListenBrainz to load social activity")
     @Published public private(set) var searchResults: [MobileDiscoverySearchResult] = []
-    @Published public private(set) var searchStatus = String(localized: "Search MusicBrainz for songs, artists, and releases")
+    @Published public private(set) var searchStatus = AppLocalization.string("Search MusicBrainz for songs, artists, and releases")
     @Published public private(set) var radioQueue: [MobileRadioQueueItem] = []
     @Published public private(set) var radioArtists: [MobileRadioArtist] = []
-    @Published public private(set) var radioStatus = String(localized: "Load a recommendation radio queue")
+    @Published public private(set) var radioStatus = AppLocalization.string("Load a recommendation radio queue")
     @Published public private(set) var listenActionStatus = ""
     @Published public private(set) var isRefreshing = false
     @Published public private(set) var isRefreshingStats = false
@@ -472,7 +472,7 @@ public final class MobileListeningStore: ObservableObject {
         let trimmedToken = token.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedToken.isEmpty else {
             logger.warning("ListenBrainz connect rejected empty token")
-            connectionState = .failed(String(localized: "Paste a ListenBrainz token."))
+            connectionState = .failed(AppLocalization.string("Paste a ListenBrainz token."))
             return
         }
 
@@ -528,16 +528,16 @@ public final class MobileListeningStore: ObservableObject {
         recentListens = []
         currentPin = nil
         statsSnapshot = nil
-        statsStatus = String(localized: "Connect ListenBrainz to load stats")
+        statsStatus = AppLocalization.string("Connect ListenBrainz to load stats")
         recommendedRecordings = []
-        recommendationsStatus = String(localized: "Connect ListenBrainz to load recommendations")
+        recommendationsStatus = AppLocalization.string("Connect ListenBrainz to load recommendations")
         socialSnapshot = nil
-        socialStatus = String(localized: "Connect ListenBrainz to load social activity")
+        socialStatus = AppLocalization.string("Connect ListenBrainz to load social activity")
         searchResults = []
-        searchStatus = String(localized: "Search MusicBrainz for songs, artists, and releases")
+        searchStatus = AppLocalization.string("Search MusicBrainz for songs, artists, and releases")
         radioQueue = []
         radioArtists = []
-        radioStatus = String(localized: "Load a recommendation radio queue")
+        radioStatus = AppLocalization.string("Load a recommendation radio queue")
         listenActionStatus = ""
         connectionState = .disconnected
         widgetSnapshotStore.clear()
@@ -606,19 +606,19 @@ public final class MobileListeningStore: ObservableObject {
 
     public func pin(_ seed: MobileMusicDetailSeed, blurb: String? = nil) async -> Bool {
         guard hasStoredToken else {
-            listenActionStatus = String(localized: "Connect ListenBrainz to pin recordings")
+            listenActionStatus = AppLocalization.string("Connect ListenBrainz to pin recordings")
             return false
         }
 
         let recordingMBID = Self.nonBlank(seed.recordingMBID)
         let recordingMSID = Self.nonBlank(seed.recordingMSID)
         guard recordingMBID != nil || recordingMSID != nil else {
-            listenActionStatus = String(localized: "Missing recording identity for pin")
+            listenActionStatus = AppLocalization.string("Missing recording identity for pin")
             return false
         }
 
         isUpdatingListenAction = true
-        listenActionStatus = String.localizedStringWithFormat(String(localized: "Pinning %@"), seed.displayTitle)
+        listenActionStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Pinning %@"), seed.displayTitle)
         defer { isUpdatingListenAction = false }
 
         do {
@@ -631,11 +631,11 @@ public final class MobileListeningStore: ObservableObject {
                 try await listenBrainz.pinRecording(recordingMsid: recordingMSID, blurb: blurb, pinnedUntil: nil)
             }
             await refresh()
-            listenActionStatus = String.localizedStringWithFormat(String(localized: "Pinned %@"), seed.displayTitle)
+            listenActionStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Pinned %@"), seed.displayTitle)
             return true
         } catch {
             logger.error("ListenBrainz pin failed: \(error.localizedDescription, privacy: .public)")
-            listenActionStatus = String.localizedStringWithFormat(String(localized: "Could not pin %@"), seed.displayTitle)
+            listenActionStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Could not pin %@"), seed.displayTitle)
             return false
         }
     }
@@ -646,23 +646,23 @@ public final class MobileListeningStore: ObservableObject {
 
     public func unpinCurrent() async -> Bool {
         guard hasStoredToken else {
-            listenActionStatus = String(localized: "Connect ListenBrainz to remove pins")
+            listenActionStatus = AppLocalization.string("Connect ListenBrainz to remove pins")
             return false
         }
 
         isUpdatingListenAction = true
-        listenActionStatus = String(localized: "Removing current pin")
+        listenActionStatus = AppLocalization.string("Removing current pin")
         defer { isUpdatingListenAction = false }
 
         do {
             try await listenBrainz.unpinCurrentRecording()
             currentPin = nil
             persistWidgetSnapshot()
-            listenActionStatus = String(localized: "Current pin removed")
+            listenActionStatus = AppLocalization.string("Current pin removed")
             return true
         } catch {
             logger.error("ListenBrainz unpin failed: \(error.localizedDescription, privacy: .public)")
-            listenActionStatus = String(localized: "Could not remove current pin")
+            listenActionStatus = AppLocalization.string("Could not remove current pin")
             return false
         }
     }
@@ -687,14 +687,14 @@ public final class MobileListeningStore: ObservableObject {
 
     public func refreshStats(range: MobileStatsRange = .week) async {
         guard case let .connected(username) = connectionState else {
-            statsStatus = String(localized: "Connect ListenBrainz to load stats")
+            statsStatus = AppLocalization.string("Connect ListenBrainz to load stats")
             statsSnapshot = nil
             return
         }
 
         logger.info("ListenBrainz mobile stats refresh started for user \(username, privacy: .public)")
         isRefreshingStats = true
-        statsStatus = String.localizedStringWithFormat(String(localized: "Loading %@ stats"), range.title.lowercased())
+        statsStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Loading %@ stats"), range.title.lowercased())
         defer { isRefreshingStats = false }
 
         do {
@@ -704,24 +704,24 @@ public final class MobileListeningStore: ObservableObject {
                 count: 8
             )
             statsSnapshot = MobileStatsSnapshot(snapshot: snapshot, range: range)
-            statsStatus = String.localizedStringWithFormat(String(localized: "Loaded %@ stats"), range.title.lowercased())
+            statsStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Loaded %@ stats"), range.title.lowercased())
             logger.info("ListenBrainz mobile stats refresh succeeded with \(self.statsSnapshot?.topArtists.count ?? 0, privacy: .public) artists")
         } catch {
             logger.error("ListenBrainz mobile stats refresh failed: \(error.localizedDescription, privacy: .public)")
-            statsStatus = String.localizedStringWithFormat(String(localized: "Failed to load stats: %@"), error.localizedDescription)
+            statsStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Failed to load stats: %@"), error.localizedDescription)
         }
     }
 
     public func refreshRecommendations() async {
         guard case let .connected(username) = connectionState else {
-            recommendationsStatus = String(localized: "Connect ListenBrainz to load recommendations")
+            recommendationsStatus = AppLocalization.string("Connect ListenBrainz to load recommendations")
             recommendedRecordings = []
             return
         }
 
         logger.info("ListenBrainz mobile recommendations refresh started for user \(username, privacy: .public)")
         isRefreshingRecommendations = true
-        recommendationsStatus = String(localized: "Loading recommendations")
+        recommendationsStatus = AppLocalization.string("Loading recommendations")
         defer { isRefreshingRecommendations = false }
 
         do {
@@ -732,13 +732,13 @@ public final class MobileListeningStore: ObservableObject {
             )
             recommendedRecordings = recommendations.map(MobileRecommendedRecording.init(recommendation:))
             recommendationsStatus = recommendedRecordings.isEmpty
-                ? String(localized: "No recommendations returned")
-                : String.localizedStringWithFormat(String(localized: "%d recommendations loaded"), recommendedRecordings.count)
+                ? AppLocalization.string("No recommendations returned")
+                : AppLocalization.localizedStringWithFormat(AppLocalization.string("%d recommendations loaded"), recommendedRecordings.count)
             persistWidgetSnapshot()
             logger.info("ListenBrainz mobile recommendations refresh succeeded with \(self.recommendedRecordings.count, privacy: .public) recordings")
         } catch {
             logger.error("ListenBrainz mobile recommendations refresh failed: \(error.localizedDescription, privacy: .public)")
-            recommendationsStatus = String.localizedStringWithFormat(String(localized: "Failed to load recommendations: %@"), error.localizedDescription)
+            recommendationsStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Failed to load recommendations: %@"), error.localizedDescription)
             persistWidgetSnapshot()
         }
     }
@@ -747,13 +747,13 @@ public final class MobileListeningStore: ObservableObject {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
             searchResults = []
-            searchStatus = String(localized: "Search MusicBrainz for songs, artists, and releases")
+            searchStatus = AppLocalization.string("Search MusicBrainz for songs, artists, and releases")
             return
         }
 
         logger.info("Mobile discovery search started for scope \(scope.rawValue, privacy: .public)")
         isSearching = true
-        searchStatus = String.localizedStringWithFormat(String(localized: "Searching %@"), trimmed)
+        searchStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Searching %@"), trimmed)
         defer { isSearching = false }
 
         do {
@@ -764,12 +764,12 @@ public final class MobileListeningStore: ObservableObject {
             )
             searchResults = results.map { MobileDiscoverySearchResult(result: $0, scope: scope) }
             searchStatus = searchResults.isEmpty
-                ? String(localized: "No open music results found")
-                : String.localizedStringWithFormat(String(localized: "%d open music results found"), searchResults.count)
+                ? AppLocalization.string("No open music results found")
+                : AppLocalization.localizedStringWithFormat(AppLocalization.string("%d open music results found"), searchResults.count)
         } catch {
             logger.error("Mobile discovery search failed: \(error.localizedDescription, privacy: .public)")
             searchResults = []
-            searchStatus = String.localizedStringWithFormat(String(localized: "Search failed: %@"), error.localizedDescription)
+            searchStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Search failed: %@"), error.localizedDescription)
         }
     }
 
@@ -785,7 +785,7 @@ public final class MobileListeningStore: ObservableObject {
 
     public func refreshRadio(seed: MobileRadioSeed? = nil) async {
         guard case let .connected(username) = connectionState else {
-            radioStatus = String(localized: "Connect ListenBrainz to load radio")
+            radioStatus = AppLocalization.string("Connect ListenBrainz to load radio")
             radioQueue = []
             radioArtists = []
             return
@@ -794,8 +794,8 @@ public final class MobileListeningStore: ObservableObject {
         logger.info("Mobile radio refresh started for user \(username, privacy: .public)")
         isRefreshingRadio = true
         radioStatus = seed.map {
-            String.localizedStringWithFormat(String(localized: "Loading %@ radio"), $0.artistName)
-        } ?? String(localized: "Loading recommendation radio")
+            AppLocalization.localizedStringWithFormat(AppLocalization.string("Loading %@ radio"), $0.artistName)
+        } ?? AppLocalization.string("Loading recommendation radio")
         defer { isRefreshingRadio = false }
 
         do {
@@ -821,34 +821,34 @@ public final class MobileListeningStore: ObservableObject {
             radioQueue = resolvedRecommendations.map(MobileRadioQueueItem.init(recommendation:))
             radioArtists = similarArtists.map(MobileRadioArtist.init(artist:))
             radioStatus = seed.map {
-                String.localizedStringWithFormat(
-                    String(localized: "%d queued recordings and %d related artists for %@"),
+                AppLocalization.localizedStringWithFormat(
+                    AppLocalization.string("%d queued recordings and %d related artists for %@"),
                     radioQueue.count,
                     radioArtists.count,
                     $0.artistName
                 )
-            } ?? String.localizedStringWithFormat(
-                String(localized: "%d recommendation radio recordings loaded"),
+            } ?? AppLocalization.localizedStringWithFormat(
+                AppLocalization.string("%d recommendation radio recordings loaded"),
                 radioQueue.count
             )
         } catch {
             logger.error("Mobile radio refresh failed: \(error.localizedDescription, privacy: .public)")
             radioQueue = []
             radioArtists = []
-            radioStatus = String.localizedStringWithFormat(String(localized: "Radio failed: %@"), error.localizedDescription)
+            radioStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Radio failed: %@"), error.localizedDescription)
         }
     }
 
     public func refreshSocial() async {
         guard case let .connected(username) = connectionState else {
-            socialStatus = String(localized: "Connect ListenBrainz to load social activity")
+            socialStatus = AppLocalization.string("Connect ListenBrainz to load social activity")
             socialSnapshot = nil
             return
         }
 
         logger.info("ListenBrainz mobile social refresh started for user \(username, privacy: .public)")
         isRefreshingSocial = true
-        socialStatus = String(localized: "Loading social activity")
+        socialStatus = AppLocalization.string("Loading social activity")
         defer { isRefreshingSocial = false }
 
         do {
@@ -880,8 +880,8 @@ public final class MobileListeningStore: ObservableObject {
                 neighborListens: listens.map(MobileSocialListen.init(listen:)),
                 fetchedAt: .now
             )
-            socialStatus = String.localizedStringWithFormat(
-                String(localized: "%d followers, %d following, and %d neighbor listens loaded"),
+            socialStatus = AppLocalization.localizedStringWithFormat(
+                AppLocalization.string("%d followers, %d following, and %d neighbor listens loaded"),
                 resolvedFollowers.count,
                 resolvedFollowing.count,
                 listens.count
@@ -889,7 +889,7 @@ public final class MobileListeningStore: ObservableObject {
             logger.info("ListenBrainz mobile social refresh succeeded with \(listens.count, privacy: .public) neighbor listens")
         } catch {
             logger.error("ListenBrainz mobile social refresh failed: \(error.localizedDescription, privacy: .public)")
-            socialStatus = String.localizedStringWithFormat(String(localized: "Failed to load social activity: %@"), error.localizedDescription)
+            socialStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Failed to load social activity: %@"), error.localizedDescription)
         }
     }
 
@@ -941,15 +941,25 @@ public final class MobileListeningStore: ObservableObject {
 
     public func widgetSnapshot(updatedAt: Date = .now) -> MobileWidgetSnapshot {
         let username: String?
+        let widgetConnectionState: MobileWidgetConnectionState
         switch connectionState {
         case let .connected(resolvedUsername):
             username = resolvedUsername
-        default:
+            widgetConnectionState = .connected
+        case .disconnected:
             username = Self.nonBlank(settingsStore.load().username)
+            widgetConnectionState = .disconnected
+        case .loading:
+            username = Self.nonBlank(settingsStore.load().username)
+            widgetConnectionState = .loading
+        case .failed:
+            username = Self.nonBlank(settingsStore.load().username)
+            widgetConnectionState = .failed
         }
 
         return MobileWidgetSnapshot(
             connectionStatus: connectionState.statusText,
+            connectionState: widgetConnectionState,
             username: username,
             recentListen: recentListens.first.map {
                 MobileWidgetListen(
@@ -994,21 +1004,21 @@ public final class MobileListeningStore: ObservableObject {
 
     private func submitFeedback(seed: MobileMusicDetailSeed, love: Bool) async -> Bool {
         guard hasStoredToken else {
-            listenActionStatus = String(localized: "Connect ListenBrainz to update feedback")
+            listenActionStatus = AppLocalization.string("Connect ListenBrainz to update feedback")
             return false
         }
 
         let recordingMBID = Self.nonBlank(seed.recordingMBID)
         let recordingMSID = Self.nonBlank(seed.recordingMSID)
         guard recordingMBID != nil || recordingMSID != nil else {
-            listenActionStatus = String(localized: "Missing recording identity for feedback")
+            listenActionStatus = AppLocalization.string("Missing recording identity for feedback")
             return false
         }
 
         isUpdatingListenAction = true
         listenActionStatus = love
-            ? String.localizedStringWithFormat(String(localized: "Loving %@"), seed.displayTitle)
-            : String.localizedStringWithFormat(String(localized: "Removing love from %@"), seed.displayTitle)
+            ? AppLocalization.localizedStringWithFormat(AppLocalization.string("Loving %@"), seed.displayTitle)
+            : AppLocalization.localizedStringWithFormat(AppLocalization.string("Removing love from %@"), seed.displayTitle)
         defer { isUpdatingListenAction = false }
 
         do {
@@ -1026,12 +1036,12 @@ public final class MobileListeningStore: ObservableObject {
                 }
             }
             listenActionStatus = love
-                ? String.localizedStringWithFormat(String(localized: "Loved %@"), seed.displayTitle)
-                : String.localizedStringWithFormat(String(localized: "Unloved %@"), seed.displayTitle)
+                ? AppLocalization.localizedStringWithFormat(AppLocalization.string("Loved %@"), seed.displayTitle)
+                : AppLocalization.localizedStringWithFormat(AppLocalization.string("Unloved %@"), seed.displayTitle)
             return true
         } catch {
             logger.error("ListenBrainz feedback failed: \(error.localizedDescription, privacy: .public)")
-            listenActionStatus = String.localizedStringWithFormat(String(localized: "Could not update %@"), seed.displayTitle)
+            listenActionStatus = AppLocalization.localizedStringWithFormat(AppLocalization.string("Could not update %@"), seed.displayTitle)
             return false
         }
     }
@@ -1055,7 +1065,7 @@ public enum MobileListeningError: LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .listenBrainzDisconnected:
-            return String(localized: "Connect ListenBrainz before submitting listens.")
+            return AppLocalization.string("Connect ListenBrainz before submitting listens.")
         }
     }
 }
@@ -1203,7 +1213,7 @@ private extension MobileMusicDetailSeed {
         self.init(
             kind: .track,
             trackName: recommendation.title,
-            artistName: recommendation.artistName ?? String(localized: "Unknown artist"),
+            artistName: recommendation.artistName ?? AppLocalization.string("Unknown artist"),
             releaseName: recommendation.releaseName,
             recordingMBID: recommendation.recordingMBID
         )
@@ -1253,7 +1263,7 @@ private extension MobileDiscoverySearchResult {
         let seed = MobileMusicDetailSeed(
             kind: seedKind,
             trackName: result.kind == .recording ? result.title : nil,
-            artistName: result.kind == .artist ? result.title : (result.subtitle ?? String(localized: "Unknown artist")),
+            artistName: result.kind == .artist ? result.title : (result.subtitle ?? AppLocalization.string("Unknown artist")),
             releaseName: result.kind == .release ? result.title : result.detail,
             recordingMBID: result.recordingMBID,
             artistMBID: result.artistMBID,
@@ -1277,7 +1287,7 @@ private extension MobileRadioQueueItem {
         let seed = MobileMusicDetailSeed(
             kind: .track,
             trackName: recommendation.title,
-            artistName: recommendation.artistName ?? String(localized: "Unknown artist"),
+            artistName: recommendation.artistName ?? AppLocalization.string("Unknown artist"),
             releaseName: recommendation.releaseName,
             recordingMBID: recommendation.recordingMbid
         )

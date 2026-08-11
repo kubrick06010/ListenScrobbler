@@ -130,8 +130,8 @@ struct ListenActionRow: View {
                     Image(systemName: loved ? "heart.fill" : "heart")
                 }
                 .help(loved
-                    ? String(localized: "Unlove on ListenBrainz")
-                    : String(localized: "Love on ListenBrainz"))
+                    ? AppLocalization.string("Unlove on ListenBrainz")
+                    : AppLocalization.string("Love on ListenBrainz"))
                 .disabled(!scrobbleService.listenBrainzEnabled || scrobbleService.isUpdatingListenBrainzFeedback)
 
                 Button {
@@ -151,8 +151,8 @@ struct ListenActionRow: View {
                     Image(systemName: isPinned ? "pin.fill" : "pin")
                 }
                 .help(isPinned
-                    ? String(localized: "Unpin from ListenBrainz")
-                    : String(localized: "Pin on ListenBrainz"))
+                    ? AppLocalization.string("Unpin from ListenBrainz")
+                    : AppLocalization.string("Pin on ListenBrainz"))
                 .disabled(!scrobbleService.listenBrainzEnabled)
 
                 Button {
@@ -168,12 +168,12 @@ struct ListenActionRow: View {
                     Image(systemName: "trash")
                 }
                 .help(canDeleteListen
-                    ? String(localized: "Delete from ListenBrainz")
-                    : String(localized: "ListenBrainz deletion needs a listen timestamp and recording MSID"))
+                    ? AppLocalization.string("Delete from ListenBrainz")
+                    : AppLocalization.string("ListenBrainz deletion needs a listen timestamp and recording MSID"))
                 .disabled(!canDeleteListen)
 
                 Text(nowPlaying
-                    ? String(localized: "Now")
+                    ? AppLocalization.string("Now")
                     : (playedAt.map { AppLocalization.date($0, date: .omitted, time: .shortened) } ?? "-"))
                     .font(.custom("Avenir Next Regular", size: 11))
                     .foregroundStyle(.secondary)

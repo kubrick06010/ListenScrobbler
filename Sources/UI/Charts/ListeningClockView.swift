@@ -10,25 +10,25 @@ enum ReportPeriod: CaseIterable {
 
     var label: String {
         switch self {
-        case .week: return String(localized: "Last.week")
-        case .month: return String(localized: "Last.month")
-        case .year: return String(localized: "Last.year")
+        case .week: return AppLocalization.string("Last.week")
+        case .month: return AppLocalization.string("Last.month")
+        case .year: return AppLocalization.string("Last.year")
         }
     }
 
     var currentLabel: String {
         switch self {
-        case .week: return String(localized: "week")
-        case .month: return String(localized: "month")
-        case .year: return String(localized: "year")
+        case .week: return AppLocalization.string("week")
+        case .month: return AppLocalization.string("month")
+        case .year: return AppLocalization.string("year")
         }
     }
 
     var previousLabel: String {
         switch self {
-        case .week: return String(localized: "last week")
-        case .month: return String(localized: "last month")
-        case .year: return String(localized: "last year")
+        case .week: return AppLocalization.string("last week")
+        case .month: return AppLocalization.string("last month")
+        case .year: return AppLocalization.string("last year")
         }
     }
 

@@ -11,9 +11,9 @@ enum ProxyMode: String, Codable, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .system:
-            return String(localized: "Auto Detect")
+            return AppLocalization.string("Auto Detect")
         case .none:
-            return String(localized: "No Proxy")
+            return AppLocalization.string("No Proxy")
         case .http:
             return "HTTP"
         case .socks5:
@@ -107,19 +107,19 @@ final class ProxySettingsController: ObservableObject {
     var statusDescription: String {
         switch settings.mode {
         case .system:
-            return String(localized: "Using macOS system proxy settings.")
+            return AppLocalization.string("Using macOS system proxy settings.")
         case .none:
-            return String(localized: "Direct connection without a proxy.")
+            return AppLocalization.string("Direct connection without a proxy.")
         case .http:
             if let port = settings.normalizedPort, !settings.normalizedHost.isEmpty {
-                return String.localizedStringWithFormat(String(localized: "HTTP proxy %@:%lld"), settings.normalizedHost, Int64(port))
+                return AppLocalization.localizedStringWithFormat(AppLocalization.string("HTTP proxy %@:%lld"), settings.normalizedHost, Int64(port))
             }
-            return String(localized: "HTTP proxy needs a host and port.")
+            return AppLocalization.string("HTTP proxy needs a host and port.")
         case .socks5:
             if let port = settings.normalizedPort, !settings.normalizedHost.isEmpty {
-                return String.localizedStringWithFormat(String(localized: "SOCKS5 proxy %@:%lld"), settings.normalizedHost, Int64(port))
+                return AppLocalization.localizedStringWithFormat(AppLocalization.string("SOCKS5 proxy %@:%lld"), settings.normalizedHost, Int64(port))
             }
-            return String(localized: "SOCKS5 proxy needs a host and port.")
+            return AppLocalization.string("SOCKS5 proxy needs a host and port.")
         }
     }
 }

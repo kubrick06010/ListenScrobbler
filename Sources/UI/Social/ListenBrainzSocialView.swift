@@ -34,7 +34,7 @@ struct ListenBrainzSocialView: View {
     @EnvironmentObject private var scrobbleService: ScrobbleService
     @State private var usernameToFollow = ""
     @State private var usernameToCompare = ""
-    @State private var playlistTitle = String(localized: "ListenScrobbler Picks")
+    @State private var playlistTitle = AppLocalization.string("ListenScrobbler Picks")
     @State private var selectedSection: SocialSection = .people
     @State private var isRefreshingSocialData = false
     let onOpenRecommendation: (ListenBrainzRecommendedRecording) -> Void
@@ -558,7 +558,7 @@ struct ListenBrainzSocialView: View {
                 let title = playlistTitle.trimmingCharacters(in: .whitespacesAndNewlines)
                 Task {
                     _ = await scrobbleService.createListenBrainzPlaylist(
-                        title: title.isEmpty ? String(localized: "ListenScrobbler Picks") : title,
+                        title: title.isEmpty ? AppLocalization.string("ListenScrobbler Picks") : title,
                         from: picks
                     )
                 }

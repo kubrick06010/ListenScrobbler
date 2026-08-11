@@ -88,9 +88,9 @@ func openPanelURL() -> URL? {
 
 func presentVaultError(_ error: Error) {
     let alert = NSAlert()
-    alert.messageText = String(localized: "Vault operation failed")
+    alert.messageText = AppLocalization.string("Vault operation failed")
     alert.informativeText = error.localizedDescription
     alert.alertStyle = .warning
-    alert.addButton(withTitle: String(localized: "OK"))
+    alert.addButton(withTitle: AppLocalization.string("OK"))
     alert.runModal()
 }

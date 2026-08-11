@@ -119,7 +119,7 @@ struct ExploreView: View {
     }
 
     private func formatCount(_ value: Int?) -> String {
-        guard let value else { return String(localized: "Unknown") }
+        guard let value else { return AppLocalization.string("Unknown") }
         return AppLocalization.integer(value)
     }
 

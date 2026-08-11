@@ -184,7 +184,7 @@ final class ScrobbleServiceTests: XCTestCase {
         XCTAssertEqual(MockURLProtocol.requests.filter { $0.url?.path == "/1/submit-listens" }.count, 1)
         XCTAssertEqual(service.queuedSubmissionJobs.count, 1)
         XCTAssertEqual(service.queuedSubmissionJobs.first?.backend, .compatibility)
-        XCTAssertEqual(service.listenBrainzStatus, String(localized: "Submitted listen"))
+        XCTAssertEqual(service.listenBrainzStatus, AppLocalization.string("Submitted listen"))
         XCTAssertTrue(service.isRetryScheduled)
     }
 
@@ -260,7 +260,7 @@ final class ScrobbleServiceTests: XCTestCase {
         await service.refreshScrobbles()
 
         XCTAssertFalse(service.isAuthenticated)
-        XCTAssertEqual(service.scrobblesStatus, String(localized: "Loaded ListenBrainz listens"))
+        XCTAssertEqual(service.scrobblesStatus, AppLocalization.string("Loaded ListenBrainz listens"))
         XCTAssertEqual(service.latestScrobbles.count, 1)
         XCTAssertEqual(service.latestScrobbles.first?.track, "Zoom")
         XCTAssertEqual(service.latestScrobbles.first?.artist, "Soda Stereo")
@@ -314,7 +314,7 @@ final class ScrobbleServiceTests: XCTestCase {
         XCTAssertTrue(service.latestScrobbles.isEmpty)
         XCTAssertEqual(deleteBodies.first?["listened_at"] as? Int, 1_781_635_646)
         XCTAssertEqual(deleteBodies.first?["recording_msid"] as? String, "msid-come-home")
-        XCTAssertEqual(service.scrobblesStatus, String(localized: "Queued deletion for \("Come Home")"))
+        XCTAssertEqual(service.scrobblesStatus, AppLocalization.string("Queued deletion for \("Come Home")"))
         withExtendedLifetime(service) {}
     }
 
@@ -420,8 +420,8 @@ final class ScrobbleServiceTests: XCTestCase {
         XCTAssertEqual(service.listenBrainzCurrentPin?.trackName, "Come Home")
         XCTAssertEqual(service.listenBrainzPinnedHistory.map(\.trackName), ["Come Home", "Surfacing"])
         XCTAssertTrue(service.listenBrainzFollowingPins.isEmpty)
-        let followingPins = String(localized: "following pins")
-        XCTAssertEqual(service.listenBrainzPinsStatus, String(localized: "Loaded \(2) pins; failed: \(followingPins)"))
+        let followingPins = AppLocalization.string("following pins")
+        XCTAssertEqual(service.listenBrainzPinsStatus, AppLocalization.string("Loaded \(2) pins; failed: \(followingPins)"))
     }
 
     @MainActor
@@ -544,7 +544,7 @@ final class ScrobbleServiceTests: XCTestCase {
 
         XCTAssertEqual(feedbackScores, [1, 0])
         XCTAssertFalse(service.listenBrainzCurrentTrackLoved)
-        XCTAssertEqual(service.listenBrainzFeedbackStatus, String(localized: "Removed love for \("Sketch for Summer")"))
+        XCTAssertEqual(service.listenBrainzFeedbackStatus, AppLocalization.string("Removed love for \("Sketch for Summer")"))
     }
 
     @MainActor
@@ -590,7 +590,7 @@ final class ScrobbleServiceTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 20_000_000)
 
         XCTAssertFalse(service.isAuthenticated)
-        XCTAssertEqual(service.sessionStatus, String(localized: "Session invalid"))
+        XCTAssertEqual(service.sessionStatus, AppLocalization.string("Session invalid"))
         XCTAssertEqual(sessionStore.load(), nil)
         XCTAssertGreaterThanOrEqual(api.validateSessionCalls, 1)
         withExtendedLifetime(service) {}

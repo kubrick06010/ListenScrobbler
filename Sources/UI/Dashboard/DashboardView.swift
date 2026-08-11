@@ -250,7 +250,7 @@ struct DashboardView: View {
 
     private func sourceLabel(_ nowPlaying: Track) -> some View {
         Label {
-            Text("Listening from \(nowPlaying.sourceApp ?? String(localized: "Music"))")
+            Text("Listening from \(nowPlaying.sourceApp ?? AppLocalization.string("Music"))")
                 .font(.custom("Avenir Next Medium", size: 15))
         } icon: {
             Image(systemName: "music.note")
@@ -292,8 +292,8 @@ struct DashboardView: View {
                 }
                 .disabled(scrobbleService.isUpdatingListenBrainzFeedback)
                 .help(scrobbleService.listenBrainzCurrentTrackLoved
-                    ? String(localized: "Unlove on ListenBrainz")
-                    : String(localized: "Love on ListenBrainz"))
+                    ? AppLocalization.string("Unlove on ListenBrainz")
+                    : AppLocalization.string("Love on ListenBrainz"))
                 .foregroundStyle(scrobbleService.listenBrainzCurrentTrackLoved ? .pink : .secondary)
 
                 Button {
@@ -531,26 +531,26 @@ struct DashboardView: View {
             ?? scrobbleService.currentOpenEnrichment?.userArtistListenCount
         let trackPlays = scrobbleService.currentTrackDetails?.userPlaycount
             ?? scrobbleService.currentOpenEnrichment?.userRecordingListenCount
-        let artist = scrobbleService.currentTrackDetails?.artist ?? scrobbleService.currentTrack?.artist ?? String(localized: "this artist")
-        let track = scrobbleService.currentTrackDetails?.name ?? scrobbleService.currentTrack?.title ?? String(localized: "this track")
+        let artist = scrobbleService.currentTrackDetails?.artist ?? scrobbleService.currentTrack?.artist ?? AppLocalization.string("this artist")
+        let track = scrobbleService.currentTrackDetails?.name ?? scrobbleService.currentTrack?.title ?? AppLocalization.string("this track")
         var fragments: [String] = []
         if let publicPlays = scrobbleService.currentOpenEnrichment?.globalRecordingListenCount {
             let key = publicPlays == 1
-                ? String(localized: "ListenBrainz has %@ public play for %@.")
-                : String(localized: "ListenBrainz has %@ public plays for %@.")
-            fragments.append(String.localizedStringWithFormat(key, AppLocalization.integer(publicPlays), track))
+                ? AppLocalization.string("ListenBrainz has %@ public play for %@.")
+                : AppLocalization.string("ListenBrainz has %@ public plays for %@.")
+            fragments.append(AppLocalization.localizedStringWithFormat(key, AppLocalization.integer(publicPlays), track))
         }
         if let artistPlays {
             let key = artistPlays == 1
-                ? String(localized: "You've listened to %@ %@ time.")
-                : String(localized: "You've listened to %@ %@ times.")
-            fragments.append(String.localizedStringWithFormat(key, artist, AppLocalization.integer(artistPlays)))
+                ? AppLocalization.string("You've listened to %@ %@ time.")
+                : AppLocalization.string("You've listened to %@ %@ times.")
+            fragments.append(AppLocalization.localizedStringWithFormat(key, artist, AppLocalization.integer(artistPlays)))
         }
         if let trackPlays {
             let key = trackPlays == 1
-                ? String(localized: "You've played %@ %@ time.")
-                : String(localized: "You've played %@ %@ times.")
-            fragments.append(String.localizedStringWithFormat(key, track, AppLocalization.integer(trackPlays)))
+                ? AppLocalization.string("You've played %@ %@ time.")
+                : AppLocalization.string("You've played %@ %@ times.")
+            fragments.append(AppLocalization.localizedStringWithFormat(key, track, AppLocalization.integer(trackPlays)))
         }
         return fragments
     }
@@ -568,55 +568,55 @@ struct DashboardView: View {
             var fragments: [String] = []
             if let profile = scrobbleService.currentOpenEnrichment?.artistProfile {
                 let type = profile.type?.nilIfBlank ?? details.type?.nilIfBlank
-                var leading = String.localizedStringWithFormat(
-                    String(localized: "%@ is indexed in ListenBrainz"),
+                var leading = AppLocalization.localizedStringWithFormat(
+                    AppLocalization.string("%@ is indexed in ListenBrainz"),
                     details.artistName
                 )
                 if let type {
-                    leading += String.localizedStringWithFormat(String(localized: " as %@"), type.lowercased())
+                    leading += AppLocalization.localizedStringWithFormat(AppLocalization.string(" as %@"), type.lowercased())
                 }
                 if let beginYear = profile.beginYear {
-                    leading += String.localizedStringWithFormat(String(localized: " formed in %lld"), Int64(beginYear))
+                    leading += AppLocalization.localizedStringWithFormat(AppLocalization.string(" formed in %lld"), Int64(beginYear))
                 }
                 fragments.append(leading + ".")
                 if let area = profile.area {
-                    fragments.append(String.localizedStringWithFormat(String(localized: "Area: %@."), area))
+                    fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("Area: %@."), area))
                 }
             } else {
                 if let type = details.type?.nilIfBlank {
-                    fragments.append(String.localizedStringWithFormat(
-                        String(localized: "%@ is indexed in MusicBrainz as %@."),
+                    fragments.append(AppLocalization.localizedStringWithFormat(
+                        AppLocalization.string("%@ is indexed in MusicBrainz as %@."),
                         details.artistName,
                         type.lowercased()
                     ))
                 } else {
-                    fragments.append(String.localizedStringWithFormat(
-                        String(localized: "%@ is resolved through MusicBrainz open metadata."),
+                    fragments.append(AppLocalization.localizedStringWithFormat(
+                        AppLocalization.string("%@ is resolved through MusicBrainz open metadata."),
                         details.artistName
                     ))
                 }
             }
             if let country = details.country?.nilIfBlank {
-                fragments.append(String.localizedStringWithFormat(String(localized: "Country: %@."), country))
+                fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("Country: %@."), country))
             }
             if let plays = scrobbleService.currentOpenEnrichment?.globalArtistListenCount {
                 let listeners = count(scrobbleService.currentOpenEnrichment?.globalArtistListenerCount)
-                fragments.append(String.localizedStringWithFormat(
-                    String(localized: "ListenBrainz shows %@ public plays from %@ listeners."),
+                fragments.append(AppLocalization.localizedStringWithFormat(
+                    AppLocalization.string("ListenBrainz shows %@ public plays from %@ listeners."),
                     AppLocalization.integer(plays),
                     listeners
                 ))
             }
             let tags = scrobbleService.currentOpenEnrichment?.artistProfile?.tags.map(\.name) ?? details.tags
             if !tags.isEmpty {
-                fragments.append(String.localizedStringWithFormat(
-                    String(localized: "Tags: %@."),
+                fragments.append(AppLocalization.localizedStringWithFormat(
+                    AppLocalization.string("Tags: %@."),
                     tags.prefix(4).joined(separator: ", ")
                 ))
             }
             return fragments.joined(separator: " ")
         }
-        return String(localized: "Open artist metadata is still loading.")
+        return AppLocalization.string("Open artist metadata is still loading.")
     }
 
     private func listenBrainzArtistContext(_ enrichment: OpenListeningEnrichment, metrics: DashboardMetrics) -> some View {

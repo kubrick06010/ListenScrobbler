@@ -1,0 +1,4 @@
+CFBundleDisplayName = "ListenScrobbler";
+CFBundleName = "ListenScrobbler";
+NSAppleMusicUsageDescription = "ListenScrobblerはミュージックライブラリの再生回数を確認し、新しい再生履歴をListenBrainzに送信します。";
+NSAppleEventsUsageDescription = "ListenScrobblerは対応する音楽プレーヤーから現在の曲と再生位置を読み取り、再生履歴を記録します。";

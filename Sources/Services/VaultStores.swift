@@ -7,9 +7,9 @@ enum VaultStoreError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .unsupportedSchema:
-            return String(localized: "This vault file is not supported by this version of ListenScrobbler.")
+            return AppLocalization.string("This vault file is not supported by this version of ListenScrobbler.")
         case .encodingFailed:
-            return String(localized: "The vault file could not be encoded.")
+            return AppLocalization.string("The vault file could not be encoded.")
         }
     }
 }
@@ -77,7 +77,7 @@ final class SharedMusicVaultStore: ObservableObject {
     // metadata that archived shares can later become portable playlists or
     // imported records without depending on a single social provider.
     @Published private(set) var entries: [SharedMusicEntry] = []
-    @Published private(set) var status = String(localized: "Shared vault ready.")
+    @Published private(set) var status = AppLocalization.string("Shared vault ready.")
 
     private let files: VaultFileStore
     private var username: String
@@ -108,13 +108,13 @@ final class SharedMusicVaultStore: ObservableObject {
     func export(to url: URL) throws {
         let bundle = SharedMusicVaultBundle(ownerUsername: username, records: entries)
         try files.writeBundle(bundle, to: url)
-        status = String(localized: "Exported \(entries.count) shared entries.")
+        status = AppLocalization.string("Exported \(entries.count) shared entries.")
     }
 
     func exportJSPF(to url: URL, title: String? = nil) throws {
         let bundle = makeJSPFBundle(title: title)
         try files.writeBundle(bundle, to: url)
-        status = String(localized: "Exported \(bundle.playlist.track.count) JSPF tracks.")
+        status = AppLocalization.string("Exported \(bundle.playlist.track.count) JSPF tracks.")
     }
 
     func importBundle(from url: URL) throws {
@@ -226,8 +226,8 @@ final class SharedMusicVaultStore: ObservableObject {
         entries = files.load([SharedMusicEntry].self, from: fileURL, fallback: [])
             .sorted { $0.createdAt > $1.createdAt }
         status = entries.isEmpty
-            ? String(localized: "No shared entries archived yet.")
-            : String(localized: "Loaded \(entries.count) shared entries.")
+            ? AppLocalization.string("No shared entries archived yet.")
+            : AppLocalization.string("Loaded \(entries.count) shared entries.")
     }
 
     private func merge(_ imported: [SharedMusicEntry]) {
@@ -324,7 +324,7 @@ final class SharedMusicVaultStore: ObservableObject {
 @MainActor
 final class ObsessionVaultStore: ObservableObject {
     @Published private(set) var entries: [ObsessionEntry] = []
-    @Published private(set) var status = String(localized: "Obsession vault ready.")
+    @Published private(set) var status = AppLocalization.string("Obsession vault ready.")
 
     private let files: VaultFileStore
     private var username: String
@@ -355,7 +355,7 @@ final class ObsessionVaultStore: ObservableObject {
     func export(to url: URL) throws {
         let bundle = ObsessionVaultBundle(ownerUsername: username, records: entries)
         try files.writeBundle(bundle, to: url)
-        status = String(localized: "Exported \(entries.count) obsession entries.")
+        status = AppLocalization.string("Exported \(entries.count) obsession entries.")
     }
 
     func importBundle(from url: URL) throws {
@@ -416,8 +416,8 @@ final class ObsessionVaultStore: ObservableObject {
         entries = files.load([ObsessionEntry].self, from: fileURL, fallback: [])
             .sorted { $0.firstSeenAt > $1.firstSeenAt }
         status = entries.isEmpty
-            ? String(localized: "No obsessions captured yet.")
-            : String(localized: "Loaded \(entries.count) obsessions.")
+            ? AppLocalization.string("No obsessions captured yet.")
+            : AppLocalization.string("Loaded \(entries.count) obsessions.")
     }
 
     private func merge(_ imported: [ObsessionEntry]) {

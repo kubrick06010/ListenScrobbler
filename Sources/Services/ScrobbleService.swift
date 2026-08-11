@@ -119,7 +119,7 @@ final class ScrobbleService: ObservableObject {
     @Published private(set) var playbackState = "Stopped"
     @Published private(set) var lastSubmittedAt: Date?
     @Published private(set) var queueFilePath = ""
-    @Published private(set) var sessionStatus = String(localized: "Not authenticated")
+    @Published private(set) var sessionStatus = AppLocalization.string("Not authenticated")
     @Published private(set) var sessionUsername: String?
     @Published private(set) var listenBrainzEnabled = false
     @Published private(set) var listenBrainzAuthenticated = false
@@ -127,37 +127,37 @@ final class ScrobbleService: ObservableObject {
     @Published private(set) var listenBrainzBaseURL = URL(string: "https://api.listenbrainz.org")!
     @Published private(set) var listenBrainzSubmitNowPlaying = true
     @Published private(set) var listenBrainzSubmitListens = true
-    @Published private(set) var listenBrainzStatus = String(localized: "Not configured")
+    @Published private(set) var listenBrainzStatus = AppLocalization.string("Not configured")
     @Published private(set) var listenBrainzLastError: String?
-    @Published private(set) var listenBrainzStatsStatus = String(localized: "Not loaded")
+    @Published private(set) var listenBrainzStatsStatus = AppLocalization.string("Not loaded")
     @Published private(set) var listenBrainzStats: ListenBrainzStatsSnapshot?
     @Published private(set) var listenBrainzArtistMap: [ListenBrainzArtistMapEntry] = []
-    @Published private(set) var listenBrainzArtistMapStatus = String(localized: "Not loaded")
+    @Published private(set) var listenBrainzArtistMapStatus = AppLocalization.string("Not loaded")
     @Published private(set) var listenBrainzArtistAffinityGraph: ArtistAffinityGraphSnapshot?
-    @Published private(set) var listenBrainzArtistAffinityStatus = String(localized: "Not loaded")
+    @Published private(set) var listenBrainzArtistAffinityStatus = AppLocalization.string("Not loaded")
     @Published private(set) var listenBrainzFollowers: [String] = []
     @Published private(set) var listenBrainzFollowing: [String] = []
     @Published private(set) var listenBrainzSimilarUsers: [ListenBrainzSimilarUser] = []
     @Published private(set) var listenBrainzSocialListens: [ListenBrainzSocialListen] = []
     @Published private(set) var listenBrainzCompatibility: ListenBrainzUserCompatibility?
     @Published private(set) var listenBrainzCompatibilityTarget: String?
-    @Published private(set) var listenBrainzCompatibilityStatus = String(localized: "Not loaded")
-    @Published private(set) var listenBrainzSocialStatus = String(localized: "Not loaded")
+    @Published private(set) var listenBrainzCompatibilityStatus = AppLocalization.string("Not loaded")
+    @Published private(set) var listenBrainzSocialStatus = AppLocalization.string("Not loaded")
     @Published private(set) var listenBrainzRecommendations: [ListenBrainzRecommendedRecording] = []
-    @Published private(set) var listenBrainzRecommendationsStatus = String(localized: "Not loaded")
-    @Published private(set) var listenBrainzRecommendationShareStatus = String(localized: "Pick a recommendation to share")
+    @Published private(set) var listenBrainzRecommendationsStatus = AppLocalization.string("Not loaded")
+    @Published private(set) var listenBrainzRecommendationShareStatus = AppLocalization.string("Pick a recommendation to share")
     @Published private(set) var listenBrainzCurrentPin: ListenBrainzPinnedRecording?
     @Published private(set) var listenBrainzPinnedHistory: [ListenBrainzPinnedRecording] = []
     @Published private(set) var listenBrainzFollowingPins: [ListenBrainzPinnedRecording] = []
-    @Published private(set) var listenBrainzPinsStatus = String(localized: "Not loaded")
+    @Published private(set) var listenBrainzPinsStatus = AppLocalization.string("Not loaded")
     @Published private(set) var listenBrainzPlaylists: [ListenBrainzPlaylistSummary] = []
     @Published private(set) var listenBrainzRecommendationPlaylists: [ListenBrainzPlaylistSummary] = []
-    @Published private(set) var listenBrainzPlaylistsStatus = String(localized: "Not loaded")
+    @Published private(set) var listenBrainzPlaylistsStatus = AppLocalization.string("Not loaded")
     @Published private(set) var listenBrainzCurrentTrackLoved = false
-    @Published private(set) var listenBrainzFeedbackStatus = String(localized: "Pick a track to love")
+    @Published private(set) var listenBrainzFeedbackStatus = AppLocalization.string("Pick a track to love")
     @Published private(set) var isUpdatingListenBrainzFeedback = false
     @Published private(set) var storedAccounts: [CompatibilitySession] = []
-    @Published private(set) var capabilitiesStatus = String(localized: "Unknown")
+    @Published private(set) var capabilitiesStatus = AppLocalization.string("Unknown")
     @Published private(set) var validationSource = "Live"
     @Published private(set) var lastRecoveryHint: String?
     @Published private(set) var elapsedForCurrentTrack: TimeInterval = 0
@@ -180,13 +180,13 @@ final class ScrobbleService: ObservableObject {
     @Published private(set) var inspectedOpenEnrichment: OpenListeningEnrichment?
     @Published private(set) var inspectedSimilarTracks: [CompatibilitySimilarTrack] = []
     @Published private(set) var inspectedSimilarAlbums: [CompatibilitySimilarAlbum] = []
-    @Published private(set) var inspectStatus = String(localized: "Select a listen to inspect")
+    @Published private(set) var inspectStatus = AppLocalization.string("Select a listen to inspect")
     @Published private(set) var profile: CompatibilityUserProfile?
     @Published private(set) var latestScrobbles: [CompatibilityRecentScrobble] = []
     @Published private(set) var friendsListening: [CompatibilityFriendListening] = []
     @Published private(set) var neighbours: [CompatibilityNeighbour] = []
     @Published private(set) var separationByUser: [String: Int] = [:]
-    @Published private(set) var separationStatus = String(localized: "Not calculated")
+    @Published private(set) var separationStatus = AppLocalization.string("Not calculated")
     @Published private(set) var socialGraph: SocialGraphSnapshot?
     @Published private(set) var weeklyTopArtists: [CompatibilityTopArtist] = []
     @Published private(set) var monthlyTopArtists: [CompatibilityTopArtist] = []
@@ -196,11 +196,11 @@ final class ScrobbleService: ObservableObject {
     @Published private(set) var lovedTracksCount: Int?
     @Published private(set) var tracksPerDayAverage: Int?
     @Published private(set) var isSubscriber = false
-    @Published private(set) var exploreStatus = String(localized: "Waiting for track")
-    @Published private(set) var profileStatus = String(localized: "Not loaded")
-    @Published private(set) var scrobblesStatus = String(localized: "Not loaded")
-    @Published private(set) var friendsStatus = String(localized: "Not loaded")
-    @Published private(set) var neighboursStatus = String(localized: "Not loaded")
+    @Published private(set) var exploreStatus = AppLocalization.string("Waiting for track")
+    @Published private(set) var profileStatus = AppLocalization.string("Not loaded")
+    @Published private(set) var scrobblesStatus = AppLocalization.string("Not loaded")
+    @Published private(set) var friendsStatus = AppLocalization.string("Not loaded")
+    @Published private(set) var neighboursStatus = AppLocalization.string("Not loaded")
 
     private var api: CompatibilityAPI
     private let listenBrainz: ListenBrainzService
@@ -237,41 +237,41 @@ final class ScrobbleService: ObservableObject {
             return "\(username) (ListenBrainz)"
         }
         let connectionState = isAuthenticated
-            ? String(localized: "Online")
-            : String(localized: "Offline")
+            ? AppLocalization.string("Online")
+            : AppLocalization.string("Offline")
         if let name = profile?.name.nilIfBlank {
             return "\(name) (\(connectionState))"
         }
         if let username = sessionUsername?.nilIfBlank {
             return "\(username) (\(connectionState))"
         }
-        return String(localized: "Guest (Offline)")
+        return AppLocalization.string("Guest (Offline)")
     }
 
     var localizedPlaybackState: String {
         switch playbackState {
-        case "Playing": String(localized: "Playing")
-        case "Paused": String(localized: "Paused")
-        case "Stopped": String(localized: "Stopped")
+        case "Playing": AppLocalization.string("Playing")
+        case "Paused": AppLocalization.string("Paused")
+        case "Stopped": AppLocalization.string("Stopped")
         default: playbackState
         }
     }
 
     var localizedBackendName: String {
         switch backendName {
-        case "Stub": String(localized: "Stub")
-        case "ListenBrainz + compatibility adapter": String(localized: "ListenBrainz + compatibility adapter")
+        case "Stub": AppLocalization.string("Stub")
+        case "ListenBrainz + compatibility adapter": AppLocalization.string("ListenBrainz + compatibility adapter")
         case "ListenBrainz": "ListenBrainz"
-        case "Compatibility adapter": String(localized: "Compatibility adapter")
-        case "Local preview": String(localized: "Local preview")
+        case "Compatibility adapter": AppLocalization.string("Compatibility adapter")
+        case "Local preview": AppLocalization.string("Local preview")
         default: backendName
         }
     }
 
     var localizedValidationSource: String {
         switch validationSource {
-        case "Cache": String(localized: "Cache")
-        case "Live": String(localized: "Live")
+        case "Cache": AppLocalization.string("Cache")
+        case "Live": AppLocalization.string("Live")
         default: validationSource
         }
     }
@@ -327,8 +327,8 @@ final class ScrobbleService: ObservableObject {
         self.isAuthenticated = self.api.isAuthenticated
         self.sessionUsername = self.api.sessionUsername
         self.sessionStatus = self.isAuthenticated
-            ? String(localized: "Authenticated (not yet validated)")
-            : String(localized: "Not authenticated")
+            ? AppLocalization.string("Authenticated (not yet validated)")
+            : AppLocalization.string("Not authenticated")
 
         self.monitor.onEvent = { [weak self] event in
             Task { @MainActor in
@@ -397,7 +397,7 @@ final class ScrobbleService: ObservableObject {
             refreshBackendName()
             if !isEnabled {
                 listenBrainzAuthenticated = false
-                listenBrainzStatus = String(localized: "Configured but disabled")
+                listenBrainzStatus = AppLocalization.string("Configured but disabled")
             }
             scheduleRetryIfNeeded()
         } catch {
@@ -409,7 +409,7 @@ final class ScrobbleService: ObservableObject {
         listenBrainzLastError = nil
         guard listenBrainzEnabled else {
             listenBrainzAuthenticated = false
-            listenBrainzStatus = String(localized: "Disabled")
+            listenBrainzStatus = AppLocalization.string("Disabled")
             return
         }
 
@@ -418,7 +418,7 @@ final class ScrobbleService: ObservableObject {
             listenBrainzAuthenticated = validation.isValid
             listenBrainzUsername = validation.username
             listenBrainzStatus = validation.isValid
-                ? String(localized: "Session valid")
+                ? AppLocalization.string("Session valid")
                 : validation.message
             refreshListenBrainzState()
             refreshBackendName()
@@ -441,11 +441,11 @@ final class ScrobbleService: ObservableObject {
         refreshListenBrainzState()
         guard listenBrainzEnabled, let username = listenBrainzUsername?.nilIfBlank else {
             listenBrainzStats = nil
-            listenBrainzStatsStatus = String(localized: "Connect ListenBrainz to load charts")
+            listenBrainzStatsStatus = AppLocalization.string("Connect ListenBrainz to load charts")
             return
         }
-        listenBrainzStatsStatus = String.localizedStringWithFormat(
-            String(localized: "Loading %@ charts..."),
+        listenBrainzStatsStatus = AppLocalization.localizedStringWithFormat(
+            AppLocalization.string("Loading %@ charts..."),
             range.title.lowercased()
         )
         do {
@@ -454,13 +454,13 @@ final class ScrobbleService: ObservableObject {
                 range: range,
                 count: 30
             )
-            listenBrainzStatsStatus = String.localizedStringWithFormat(
-                String(localized: "Loaded %@ charts"),
+            listenBrainzStatsStatus = AppLocalization.localizedStringWithFormat(
+                AppLocalization.string("Loaded %@ charts"),
                 range.title.lowercased()
             )
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzStatsStatus = String(localized: "Failed to load ListenBrainz charts")
+            listenBrainzStatsStatus = AppLocalization.string("Failed to load ListenBrainz charts")
         }
     }
 
@@ -469,31 +469,31 @@ final class ScrobbleService: ObservableObject {
         listenBrainzAuthenticated = false
         listenBrainzLastError = nil
         listenBrainzStats = nil
-        listenBrainzStatsStatus = String(localized: "Not configured")
+        listenBrainzStatsStatus = AppLocalization.string("Not configured")
         listenBrainzArtistMap = []
-        listenBrainzArtistMapStatus = String(localized: "Not configured")
+        listenBrainzArtistMapStatus = AppLocalization.string("Not configured")
         listenBrainzArtistAffinityGraph = nil
-        listenBrainzArtistAffinityStatus = String(localized: "Not configured")
+        listenBrainzArtistAffinityStatus = AppLocalization.string("Not configured")
         listenBrainzFollowers = []
         listenBrainzFollowing = []
         listenBrainzSimilarUsers = []
         listenBrainzSocialListens = []
         listenBrainzCompatibility = nil
         listenBrainzCompatibilityTarget = nil
-        listenBrainzCompatibilityStatus = String(localized: "Not configured")
-        listenBrainzSocialStatus = String(localized: "Not configured")
+        listenBrainzCompatibilityStatus = AppLocalization.string("Not configured")
+        listenBrainzSocialStatus = AppLocalization.string("Not configured")
         listenBrainzRecommendations = []
-        listenBrainzRecommendationsStatus = String(localized: "Not configured")
-        listenBrainzRecommendationShareStatus = String(localized: "Pick a recommendation to share")
+        listenBrainzRecommendationsStatus = AppLocalization.string("Not configured")
+        listenBrainzRecommendationShareStatus = AppLocalization.string("Pick a recommendation to share")
         listenBrainzCurrentPin = nil
         listenBrainzPinnedHistory = []
         listenBrainzFollowingPins = []
-        listenBrainzPinsStatus = String(localized: "Not configured")
+        listenBrainzPinsStatus = AppLocalization.string("Not configured")
         listenBrainzPlaylists = []
         listenBrainzRecommendationPlaylists = []
-        listenBrainzPlaylistsStatus = String(localized: "Not configured")
+        listenBrainzPlaylistsStatus = AppLocalization.string("Not configured")
         listenBrainzCurrentTrackLoved = false
-        listenBrainzFeedbackStatus = String(localized: "Connect ListenBrainz to love tracks")
+        listenBrainzFeedbackStatus = AppLocalization.string("Connect ListenBrainz to love tracks")
         isUpdatingListenBrainzFeedback = false
         refreshListenBrainzState()
         refreshBackendName()
@@ -506,11 +506,11 @@ final class ScrobbleService: ObservableObject {
             listenBrainzFollowing = []
             listenBrainzSimilarUsers = []
             listenBrainzSocialListens = []
-            listenBrainzSocialStatus = String(localized: "Connect ListenBrainz to load your social graph")
+            listenBrainzSocialStatus = AppLocalization.string("Connect ListenBrainz to load your social graph")
             return
         }
 
-        listenBrainzSocialStatus = String(localized: "Loading followers, following, and similar users...")
+        listenBrainzSocialStatus = AppLocalization.string("Loading followers, following, and similar users...")
         do {
             async let followers = listenBrainz.fetchFollowers(username: username)
             async let following = listenBrainz.fetchFollowing(username: username)
@@ -529,10 +529,10 @@ final class ScrobbleService: ObservableObject {
                 usernames: neighbors,
                 countPerUser: 3
             )
-            listenBrainzSocialStatus = String(localized: "Loaded \(listenBrainzFollowers.count) followers, \(listenBrainzFollowing.count) following, \(listenBrainzSimilarUsers.count) similar users, and \(listenBrainzSocialListens.count) neighbor listens")
+            listenBrainzSocialStatus = AppLocalization.string("Loaded \(listenBrainzFollowers.count) followers, \(listenBrainzFollowing.count) following, \(listenBrainzSimilarUsers.count) similar users, and \(listenBrainzSocialListens.count) neighbor listens")
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzSocialStatus = String(localized: "Failed to load ListenBrainz social graph")
+            listenBrainzSocialStatus = AppLocalization.string("Failed to load ListenBrainz social graph")
         }
     }
 
@@ -541,7 +541,7 @@ final class ScrobbleService: ObservableObject {
         guard listenBrainzEnabled, let sourceUser = listenBrainzUsername?.nilIfBlank else {
             listenBrainzCompatibility = nil
             listenBrainzCompatibilityTarget = nil
-            listenBrainzCompatibilityStatus = String(localized: "Connect ListenBrainz to compare archives")
+            listenBrainzCompatibilityStatus = AppLocalization.string("Connect ListenBrainz to compare archives")
             return
         }
 
@@ -554,22 +554,22 @@ final class ScrobbleService: ObservableObject {
         guard let resolvedTarget, resolvedTarget.caseInsensitiveCompare(sourceUser) != .orderedSame else {
             listenBrainzCompatibility = nil
             listenBrainzCompatibilityTarget = nil
-            listenBrainzCompatibilityStatus = String(localized: "Choose another user to compare archives")
+            listenBrainzCompatibilityStatus = AppLocalization.string("Choose another user to compare archives")
             return
         }
 
         listenBrainzCompatibilityTarget = resolvedTarget
-        listenBrainzCompatibilityStatus = String(localized: "Comparing \(sourceUser) and \(resolvedTarget)...")
+        listenBrainzCompatibilityStatus = AppLocalization.string("Comparing \(sourceUser) and \(resolvedTarget)...")
         do {
             listenBrainzCompatibility = try await listenBrainz.fetchCompatibility(
                 sourceUsername: sourceUser,
                 targetUsername: resolvedTarget
             )
-            listenBrainzCompatibilityStatus = String(localized: "Loaded compatibility with \(resolvedTarget)")
+            listenBrainzCompatibilityStatus = AppLocalization.string("Loaded compatibility with \(resolvedTarget)")
         } catch {
             handleListenBrainz(error: error)
             listenBrainzCompatibility = nil
-            listenBrainzCompatibilityStatus = String(localized: "Failed to load compatibility")
+            listenBrainzCompatibilityStatus = AppLocalization.string("Failed to load compatibility")
         }
     }
 
@@ -577,19 +577,19 @@ final class ScrobbleService: ObservableObject {
         refreshListenBrainzState()
         guard listenBrainzEnabled, let username = listenBrainzUsername?.nilIfBlank else {
             listenBrainzArtistMap = []
-            listenBrainzArtistMapStatus = String(localized: "Connect ListenBrainz to load artist origins")
+            listenBrainzArtistMapStatus = AppLocalization.string("Connect ListenBrainz to load artist origins")
             return
         }
 
-        listenBrainzArtistMapStatus = String(localized: "Loading artist origins...")
+        listenBrainzArtistMapStatus = AppLocalization.string("Loading artist origins...")
         do {
             listenBrainzArtistMap = try await listenBrainz.fetchArtistMap(username: username, range: range)
             listenBrainzArtistMapStatus = listenBrainzArtistMap.isEmpty
-                ? String(localized: "No artist origin data available")
-                : String(localized: "Loaded \(listenBrainzArtistMap.count) countries")
+                ? AppLocalization.string("No artist origin data available")
+                : AppLocalization.string("Loaded \(listenBrainzArtistMap.count) countries")
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzArtistMapStatus = String(localized: "Failed to load artist origins")
+            listenBrainzArtistMapStatus = AppLocalization.string("Failed to load artist origins")
         }
     }
 
@@ -597,11 +597,11 @@ final class ScrobbleService: ObservableObject {
         refreshListenBrainzState()
         guard listenBrainzEnabled, let username = listenBrainzUsername?.nilIfBlank else {
             listenBrainzArtistAffinityGraph = nil
-            listenBrainzArtistAffinityStatus = String(localized: "Connect ListenBrainz to load artist affinity")
+            listenBrainzArtistAffinityStatus = AppLocalization.string("Connect ListenBrainz to load artist affinity")
             return
         }
 
-        listenBrainzArtistAffinityStatus = String(localized: "Loading artist affinity...")
+        listenBrainzArtistAffinityStatus = AppLocalization.string("Loading artist affinity...")
         do {
             let topArtists: [ListenBrainzArtistStat]
             if let snapshot = listenBrainzStats, snapshot.range == range, !snapshot.topArtists.isEmpty {
@@ -613,7 +613,7 @@ final class ScrobbleService: ObservableObject {
             let seeds = Array(topArtists.filter { ($0.mbid?.isEmpty == false) }.prefix(4))
             guard !seeds.isEmpty else {
                 listenBrainzArtistAffinityGraph = nil
-                listenBrainzArtistAffinityStatus = String(localized: "Top artists need MusicBrainz IDs before we can draw affinity")
+                listenBrainzArtistAffinityStatus = AppLocalization.string("Top artists need MusicBrainz IDs before we can draw affinity")
                 return
             }
 
@@ -700,12 +700,12 @@ final class ScrobbleService: ObservableObject {
                 generatedAt: .now
             )
             listenBrainzArtistAffinityStatus = filteredEdges.isEmpty
-                ? String(localized: "No artist affinity edges available yet")
-                : String(localized: "Loaded \(filteredEdges.count) affinity connections")
+                ? AppLocalization.string("No artist affinity edges available yet")
+                : AppLocalization.string("Loaded \(filteredEdges.count) affinity connections")
         } catch {
             handleListenBrainz(error: error)
             listenBrainzArtistAffinityGraph = nil
-            listenBrainzArtistAffinityStatus = String(localized: "Failed to load artist affinity")
+            listenBrainzArtistAffinityStatus = AppLocalization.string("Failed to load artist affinity")
         }
     }
 
@@ -713,20 +713,20 @@ final class ScrobbleService: ObservableObject {
         refreshListenBrainzState()
         guard listenBrainzEnabled, let username = listenBrainzUsername?.nilIfBlank else {
             listenBrainzRecommendations = []
-            listenBrainzRecommendationsStatus = String(localized: "Connect ListenBrainz to load recommendations")
+            listenBrainzRecommendationsStatus = AppLocalization.string("Connect ListenBrainz to load recommendations")
             return
         }
 
-        listenBrainzRecommendationsStatus = String(localized: "Loading recommendations...")
+        listenBrainzRecommendationsStatus = AppLocalization.string("Loading recommendations...")
         do {
             listenBrainzRecommendations = try await listenBrainz.fetchRecommendedRecordings(
                 username: username,
                 count: 24
             )
-            listenBrainzRecommendationsStatus = String(localized: "Loaded \(listenBrainzRecommendations.count) recommendations")
+            listenBrainzRecommendationsStatus = AppLocalization.string("Loaded \(listenBrainzRecommendations.count) recommendations")
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzRecommendationsStatus = String(localized: "Failed to load recommendations")
+            listenBrainzRecommendationsStatus = AppLocalization.string("Failed to load recommendations")
         }
     }
 
@@ -736,11 +736,11 @@ final class ScrobbleService: ObservableObject {
             listenBrainzCurrentPin = nil
             listenBrainzPinnedHistory = []
             listenBrainzFollowingPins = []
-            listenBrainzPinsStatus = String(localized: "Connect ListenBrainz to load pins")
+            listenBrainzPinsStatus = AppLocalization.string("Connect ListenBrainz to load pins")
             return
         }
 
-        listenBrainzPinsStatus = String(localized: "Loading pins...")
+        listenBrainzPinsStatus = AppLocalization.string("Loading pins...")
         var failures: [String] = []
 
         do {
@@ -748,7 +748,7 @@ final class ScrobbleService: ObservableObject {
         } catch {
             handleListenBrainz(error: error)
             listenBrainzCurrentPin = nil
-            failures.append(String(localized: "current pin"))
+            failures.append(AppLocalization.string("current pin"))
         }
 
         do {
@@ -756,7 +756,7 @@ final class ScrobbleService: ObservableObject {
         } catch {
             handleListenBrainz(error: error)
             listenBrainzPinnedHistory = []
-            failures.append(String(localized: "pin history"))
+            failures.append(AppLocalization.string("pin history"))
         }
 
         do {
@@ -764,13 +764,13 @@ final class ScrobbleService: ObservableObject {
         } catch {
             handleListenBrainz(error: error)
             listenBrainzFollowingPins = []
-            failures.append(String(localized: "following pins"))
+            failures.append(AppLocalization.string("following pins"))
         }
 
         if failures.isEmpty {
-            listenBrainzPinsStatus = String(localized: "Loaded \(listenBrainzPinnedHistory.count) pins and \(listenBrainzFollowingPins.count) following pins")
+            listenBrainzPinsStatus = AppLocalization.string("Loaded \(listenBrainzPinnedHistory.count) pins and \(listenBrainzFollowingPins.count) following pins")
         } else {
-            listenBrainzPinsStatus = String(localized: "Loaded \(listenBrainzPinnedHistory.count) pins; failed: \(failures.joined(separator: ", "))")
+            listenBrainzPinsStatus = AppLocalization.string("Loaded \(listenBrainzPinnedHistory.count) pins; failed: \(failures.joined(separator: ", "))")
         }
     }
 
@@ -779,54 +779,54 @@ final class ScrobbleService: ObservableObject {
         guard listenBrainzEnabled, let username = listenBrainzUsername?.nilIfBlank else {
             listenBrainzPlaylists = []
             listenBrainzRecommendationPlaylists = []
-            listenBrainzPlaylistsStatus = String(localized: "Connect ListenBrainz to load playlists")
+            listenBrainzPlaylistsStatus = AppLocalization.string("Connect ListenBrainz to load playlists")
             return
         }
 
-        listenBrainzPlaylistsStatus = String(localized: "Loading playlists...")
+        listenBrainzPlaylistsStatus = AppLocalization.string("Loading playlists...")
         do {
             async let own = listenBrainz.fetchPlaylists(username: username, count: 16)
             async let recommended = listenBrainz.fetchRecommendationPlaylists(username: username, count: 16)
             listenBrainzPlaylists = try await own
             listenBrainzRecommendationPlaylists = try await recommended
-            listenBrainzPlaylistsStatus = String(localized: "Loaded \(listenBrainzPlaylists.count) playlists")
+            listenBrainzPlaylistsStatus = AppLocalization.string("Loaded \(listenBrainzPlaylists.count) playlists")
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzPlaylistsStatus = String(localized: "Failed to load playlists")
+            listenBrainzPlaylistsStatus = AppLocalization.string("Failed to load playlists")
         }
     }
 
     func followListenBrainz(user: String) async {
         let normalized = user.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !normalized.isEmpty else {
-            listenBrainzSocialStatus = String(localized: "Enter a username to follow")
+            listenBrainzSocialStatus = AppLocalization.string("Enter a username to follow")
             return
         }
 
         do {
             try await listenBrainz.follow(username: normalized)
             await refreshListenBrainzSocial()
-            listenBrainzSocialStatus = String(localized: "Now following \(normalized)")
+            listenBrainzSocialStatus = AppLocalization.string("Now following \(normalized)")
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzSocialStatus = String(localized: "Could not follow \(normalized)")
+            listenBrainzSocialStatus = AppLocalization.string("Could not follow \(normalized)")
         }
     }
 
     func unfollowListenBrainz(user: String) async {
         let normalized = user.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !normalized.isEmpty else {
-            listenBrainzSocialStatus = String(localized: "Choose someone to unfollow")
+            listenBrainzSocialStatus = AppLocalization.string("Choose someone to unfollow")
             return
         }
 
         do {
             try await listenBrainz.unfollow(username: normalized)
             await refreshListenBrainzSocial()
-            listenBrainzSocialStatus = String(localized: "Unfollowed \(normalized)")
+            listenBrainzSocialStatus = AppLocalization.string("Unfollowed \(normalized)")
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzSocialStatus = String(localized: "Could not unfollow \(normalized)")
+            listenBrainzSocialStatus = AppLocalization.string("Could not unfollow \(normalized)")
         }
     }
 
@@ -839,15 +839,15 @@ final class ScrobbleService: ObservableObject {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
         guard let username = listenBrainzUsername?.nilIfBlank else {
-            listenBrainzRecommendationShareStatus = String(localized: "Validate ListenBrainz before sending recommendations")
+            listenBrainzRecommendationShareStatus = AppLocalization.string("Validate ListenBrainz before sending recommendations")
             return false
         }
         guard !users.isEmpty else {
-            listenBrainzRecommendationShareStatus = String(localized: "Select at least one follower")
+            listenBrainzRecommendationShareStatus = AppLocalization.string("Select at least one follower")
             return false
         }
 
-        listenBrainzRecommendationShareStatus = String(localized: "Sending recommendation...")
+        listenBrainzRecommendationShareStatus = AppLocalization.string("Sending recommendation...")
         do {
             try await listenBrainz.recommendRecording(
                 recordingMbid: recommendation.recordingMbid,
@@ -856,26 +856,26 @@ final class ScrobbleService: ObservableObject {
                 from: username
             )
             listenBrainzRecommendationShareStatus = users.count == 1
-                ? String(localized: "Sent to 1 follower")
-                : String(localized: "Sent to \(users.count) followers")
+                ? AppLocalization.string("Sent to 1 follower")
+                : AppLocalization.string("Sent to \(users.count) followers")
             return true
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzRecommendationShareStatus = String(localized: "Could not send recommendation")
+            listenBrainzRecommendationShareStatus = AppLocalization.string("Could not send recommendation")
             return false
         }
     }
 
     func pinListenBrainzRecommendation(_ recommendation: ListenBrainzRecommendedRecording, blurb: String? = nil) async -> Bool {
-        listenBrainzPinsStatus = String(localized: "Pinning recording...")
+        listenBrainzPinsStatus = AppLocalization.string("Pinning recording...")
         do {
             try await listenBrainz.pinRecording(recordingMbid: recommendation.recordingMbid, blurb: blurb)
             await refreshListenBrainzPins()
-            listenBrainzPinsStatus = String(localized: "Pinned \(recommendation.title)")
+            listenBrainzPinsStatus = AppLocalization.string("Pinned \(recommendation.title)")
             return true
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzPinsStatus = String(localized: "Could not pin recording")
+            listenBrainzPinsStatus = AppLocalization.string("Could not pin recording")
             return false
         }
     }
@@ -883,32 +883,32 @@ final class ScrobbleService: ObservableObject {
     func pinListenBrainzRecording(recordingMbid: String, title: String, blurb: String? = nil) async -> Bool {
         refreshListenBrainzState()
         guard listenBrainzEnabled else {
-            listenBrainzPinsStatus = String(localized: "Connect ListenBrainz to pin recordings")
+            listenBrainzPinsStatus = AppLocalization.string("Connect ListenBrainz to pin recordings")
             return false
         }
 
         let trimmedMbid = recordingMbid.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedMbid.isEmpty else {
-            listenBrainzPinsStatus = String(localized: "Missing recording MBID for pin")
+            listenBrainzPinsStatus = AppLocalization.string("Missing recording MBID for pin")
             return false
         }
 
         let displayTitle = title.nilIfBlank ?? "recording"
-        listenBrainzPinsStatus = String(localized: "Pinning \(displayTitle)...")
+        listenBrainzPinsStatus = AppLocalization.string("Pinning \(displayTitle)...")
         do {
             if let currentPinMBID = listenBrainzCurrentPin?.recordingMbid?.nilIfBlank,
                currentPinMBID.caseInsensitiveCompare(trimmedMbid) != .orderedSame {
-                listenBrainzPinsStatus = String(localized: "Replacing current ListenBrainz pin...")
+                listenBrainzPinsStatus = AppLocalization.string("Replacing current ListenBrainz pin...")
                 try await listenBrainz.unpinCurrentRecording()
                 listenBrainzCurrentPin = nil
             }
             try await listenBrainz.pinRecording(recordingMbid: trimmedMbid, blurb: blurb)
             await refreshListenBrainzPins()
-            listenBrainzPinsStatus = String(localized: "Pinned \(displayTitle)")
+            listenBrainzPinsStatus = AppLocalization.string("Pinned \(displayTitle)")
             return true
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzPinsStatus = String(localized: "Could not pin \(displayTitle)")
+            listenBrainzPinsStatus = AppLocalization.string("Could not pin \(displayTitle)")
             return false
         }
     }
@@ -916,36 +916,36 @@ final class ScrobbleService: ObservableObject {
     func pinListenBrainzRecording(recordingMsid: String, title: String, blurb: String? = nil) async -> Bool {
         refreshListenBrainzState()
         guard listenBrainzEnabled else {
-            listenBrainzPinsStatus = String(localized: "Connect ListenBrainz to pin recordings")
+            listenBrainzPinsStatus = AppLocalization.string("Connect ListenBrainz to pin recordings")
             return false
         }
 
         let trimmedMsid = recordingMsid.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedMsid.isEmpty else {
-            listenBrainzPinsStatus = String(localized: "Missing recording MSID for pin")
+            listenBrainzPinsStatus = AppLocalization.string("Missing recording MSID for pin")
             return false
         }
 
         let displayTitle = title.nilIfBlank ?? "recording"
-        listenBrainzPinsStatus = String(localized: "Pinning \(displayTitle)...")
+        listenBrainzPinsStatus = AppLocalization.string("Pinning \(displayTitle)...")
         do {
             if let currentPinMSID = listenBrainzCurrentPin?.recordingMsid?.nilIfBlank,
                currentPinMSID.caseInsensitiveCompare(trimmedMsid) != .orderedSame {
-                listenBrainzPinsStatus = String(localized: "Replacing current ListenBrainz pin...")
+                listenBrainzPinsStatus = AppLocalization.string("Replacing current ListenBrainz pin...")
                 try await listenBrainz.unpinCurrentRecording()
                 listenBrainzCurrentPin = nil
             } else if listenBrainzCurrentPin?.recordingMbid?.nilIfBlank != nil {
-                listenBrainzPinsStatus = String(localized: "Replacing current ListenBrainz pin...")
+                listenBrainzPinsStatus = AppLocalization.string("Replacing current ListenBrainz pin...")
                 try await listenBrainz.unpinCurrentRecording()
                 listenBrainzCurrentPin = nil
             }
             try await listenBrainz.pinRecording(recordingMsid: trimmedMsid, blurb: blurb)
             await refreshListenBrainzPins()
-            listenBrainzPinsStatus = String(localized: "Pinned \(displayTitle)")
+            listenBrainzPinsStatus = AppLocalization.string("Pinned \(displayTitle)")
             return true
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzPinsStatus = String(localized: "Could not pin \(displayTitle)")
+            listenBrainzPinsStatus = AppLocalization.string("Could not pin \(displayTitle)")
             return false
         }
     }
@@ -963,7 +963,7 @@ final class ScrobbleService: ObservableObject {
 
         refreshListenBrainzState()
         guard listenBrainzEnabled else {
-            listenBrainzPinsStatus = String(localized: "Connect ListenBrainz to pin recordings")
+            listenBrainzPinsStatus = AppLocalization.string("Connect ListenBrainz to pin recordings")
             return false
         }
 
@@ -971,14 +971,14 @@ final class ScrobbleService: ObservableObject {
             return await pinListenBrainzRecording(recordingMsid: recordingMSID, title: title, blurb: blurb)
         }
 
-        listenBrainzPinsStatus = String(localized: "Resolving \(title) in MusicBrainz...")
+        listenBrainzPinsStatus = AppLocalization.string("Resolving \(title) in MusicBrainz...")
         do {
             let details = try await musicBrainz.lookup(track: title, artist: artist, release: album)
             guard let resolvedRecordingMBID = details.recordingMBID?.nilIfBlank else {
                 if let recordingMSID = await listenBrainzRecentRecordingMSID(title: title, artist: artist, forceRefresh: true) {
                     return await pinListenBrainzRecording(recordingMsid: recordingMSID, title: title, blurb: blurb)
                 }
-                listenBrainzPinsStatus = String(localized: "No ListenBrainz recording identity found for \(title)")
+                listenBrainzPinsStatus = AppLocalization.string("No ListenBrainz recording identity found for \(title)")
                 return false
             }
             return await pinListenBrainzRecording(
@@ -991,36 +991,36 @@ final class ScrobbleService: ObservableObject {
             if let recordingMSID = await listenBrainzRecentRecordingMSID(title: title, artist: artist, forceRefresh: true) {
                 return await pinListenBrainzRecording(recordingMsid: recordingMSID, title: title, blurb: blurb)
             }
-            listenBrainzPinsStatus = String(localized: "No ListenBrainz recording identity found for \(title)")
+            listenBrainzPinsStatus = AppLocalization.string("No ListenBrainz recording identity found for \(title)")
             return false
         }
     }
 
     func unpinListenBrainzCurrent() async -> Bool {
-        listenBrainzPinsStatus = String(localized: "Removing current pin...")
+        listenBrainzPinsStatus = AppLocalization.string("Removing current pin...")
         do {
             try await listenBrainz.unpinCurrentRecording()
             await refreshListenBrainzPins()
-            listenBrainzPinsStatus = String(localized: "Current pin removed")
+            listenBrainzPinsStatus = AppLocalization.string("Current pin removed")
             return true
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzPinsStatus = String(localized: "Could not remove current pin")
+            listenBrainzPinsStatus = AppLocalization.string("Could not remove current pin")
             return false
         }
     }
 
     func deleteListenBrainzPin(rowID: Int, title: String) async -> Bool {
         let displayTitle = title.nilIfBlank ?? "pin"
-        listenBrainzPinsStatus = String(localized: "Deleting \(displayTitle)...")
+        listenBrainzPinsStatus = AppLocalization.string("Deleting \(displayTitle)...")
         do {
             try await listenBrainz.deletePin(rowID: rowID)
             await refreshListenBrainzPins()
-            listenBrainzPinsStatus = String(localized: "Deleted \(displayTitle)")
+            listenBrainzPinsStatus = AppLocalization.string("Deleted \(displayTitle)")
             return true
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzPinsStatus = String(localized: "Could not delete \(displayTitle)")
+            listenBrainzPinsStatus = AppLocalization.string("Could not delete \(displayTitle)")
             return false
         }
     }
@@ -1029,46 +1029,46 @@ final class ScrobbleService: ObservableObject {
         let displayTitle = scrobble.track.nilIfBlank ?? "listen"
         refreshListenBrainzState()
         guard listenBrainzEnabled else {
-            scrobblesStatus = String(localized: "Connect ListenBrainz to delete listens")
+            scrobblesStatus = AppLocalization.string("Connect ListenBrainz to delete listens")
             return false
         }
         guard let listenedAt = scrobble.playedAt,
               let recordingMsid = scrobble.recordingMsid?.nilIfBlank else {
-            scrobblesStatus = String(localized: "Cannot delete \(displayTitle): missing ListenBrainz listen identity")
+            scrobblesStatus = AppLocalization.string("Cannot delete \(displayTitle): missing ListenBrainz listen identity")
             return false
         }
 
-        scrobblesStatus = String(localized: "Deleting \(displayTitle)...")
+        scrobblesStatus = AppLocalization.string("Deleting \(displayTitle)...")
         do {
             try await listenBrainz.deleteListen(listenedAt: listenedAt, recordingMsid: recordingMsid)
             latestScrobbles.removeAll { $0.id == scrobble.id }
-            scrobblesStatus = String(localized: "Queued deletion for \(displayTitle)")
+            scrobblesStatus = AppLocalization.string("Queued deletion for \(displayTitle)")
             return true
         } catch {
             handleListenBrainz(error: error)
-            scrobblesStatus = String(localized: "Could not delete \(displayTitle)")
+            scrobblesStatus = AppLocalization.string("Could not delete \(displayTitle)")
             return false
         }
     }
 
     func toggleCurrentTrackLove() async {
         guard let track = currentTrack else {
-            listenBrainzFeedbackStatus = String(localized: "Pick a track to love")
+            listenBrainzFeedbackStatus = AppLocalization.string("Pick a track to love")
             return
         }
         guard !isUpdatingListenBrainzFeedback else { return }
 
         refreshListenBrainzState()
         guard listenBrainzEnabled else {
-            listenBrainzFeedbackStatus = String(localized: "Connect ListenBrainz to love tracks")
+            listenBrainzFeedbackStatus = AppLocalization.string("Connect ListenBrainz to love tracks")
             return
         }
 
         isUpdatingListenBrainzFeedback = true
         let shouldLove = !listenBrainzCurrentTrackLoved
         listenBrainzFeedbackStatus = shouldLove
-            ? String(localized: "Loving \(track.title)...")
-            : String(localized: "Removing love for \(track.title)...")
+            ? AppLocalization.string("Loving \(track.title)...")
+            : AppLocalization.string("Removing love for \(track.title)...")
         defer { isUpdatingListenBrainzFeedback = false }
 
         do {
@@ -1089,32 +1089,32 @@ final class ScrobbleService: ObservableObject {
             }
             listenBrainzCurrentTrackLoved = shouldLove
             listenBrainzFeedbackStatus = shouldLove
-                ? String(localized: "Loved \(track.title)")
-                : String(localized: "Removed love for \(track.title)")
+                ? AppLocalization.string("Loved \(track.title)")
+                : AppLocalization.string("Removed love for \(track.title)")
         } catch {
             handleListenBrainz(error: error)
             listenBrainzFeedbackStatus = shouldLove
-                ? String(localized: "Could not love \(track.title)")
-                : String(localized: "Could not remove love for \(track.title)")
+                ? AppLocalization.string("Could not love \(track.title)")
+                : AppLocalization.string("Could not remove love for \(track.title)")
         }
     }
 
     func createListenBrainzPlaylist(title: String, from recommendations: [ListenBrainzRecommendedRecording]) async -> Bool {
         let mbids = recommendations.map(\.recordingMbid)
         guard !mbids.isEmpty else {
-            listenBrainzPlaylistsStatus = String(localized: "Choose at least one recommendation")
+            listenBrainzPlaylistsStatus = AppLocalization.string("Choose at least one recommendation")
             return false
         }
 
-        listenBrainzPlaylistsStatus = String(localized: "Creating playlist...")
+        listenBrainzPlaylistsStatus = AppLocalization.string("Creating playlist...")
         do {
             try await listenBrainz.createPlaylist(title: title, recordingMBIDs: mbids)
             await refreshListenBrainzPlaylists()
-            listenBrainzPlaylistsStatus = String(localized: "Created playlist \(title)")
+            listenBrainzPlaylistsStatus = AppLocalization.string("Created playlist \(title)")
             return true
         } catch {
             handleListenBrainz(error: error)
-            listenBrainzPlaylistsStatus = String(localized: "Could not create playlist")
+            listenBrainzPlaylistsStatus = AppLocalization.string("Could not create playlist")
             return false
         }
     }
@@ -1122,7 +1122,7 @@ final class ScrobbleService: ObservableObject {
     func signIn(username: String, password: String) async {
         authError = nil
         guard !username.isEmpty, !password.isEmpty else {
-            authError = String(localized: "Username and password are required.")
+            authError = AppLocalization.string("Username and password are required.")
             return
         }
 
@@ -1134,7 +1134,7 @@ final class ScrobbleService: ObservableObject {
             sessionUsername = session.name
             friendGraphCache = [:]
             separationByUser = [:]
-            separationStatus = String(localized: "Not calculated")
+            separationStatus = AppLocalization.string("Not calculated")
             socialGraph = nil
             scheduleRetryIfNeeded()
             await validateSessionOnStartup()
@@ -1156,14 +1156,14 @@ final class ScrobbleService: ObservableObject {
         isAuthenticated = false
         sessionUsername = nil
         authError = nil
-        sessionStatus = String(localized: "Not authenticated")
-        capabilitiesStatus = String(localized: "Unknown")
+        sessionStatus = AppLocalization.string("Not authenticated")
+        capabilitiesStatus = AppLocalization.string("Unknown")
         validationSource = "Live"
         profile = nil
         inspectedTrackDetails = nil
         inspectedArtistDetails = nil
         inspectedOpenEntityDetails = nil
-        inspectStatus = String(localized: "Select a listen to inspect")
+        inspectStatus = AppLocalization.string("Select a listen to inspect")
         latestScrobbles = []
         weeklyTopArtists = []
         monthlyTopArtists = []
@@ -1172,41 +1172,41 @@ final class ScrobbleService: ObservableObject {
         globalTopArtistNames = []
         lovedTracksCount = nil
         tracksPerDayAverage = nil
-        profileStatus = String(localized: "Not loaded")
-        scrobblesStatus = String(localized: "Not loaded")
+        profileStatus = AppLocalization.string("Not loaded")
+        scrobblesStatus = AppLocalization.string("Not loaded")
         isSubscriber = false
         friendsListening = []
-        friendsStatus = String(localized: "Not loaded")
+        friendsStatus = AppLocalization.string("Not loaded")
         neighbours = []
-        neighboursStatus = String(localized: "Not loaded")
+        neighboursStatus = AppLocalization.string("Not loaded")
         listenBrainzFollowers = []
         listenBrainzFollowing = []
         listenBrainzSimilarUsers = []
         listenBrainzSocialListens = []
         listenBrainzCompatibility = nil
         listenBrainzCompatibilityTarget = nil
-        listenBrainzCompatibilityStatus = String(localized: "Not loaded")
-        listenBrainzSocialStatus = String(localized: "Not loaded")
+        listenBrainzCompatibilityStatus = AppLocalization.string("Not loaded")
+        listenBrainzSocialStatus = AppLocalization.string("Not loaded")
         listenBrainzArtistMap = []
-        listenBrainzArtistMapStatus = String(localized: "Not loaded")
+        listenBrainzArtistMapStatus = AppLocalization.string("Not loaded")
         listenBrainzArtistAffinityGraph = nil
-        listenBrainzArtistAffinityStatus = String(localized: "Not loaded")
+        listenBrainzArtistAffinityStatus = AppLocalization.string("Not loaded")
         listenBrainzRecommendations = []
-        listenBrainzRecommendationsStatus = String(localized: "Not loaded")
-        listenBrainzRecommendationShareStatus = String(localized: "Pick a recommendation to share")
+        listenBrainzRecommendationsStatus = AppLocalization.string("Not loaded")
+        listenBrainzRecommendationShareStatus = AppLocalization.string("Pick a recommendation to share")
         listenBrainzCurrentPin = nil
         listenBrainzPinnedHistory = []
         listenBrainzFollowingPins = []
-        listenBrainzPinsStatus = String(localized: "Not loaded")
+        listenBrainzPinsStatus = AppLocalization.string("Not loaded")
         listenBrainzPlaylists = []
         listenBrainzRecommendationPlaylists = []
-        listenBrainzPlaylistsStatus = String(localized: "Not loaded")
+        listenBrainzPlaylistsStatus = AppLocalization.string("Not loaded")
         listenBrainzCurrentTrackLoved = false
-        listenBrainzFeedbackStatus = String(localized: "Connect ListenBrainz to love tracks")
+        listenBrainzFeedbackStatus = AppLocalization.string("Connect ListenBrainz to love tracks")
         isUpdatingListenBrainzFeedback = false
         currentListenBrainzRecordingMSID = nil
         separationByUser = [:]
-        separationStatus = String(localized: "Not calculated")
+        separationStatus = AppLocalization.string("Not calculated")
         socialGraph = nil
         separationTask?.cancel()
         separationTask = nil
@@ -1231,7 +1231,7 @@ final class ScrobbleService: ObservableObject {
         authError = nil
         friendGraphCache = [:]
         separationByUser = [:]
-        separationStatus = String(localized: "Not calculated")
+        separationStatus = AppLocalization.string("Not calculated")
         socialGraph = nil
         scheduleRetryIfNeeded()
         await validateSessionOnStartup()
@@ -1264,8 +1264,8 @@ final class ScrobbleService: ObservableObject {
         } else {
             isAuthenticated = false
             sessionUsername = nil
-            sessionStatus = String(localized: "Not authenticated")
-            capabilitiesStatus = String(localized: "Unknown")
+            sessionStatus = AppLocalization.string("Not authenticated")
+            capabilitiesStatus = AppLocalization.string("Unknown")
             validationSource = "Live"
             profile = nil
             latestScrobbles = []
@@ -1278,17 +1278,17 @@ final class ScrobbleService: ObservableObject {
             globalTopArtistNames = []
             lovedTracksCount = nil
             tracksPerDayAverage = nil
-            profileStatus = String(localized: "Not loaded")
-            scrobblesStatus = String(localized: "Not loaded")
-            friendsStatus = String(localized: "Not loaded")
-            neighboursStatus = String(localized: "Not loaded")
+            profileStatus = AppLocalization.string("Not loaded")
+            scrobblesStatus = AppLocalization.string("Not loaded")
+            friendsStatus = AppLocalization.string("Not loaded")
+            neighboursStatus = AppLocalization.string("Not loaded")
             isSubscriber = false
         }
     }
 
     func refreshExplore() async {
         guard let track = currentTrack else {
-            exploreStatus = String(localized: "Waiting for track")
+            exploreStatus = AppLocalization.string("Waiting for track")
             currentTrackDetails = nil
             currentArtistDetails = nil
             currentOpenEntityDetails = nil
@@ -1319,17 +1319,17 @@ final class ScrobbleService: ObservableObject {
         separationTask?.cancel()
         socialGraph = nil
         guard !target.isEmpty else {
-            separationStatus = String(localized: "No target user selected")
+            separationStatus = AppLocalization.string("No target user selected")
             socialGraph = nil
             return
         }
         guard isAuthenticated else {
-            separationStatus = String(localized: "Sign in to calculate separation")
+            separationStatus = AppLocalization.string("Sign in to calculate separation")
             socialGraph = nil
             return
         }
         guard let source = api.sessionUsername?.trimmingCharacters(in: .whitespacesAndNewlines), !source.isEmpty else {
-            separationStatus = String(localized: "No source user available")
+            separationStatus = AppLocalization.string("No source user available")
             socialGraph = nil
             return
         }
@@ -1338,7 +1338,7 @@ final class ScrobbleService: ObservableObject {
         let sourceLower = source.lowercased()
         if targetLower == sourceLower {
             separationByUser[targetLower] = 0
-            separationStatus = String(localized: "You are 0° away from \(target)")
+            separationStatus = AppLocalization.string("You are 0° away from \(target)")
             socialGraph = SocialGraphSnapshot(
                 sourceUser: source,
                 nodes: [
@@ -1356,7 +1356,7 @@ final class ScrobbleService: ObservableObject {
             return
         }
 
-        separationStatus = String(localized: "Calculating path to \(target)...")
+        separationStatus = AppLocalization.string("Calculating path to \(target)...")
         let results = await bfsDegrees(
             from: source,
             targets: [target],
@@ -1368,10 +1368,10 @@ final class ScrobbleService: ObservableObject {
 
         if let degree = results.degrees[targetLower] {
             separationByUser[targetLower] = degree
-            separationStatus = String(localized: "Found a \(degree)° path to \(target)")
+            separationStatus = AppLocalization.string("Found a \(degree)° path to \(target)")
         } else {
             separationByUser[targetLower] = nil
-            separationStatus = String(localized: "No path found within \(detailedSeparationDepth)° for \(target)")
+            separationStatus = AppLocalization.string("No path found within \(detailedSeparationDepth)° for \(target)")
         }
     }
 
@@ -1397,7 +1397,7 @@ final class ScrobbleService: ObservableObject {
     }
 
     func inspect(scrobble: CompatibilityRecentScrobble) async {
-        inspectStatus = String(localized: "Loading detail...")
+        inspectStatus = AppLocalization.string("Loading detail...")
         lastAPIError = nil
         lastRecoveryHint = nil
         inspectedTrackDetails = nil
@@ -1441,9 +1441,9 @@ final class ScrobbleService: ObservableObject {
         guard isAuthenticated else {
             inspectStatus = loadedAnything
                 ? (degraded
-                    ? String(localized: "Loaded open metadata (limited)")
-                    : String(localized: "Loaded open metadata"))
-                : String(localized: "MusicBrainz lookup failed")
+                    ? AppLocalization.string("Loaded open metadata (limited)")
+                    : AppLocalization.string("Loaded open metadata"))
+                : AppLocalization.string("MusicBrainz lookup failed")
             return
         }
 
@@ -1465,7 +1465,7 @@ final class ScrobbleService: ObservableObject {
                     playcount: nil,
                     userPlaycount: nil,
                     url: scrobble.url,
-                    summary: String(localized: "Detailed track metadata is temporarily unavailable."),
+                    summary: AppLocalization.string("Detailed track metadata is temporarily unavailable."),
                     tags: []
                 )
                 loadedAnything = true
@@ -1529,7 +1529,7 @@ final class ScrobbleService: ObservableObject {
                     playcount: nil,
                     userPlaycount: nil,
                     url: nil,
-                    summary: String(localized: "Artist biography and stats are temporarily unavailable."),
+                    summary: AppLocalization.string("Artist biography and stats are temporarily unavailable."),
                     tags: [],
                     similarArtists: []
                 )
@@ -1540,10 +1540,10 @@ final class ScrobbleService: ObservableObject {
 
         if loadedAnything {
             inspectStatus = degraded
-                ? String(localized: "Loaded (limited)")
-                : String(localized: "Loaded")
+                ? AppLocalization.string("Loaded (limited)")
+                : AppLocalization.string("Loaded")
         } else {
-            inspectStatus = String(localized: "Failed to load detail")
+            inspectStatus = AppLocalization.string("Failed to load detail")
         }
     }
 
@@ -1587,7 +1587,7 @@ final class ScrobbleService: ObservableObject {
         inspectedOpenEntityDetails = nil
         inspectedSimilarTracks = []
         inspectedSimilarAlbums = []
-        inspectStatus = String(localized: "Select a listen to inspect")
+        inspectStatus = AppLocalization.string("Select a listen to inspect")
     }
 
     func love(scrobble: CompatibilityRecentScrobble) async {
@@ -1654,7 +1654,7 @@ final class ScrobbleService: ObservableObject {
 
         refreshListenBrainzState()
         guard listenBrainzEnabled else {
-            listenBrainzFeedbackStatus = String(localized: "Connect ListenBrainz to love tracks")
+            listenBrainzFeedbackStatus = AppLocalization.string("Connect ListenBrainz to love tracks")
             return
         }
 
@@ -1662,8 +1662,8 @@ final class ScrobbleService: ObservableObject {
         let shouldLove = !currentlyLoved
         let displayTitle = title.nilIfBlank ?? "track"
         listenBrainzFeedbackStatus = shouldLove
-            ? String(localized: "Loving \(displayTitle)...")
-            : String(localized: "Removing love for \(displayTitle)...")
+            ? AppLocalization.string("Loving \(displayTitle)...")
+            : AppLocalization.string("Removing love for \(displayTitle)...")
         defer { isUpdatingListenBrainzFeedback = false }
 
         do {
@@ -1693,13 +1693,13 @@ final class ScrobbleService: ObservableObject {
                 updateLovedState(for: sourceScrobbleID, loved: shouldLove)
             }
             listenBrainzFeedbackStatus = shouldLove
-                ? String(localized: "Loved \(displayTitle)")
-                : String(localized: "Removed love for \(displayTitle)")
+                ? AppLocalization.string("Loved \(displayTitle)")
+                : AppLocalization.string("Removed love for \(displayTitle)")
         } catch {
             handleListenBrainz(error: error)
             listenBrainzFeedbackStatus = shouldLove
-                ? String(localized: "Could not love \(displayTitle)")
-                : String(localized: "Could not remove love for \(displayTitle)")
+                ? AppLocalization.string("Could not love \(displayTitle)")
+                : AppLocalization.string("Could not remove love for \(displayTitle)")
         }
     }
 
@@ -1774,7 +1774,7 @@ final class ScrobbleService: ObservableObject {
                         continue
                     }
                     try await listenBrainz.submitListen(job.track)
-                    listenBrainzStatus = String(localized: "Submitted listen")
+                    listenBrainzStatus = AppLocalization.string("Submitted listen")
                 }
                 recentScrobbles[job.track.fingerprint] = .now
             } catch {
@@ -1866,8 +1866,8 @@ final class ScrobbleService: ObservableObject {
         currentListenBrainzRecordingMSID = nil
         listenBrainzCurrentTrackLoved = false
         listenBrainzFeedbackStatus = listenBrainzEnabled
-            ? String(localized: "Ready to love \(track.title)")
-            : String(localized: "Connect ListenBrainz to love tracks")
+            ? AppLocalization.string("Ready to love \(track.title)")
+            : AppLocalization.string("Connect ListenBrainz to love tracks")
         isUpdatingListenBrainzFeedback = false
         elapsedForCurrentTrack = accumulatedPlayTime
         scrobbleThreshold = threshold(for: track)
@@ -2038,7 +2038,7 @@ final class ScrobbleService: ObservableObject {
                                 if self.currentTrack?.id == track.id {
                                     self.currentListenBrainzRecordingMSID = recordingMSID
                                 }
-                                self.listenBrainzStatus = String(localized: "Submitted now playing")
+                                self.listenBrainzStatus = AppLocalization.string("Submitted now playing")
                             }
                         }
                         await MainActor.run {
@@ -2124,15 +2124,15 @@ final class ScrobbleService: ObservableObject {
         currentListenBrainzRecordingMSID = nil
         listenBrainzCurrentTrackLoved = false
         listenBrainzFeedbackStatus = listenBrainzEnabled
-            ? String(localized: "Pick a track to love")
-            : String(localized: "Connect ListenBrainz to love tracks")
+            ? AppLocalization.string("Pick a track to love")
+            : AppLocalization.string("Connect ListenBrainz to love tracks")
         isUpdatingListenBrainzFeedback = false
     }
 
     private func refreshExploreData(for track: Track) async {
         exploreStatus = apiConfigured
-            ? String(localized: "Loading track and artist details...")
-            : String(localized: "Loading open track metadata...")
+            ? AppLocalization.string("Loading track and artist details...")
+            : AppLocalization.string("Loading open track metadata...")
         lastAPIError = nil
         lastRecoveryHint = nil
 
@@ -2170,9 +2170,9 @@ final class ScrobbleService: ObservableObject {
             currentTrackDetails = nil
             exploreStatus = loadedAnything
                 ? (degraded
-                    ? String(localized: "Loaded open metadata (limited)")
-                    : String(localized: "Loaded open metadata"))
-                : String(localized: "Failed to load open metadata")
+                    ? AppLocalization.string("Loaded open metadata (limited)")
+                    : AppLocalization.string("Loaded open metadata"))
+                : AppLocalization.string("Failed to load open metadata")
             return
         }
 
@@ -2233,8 +2233,8 @@ final class ScrobbleService: ObservableObject {
         }
 
         exploreStatus = loadedAnything
-            ? (degraded ? String(localized: "Loaded (limited)") : String(localized: "Loaded"))
-            : String(localized: "Failed to load details")
+            ? (degraded ? AppLocalization.string("Loaded (limited)") : AppLocalization.string("Loaded"))
+            : AppLocalization.string("Failed to load details")
     }
 
     private func loadOpenEnrichment(
@@ -2426,28 +2426,28 @@ final class ScrobbleService: ObservableObject {
     private func openArtistSummaryFallback(_ fallback: OpenArtistFallback, originalArtist: String) -> String {
         var fragments: [String] = []
         let name = fallback.name.nilIfBlank ?? originalArtist
-        fragments.append(String.localizedStringWithFormat(String(localized: "%@ is indexed in MusicBrainz"), name))
+        fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("%@ is indexed in MusicBrainz"), name))
         if let listeners = fallback.listeners {
-            fragments.append(String.localizedStringWithFormat(
-                String(localized: "ListenBrainz shows %@ public listeners"),
+            fragments.append(AppLocalization.localizedStringWithFormat(
+                AppLocalization.string("ListenBrainz shows %@ public listeners"),
                 AppLocalization.integer(listeners)
             ))
         }
         if let plays = fallback.playcount {
-            fragments.append(String.localizedStringWithFormat(
-                String(localized: "%@ public plays"),
+            fragments.append(AppLocalization.localizedStringWithFormat(
+                AppLocalization.string("%@ public plays"),
                 AppLocalization.integer(plays)
             ))
         }
         if let beginYear = fallback.profile?.beginYear {
-            fragments.append(String.localizedStringWithFormat(String(localized: "Active since %lld"), Int64(beginYear)))
+            fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("Active since %lld"), Int64(beginYear)))
         }
         if let area = fallback.profile?.area {
-            fragments.append(String.localizedStringWithFormat(String(localized: "Area: %@"), area))
+            fragments.append(AppLocalization.localizedStringWithFormat(AppLocalization.string("Area: %@"), area))
         }
         if !fallback.tags.isEmpty {
-            fragments.append(String.localizedStringWithFormat(
-                String(localized: "Tags: %@"),
+            fragments.append(AppLocalization.localizedStringWithFormat(
+                AppLocalization.string("Tags: %@"),
                 fallback.tags.prefix(5).joined(separator: ", ")
             ))
         }
@@ -2597,7 +2597,7 @@ final class ScrobbleService: ObservableObject {
             return .recordingMBID(recordingMBID)
         }
 
-        throw ListenBrainzError.api(message: String(localized: "No ListenBrainz recording identity found for \(title)."))
+        throw ListenBrainzError.api(message: AppLocalization.string("No ListenBrainz recording identity found for \(title)."))
     }
 
     private func listenBrainzRecentRecordingMSID(
@@ -2660,7 +2660,7 @@ final class ScrobbleService: ObservableObject {
 
     private func refreshProfileData() async {
         guard isAuthenticated else {
-            profileStatus = String(localized: "Sign in to load profile")
+            profileStatus = AppLocalization.string("Sign in to load profile")
             profile = nil
             weeklyTopArtists = []
             monthlyTopArtists = []
@@ -2671,7 +2671,7 @@ final class ScrobbleService: ObservableObject {
             tracksPerDayAverage = nil
             return
         }
-        profileStatus = String(localized: "Loading profile...")
+        profileStatus = AppLocalization.string("Loading profile...")
         lastAPIError = nil
         lastRecoveryHint = nil
 
@@ -2697,19 +2697,19 @@ final class ScrobbleService: ObservableObject {
                 self.lovedTracksCount = try await lovedCount
                 self.globalTopArtistNames = (try? await global) ?? []
                 self.tracksPerDayAverage = self.computeTracksPerDayAverage(profile)
-                self.profileStatus = String(localized: "Loaded")
+                self.profileStatus = AppLocalization.string("Loaded")
             } catch is CancellationError {
                 return
             } catch {
                 self.handle(error: error)
-                self.profileStatus = String(localized: "Failed to load profile")
+                self.profileStatus = AppLocalization.string("Failed to load profile")
             }
         }
     }
 
     private func refreshScrobblesData() async {
         refreshListenBrainzState()
-        scrobblesStatus = String(localized: "Loading listens...")
+        scrobblesStatus = AppLocalization.string("Loading listens...")
         lastAPIError = nil
         lastRecoveryHint = nil
 
@@ -2717,7 +2717,7 @@ final class ScrobbleService: ObservableObject {
             do {
                 let listens = try await listenBrainz.fetchRecentListens(username: username, count: 100)
                 latestScrobbles = listens.map(CompatibilityRecentScrobble.init(listenBrainzListen:))
-                scrobblesStatus = String(localized: "Loaded ListenBrainz listens")
+                scrobblesStatus = AppLocalization.string("Loaded ListenBrainz listens")
                 return
             } catch is CancellationError {
                 return
@@ -2725,36 +2725,36 @@ final class ScrobbleService: ObservableObject {
                 handleListenBrainz(error: error)
                 if !isAuthenticated {
                     latestScrobbles = []
-                    scrobblesStatus = String(localized: "Failed to load ListenBrainz listens")
+                    scrobblesStatus = AppLocalization.string("Failed to load ListenBrainz listens")
                     return
                 }
             }
         }
 
         guard isAuthenticated else {
-            scrobblesStatus = String(localized: "Connect ListenBrainz to load listens")
+            scrobblesStatus = AppLocalization.string("Connect ListenBrainz to load listens")
             latestScrobbles = []
             return
         }
 
         do {
             latestScrobbles = try await api.fetchRecentScrobbles(limit: 1000)
-            scrobblesStatus = String(localized: "Loaded")
+            scrobblesStatus = AppLocalization.string("Loaded")
         } catch is CancellationError {
             return
         } catch {
             handle(error: error)
-            scrobblesStatus = String(localized: "Failed to load listens")
+            scrobblesStatus = AppLocalization.string("Failed to load listens")
         }
     }
 
     private func refreshFriendsData() async {
         guard isAuthenticated else {
-            friendsStatus = String(localized: "Connect an account to load people")
+            friendsStatus = AppLocalization.string("Connect an account to load people")
             friendsListening = []
             return
         }
-        friendsStatus = String(localized: "Loading people...")
+        friendsStatus = AppLocalization.string("Loading people...")
         lastAPIError = nil
         lastRecoveryHint = nil
 
@@ -2785,29 +2785,29 @@ final class ScrobbleService: ObservableObject {
                 return lhs > rhs
             }
             let nowCount = friendsListening.filter { inferredNowPlayingState(for: $0) }.count
-            friendsStatus = String(localized: "Loaded \(friendsListening.count) people (\(nowCount) listening now)")
+            friendsStatus = AppLocalization.string("Loaded \(friendsListening.count) people (\(nowCount) listening now)")
             scheduleSeparationRefresh()
         } catch is CancellationError {
             return
         } catch {
             handle(error: error)
-            friendsStatus = String(localized: "Failed to load people")
+            friendsStatus = AppLocalization.string("Failed to load people")
         }
     }
 
     private func refreshNeighboursData() async {
         guard isAuthenticated else {
-            neighboursStatus = String(localized: "Connect an account to load related listeners")
+            neighboursStatus = AppLocalization.string("Connect an account to load related listeners")
             neighbours = []
             return
         }
-        neighboursStatus = String(localized: "Loading related listeners...")
+        neighboursStatus = AppLocalization.string("Loading related listeners...")
         lastAPIError = nil
         lastRecoveryHint = nil
 
         do {
             neighbours = try await api.fetchNeighbours(limit: 500)
-            neighboursStatus = String(localized: "Loaded \(neighbours.count) related listeners")
+            neighboursStatus = AppLocalization.string("Loaded \(neighbours.count) related listeners")
             scheduleSeparationRefresh()
         } catch is CancellationError {
             return
@@ -2817,11 +2817,11 @@ final class ScrobbleService: ObservableObject {
                 await refreshFriendsData()
             }
             neighbours = fallbackNeighboursFromFriends(limit: 500)
-            neighboursStatus = String(localized: "Related-listener endpoint unavailable; showing \(neighbours.count) people")
+            neighboursStatus = AppLocalization.string("Related-listener endpoint unavailable; showing \(neighbours.count) people")
             scheduleSeparationRefresh()
         } catch {
             handle(error: error)
-            neighboursStatus = String(localized: "Failed to load related listeners")
+            neighboursStatus = AppLocalization.string("Failed to load related listeners")
         }
     }
 
@@ -2879,28 +2879,28 @@ final class ScrobbleService: ObservableObject {
     private func refreshSeparationDegrees() async {
         guard isAuthenticated else {
             separationByUser = [:]
-            separationStatus = String(localized: "Sign in to calculate separation")
+            separationStatus = AppLocalization.string("Sign in to calculate separation")
             return
         }
         guard let source = api.sessionUsername?.trimmingCharacters(in: .whitespacesAndNewlines), !source.isEmpty else {
             separationByUser = [:]
-            separationStatus = String(localized: "No source user available")
+            separationStatus = AppLocalization.string("No source user available")
             return
         }
 
         let targetUsers = visibleTargetUsers(source: source)
         guard !targetUsers.isEmpty else {
             separationByUser = [:]
-            separationStatus = String(localized: "No users to compare")
+            separationStatus = AppLocalization.string("No users to compare")
             return
         }
 
-        separationStatus = String(localized: "Calculating separation paths...")
+        separationStatus = AppLocalization.string("Calculating separation paths...")
         let results = await bfsDegrees(from: source, targets: targetUsers, maxDepth: quickSeparationDepth, includeContext: true)
         guard !Task.isCancelled else { return }
         separationByUser = results.degrees
         let found = results.degrees.count
-        separationStatus = String(localized: "Found paths for \(found)/\(targetUsers.count) users")
+        separationStatus = AppLocalization.string("Found paths for \(found)/\(targetUsers.count) users")
     }
 
     private func visibleTargetUsers(source: String) -> [String] {
@@ -3115,13 +3115,13 @@ final class ScrobbleService: ObservableObject {
         do {
             let validation = try await api.validateSession()
             if validation.isValid {
-                sessionStatus = String(localized: "Session valid")
+                sessionStatus = AppLocalization.string("Session valid")
                 capabilitiesStatus = formatCapabilities(validation.capabilities)
                 isSubscriber = validation.capabilities.isSubscriber
                 validationSource = validation.fromCache ? "Cache" : "Live"
             } else {
                 signOut()
-                sessionStatus = String(localized: "Session invalid")
+                sessionStatus = AppLocalization.string("Session invalid")
             }
         } catch {
             if error is CancellationError {
@@ -3130,10 +3130,10 @@ final class ScrobbleService: ObservableObject {
             handle(error: error)
             if let apiError = error as? CompatibilityAPIError, case .invalidSession = apiError {
                 signOut()
-                sessionStatus = String(localized: "Session invalid")
+                sessionStatus = AppLocalization.string("Session invalid")
                 return
             }
-            sessionStatus = String(localized: "Validation failed")
+            sessionStatus = AppLocalization.string("Validation failed")
         }
     }
 
@@ -3177,18 +3177,18 @@ final class ScrobbleService: ObservableObject {
         if !settings.isEnabled {
             listenBrainzAuthenticated = false
             listenBrainzStatus = hasToken
-                ? String(localized: "Configured but disabled")
-                : String(localized: "Not configured")
+                ? AppLocalization.string("Configured but disabled")
+                : AppLocalization.string("Not configured")
         } else if let username = settings.username {
             listenBrainzAuthenticated = hasToken
             listenBrainzStatus = hasToken
-                ? String(localized: "Session valid for \(username)")
-                : String(localized: "Token missing")
+                ? AppLocalization.string("Session valid for \(username)")
+                : AppLocalization.string("Token missing")
         } else {
             listenBrainzAuthenticated = false
             listenBrainzStatus = hasToken
-                ? String(localized: "Token stored, validation pending")
-                : String(localized: "Token missing")
+                ? AppLocalization.string("Token stored, validation pending")
+                : AppLocalization.string("Token missing")
         }
     }
 
@@ -3213,7 +3213,7 @@ final class ScrobbleService: ObservableObject {
             message = error.localizedDescription
         }
         listenBrainzLastError = message
-        listenBrainzStatus = String(localized: "Failed: \(message)")
+        listenBrainzStatus = AppLocalization.string("Failed: \(message)")
     }
 
     private func handle(error: Error) {
@@ -3222,13 +3222,13 @@ final class ScrobbleService: ObservableObject {
             lastRecoveryHint = apiError.recoverySuggestion?.replacingOccurrences(of: "legacy provider", with: "the compatibility service")
         } else {
             lastAPIError = error.localizedDescription
-            lastRecoveryHint = String(localized: "Retry later. If this persists, verify API credentials and connectivity.")
+            lastRecoveryHint = AppLocalization.string("Retry later. If this persists, verify API credentials and connectivity.")
         }
     }
 
     private func formatCapabilities(_ capabilities: CompatibilityCapabilities) -> String {
-        let tier = capabilities.isSubscriber ? String(localized: "Supporter") : String(localized: "Standard")
-        let radio = capabilities.canUseRadio ? String(localized: "Radio on") : String(localized: "Radio off")
+        let tier = capabilities.isSubscriber ? AppLocalization.string("Supporter") : AppLocalization.string("Standard")
+        let radio = capabilities.canUseRadio ? AppLocalization.string("Radio on") : AppLocalization.string("Radio off")
         if let accountType = capabilities.accountType, !accountType.isEmpty {
             return "\(tier), \(radio), \(accountType)"
         }

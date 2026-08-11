@@ -11,9 +11,9 @@ struct SimilarArtistGraphNode: Identifiable, Equatable {
 
         var label: String {
             switch self {
-            case .similarity: return String(localized: "Similar")
-            case .connection: return String(localized: "Connected")
-            case .alias: return String(localized: "Alias")
+            case .similarity: return AppLocalization.string("Similar")
+            case .connection: return AppLocalization.string("Connected")
+            case .alias: return AppLocalization.string("Alias")
             }
         }
     }
@@ -343,7 +343,7 @@ struct ListenBrainzRecommendationComposerView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(recommendation.title)
                     .font(.custom("Avenir Next Demi Bold", size: 16))
-                Text(recommendation.artistName ?? String(localized: "Unknown artist"))
+                Text(recommendation.artistName ?? AppLocalization.string("Unknown artist"))
                     .font(.custom("Avenir Next Medium", size: 13))
                     .foregroundStyle(.secondary)
                 if let releaseName = recommendation.releaseName {
