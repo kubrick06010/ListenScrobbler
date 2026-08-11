@@ -12,6 +12,7 @@ struct ScrobbleDetailPanel: View {
     let onShare: (ShareDraft) -> Void
     let onCaptureObsession: (ObsessionDraft) -> Void
     @State private var biography: ArtistBiographySheetItem?
+    @State private var resolvedArtworkURL: String?
 
     var body: some View {
         let metrics = DetailPanelMetrics(width: availableWidth)
@@ -21,6 +22,10 @@ struct ScrobbleDetailPanel: View {
                 HStack {
                     Text(panelTitle)
                         .font(.custom("Avenir Next Demi Bold", size: metrics.headerFont))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.68)
+                        .allowsTightening(true)
+                        .layoutPriority(1)
                     Spacer()
                     detailActions
                     Text(scrobbleService.inspectStatus)
@@ -101,6 +106,9 @@ struct ScrobbleDetailPanel: View {
         .sheet(item: $biography) { item in
             ArtistBiographySheetView(item: item)
         }
+        .task(id: item.id) {
+            resolvedArtworkURL = await scrobbleService.artworkURL(for: item)
+        }
     }
 
     private var panelTitle: String {
@@ -142,6 +150,7 @@ struct ScrobbleDetailPanel: View {
             .help("Archive share")
         }
         .buttonStyle(.bordered)
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     private var shareDraft: ShareDraft {
@@ -174,7 +183,9 @@ struct ScrobbleDetailPanel: View {
     private var detailArtworkURL: String? {
         scrobbleService.inspectedTrackDetails?.imageURL
             ?? item.imageURL
+            ?? resolvedArtworkURL
             ?? scrobbleService.inspectedOpenEntityDetails?.imageURL
+            ?? scrobbleService.inspectedOpenEntityDetails?.artistImageURL
     }
 
     private var artistBiographyItem: ArtistBiographySheetItem? {

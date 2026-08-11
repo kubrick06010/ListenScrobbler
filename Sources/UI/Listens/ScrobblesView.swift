@@ -93,11 +93,12 @@ struct ListenActionRow: View {
     let onOpen: () -> Void
     let onShare: (ShareDraft) -> Void
     @State private var isConfirmingDelete = false
+    @State private var resolvedImageURL: String?
 
     var body: some View {
         HStack(spacing: 10) {
             HStack(spacing: 10) {
-                scrobbleArtwork(imageURL, nowPlaying: nowPlaying)
+                scrobbleArtwork(imageURL?.nilIfBlank ?? resolvedImageURL, nowPlaying: nowPlaying)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.custom("Avenir Next Medium", size: 13))
@@ -186,6 +187,22 @@ struct ListenActionRow: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
         .background(nowPlaying ? Color.yellow.opacity(0.25) : Color.clear, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .task(id: artworkTaskID) {
+            guard imageURL?.nilIfBlank == nil else { return }
+            resolvedImageURL = await scrobbleService.artworkURL(for: CompatibilityRecentScrobble(
+                id: sourceScrobbleID ?? "listen-row",
+                track: title,
+                artist: artist,
+                album: album,
+                imageURL: nil,
+                url: url,
+                loved: loved,
+                playedAt: playedAt,
+                nowPlaying: nowPlaying,
+                recordingMbid: recordingMBID,
+                recordingMsid: recordingMSID
+            ))
+        }
         .confirmationDialog("Delete this ListenBrainz listen?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("Delete Listen", role: .destructive, action: onDelete)
             Button("Cancel", role: .cancel) {}
@@ -201,6 +218,11 @@ struct ListenActionRow: View {
             recordingMbid: recordingMBID,
             recordingMsid: recordingMSID
         )
+    }
+
+    private var artworkTaskID: String? {
+        guard imageURL?.nilIfBlank == nil else { return nil }
+        return "\(artist)::\(title)::\(album ?? "")"
     }
 
     private var canDeleteListen: Bool {

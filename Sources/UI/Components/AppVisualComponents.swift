@@ -92,16 +92,25 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
     @State private var loadedURL: URL?
     @State private var failedURL: URL?
 
+    private var requestURL: URL {
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              components.scheme?.lowercased() == "http" else {
+            return url
+        }
+        components.scheme = "https"
+        return components.url ?? url
+    }
+
     var body: some View {
         Group {
-            if let image, loadedURL == url {
+            if let image, loadedURL == requestURL {
                 content(Image(nsImage: image))
             } else {
                 placeholder()
             }
         }
-        .task(id: url) {
-            await load(url)
+        .task(id: requestURL) {
+            await load(requestURL)
         }
     }
 
@@ -121,7 +130,12 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
         }
 
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            // Artwork must use the same proxy configuration as MusicBrainz and
+            // the compatibility API. Using URLSession.shared here bypassed a
+            // user's manual proxy and made otherwise valid artwork URLs appear
+            // as placeholders in the UI.
+            let session = URLSession.compatibilitySession(proxySettings: ProxySettingsStore().load())
+            let (data, response) = try await session.data(for: request)
             guard let decoded = NSImage(data: data) else {
                 failedURL = targetURL
                 return

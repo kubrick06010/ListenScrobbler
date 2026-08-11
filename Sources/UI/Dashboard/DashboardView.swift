@@ -64,7 +64,11 @@ struct DashboardView: View {
 
                             Divider().overlay(sectionDividerColor)
 
-                            ArtistSummaryCard(data: artistExperienceData, compact: metrics.isCompact) {
+                            ArtistSummaryCard(
+                                data: artistExperienceData,
+                                compact: metrics.isCompact,
+                                artworkSize: metrics.trackArtSize
+                            ) {
                                 selectedArtist = artistExperienceData
                             }
                         }
@@ -515,14 +519,64 @@ struct DashboardView: View {
 
     private func trackInsightsCard(fontSize: CGFloat) -> some View {
         let fragments = trackInsightFragments()
+        let openEditorial = scrobbleService.currentOpenEntityDetails?.editorialInformation
+        let compatibilitySummary = scrobbleService.currentTrackDetails?.summary?.nilIfBlank
         return Group {
-            if !fragments.isEmpty {
-                Text(fragments.joined(separator: " "))
-                    .font(.custom("Avenir Next Medium", size: fontSize))
-                    .padding(12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(calloutBackground, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+            if !fragments.isEmpty || openEditorial != nil || compatibilitySummary != nil {
+                VStack(alignment: .leading, spacing: 12) {
+                    if !fragments.isEmpty {
+                        Text(fragments.joined(separator: " "))
+                            .font(.custom("Avenir Next Medium", size: fontSize))
+                    }
+                    if let compatibilitySummary {
+                        editorialSummary(
+                            EditorialInformation(
+                                summary: compatibilitySummary,
+                                sourceURL: scrobbleService.currentTrackDetails?.url.flatMap(URL.init(string:)),
+                                level: .track,
+                                provider: .compatibilityAPI
+                            ),
+                            fontSize: fontSize
+                        )
+                    } else if let openEditorial {
+                        editorialSummary(openEditorial, fontSize: fontSize)
+                    }
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(calloutBackground, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
             }
+        }
+    }
+
+    private func editorialSummary(_ information: EditorialInformation, fontSize: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(editorialTitle(for: information.level))
+                .font(.custom("Avenir Next Demi Bold", size: max(12, fontSize - 1)))
+            HTMLSummaryText(rawHTML: information.summary, fontSize: fontSize)
+                .fixedSize(horizontal: false, vertical: true)
+            if let sourceURL = information.sourceURL {
+                Button("Fuente: \(editorialProviderTitle(information.provider))") {
+                    openURL(sourceURL)
+                }
+                .buttonStyle(.link)
+                .font(.custom("Avenir Next Medium", size: max(11, fontSize - 2)))
+            }
+        }
+    }
+
+    private func editorialTitle(for level: EditorialLevel) -> String {
+        switch level {
+        case .track: return "Información de la pista"
+        case .album: return "Información del álbum / EP"
+        case .artist: return "Contexto del artista"
+        }
+    }
+
+    private func editorialProviderTitle(_ provider: EditorialProvider) -> String {
+        switch provider {
+        case .wikipedia: return "Wikipedia"
+        case .compatibilityAPI: return "proveedor de música"
         }
     }
 

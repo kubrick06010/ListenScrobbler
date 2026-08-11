@@ -51,6 +51,74 @@ final class MusicBrainzServiceTests: XCTestCase {
         XCTAssertTrue(details.links.contains { $0.url.absoluteString == "https://musicbrainz.org/recording/recording-id" })
     }
 
+    func testCoverArtArchiveArtworkUsesHTTPSForAppTransportSecurity() async throws {
+        let service = makeService { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch request.url!.path {
+            case "/ws/2/recording":
+                return (response, Data(Self.recordingPayload.utf8))
+            case "/ws/2/artist":
+                return (response, Data(Self.artistPayload.utf8))
+            case "/ws/2/artist/artist-id":
+                return (response, Data(Self.artistLookupPayload.utf8))
+            case "/ws/2/release":
+                return (response, Data(Self.releasePayload.utf8))
+            case "/release/release-id":
+                return (response, Data(#"{"images":[{"front":true,"thumbnails":{"500":"http://cover.example/large.jpg"}}]}"#.utf8))
+            default:
+                XCTFail("Unexpected path \(request.url!.path)")
+                return (response, Data())
+            }
+        }
+
+        let details = try await service.lookup(track: "Track", artist: "Artist", release: "Album")
+
+        XCTAssertEqual(details.imageURL, "https://cover.example/large.jpg")
+        XCTAssertEqual(details.artworkResolution?.url, "https://cover.example/large.jpg")
+    }
+
+    func testCoverArtArchiveFallsBackToStableFrontURLWhenIndexFails() async throws {
+        let service = makeService { request in
+            let statusCode = request.url!.path == "/release/release-id" ? 503 : 200
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: statusCode,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch request.url!.path {
+            case "/ws/2/recording":
+                return (response, Data(Self.recordingPayload.utf8))
+            case "/ws/2/artist":
+                return (response, Data(Self.artistPayload.utf8))
+            case "/ws/2/artist/artist-id":
+                return (response, Data(Self.artistLookupPayload.utf8))
+            case "/ws/2/release":
+                return (response, Data(Self.releasePayload.utf8))
+            case "/release/release-id":
+                return (response, Data())
+            default:
+                XCTFail("Unexpected path \(request.url!.path)")
+                return (response, Data())
+            }
+        }
+
+        let details = try await service.lookup(track: "Track", artist: "Artist", release: "Album")
+
+        XCTAssertEqual(
+            details.imageURL,
+            "https://coverartarchive.org/release/release-id/front-500"
+        )
+        XCTAssertEqual(details.artworkResolution?.provider, .coverArtArchive)
+    }
+
     func testLookupBuildsRichArtistProfileFromOpenMetadata() async throws {
         let service = makeService(preferredAppLanguageCodes: ["en"]) { request in
             let response = HTTPURLResponse(
