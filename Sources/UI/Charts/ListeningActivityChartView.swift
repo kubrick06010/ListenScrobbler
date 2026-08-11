@@ -80,7 +80,15 @@ struct ListeningActivityChartView: View {
 
     private func shortLabel(_ activity: ListenBrainzListeningActivity) -> String {
         if let from = activity.from {
-            if range == .year || range == .allTime {
+            if range == .allTime {
+                return from.formatted(
+                    .dateTime
+                        .month(.abbreviated)
+                        .year(.twoDigits)
+                        .locale(preferredAppLocale())
+                )
+            }
+            if range == .year {
                 return from.formatted(.dateTime.month(.abbreviated).locale(preferredAppLocale()))
             }
             return from.formatted(.dateTime.day().locale(preferredAppLocale()))

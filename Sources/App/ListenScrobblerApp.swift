@@ -19,6 +19,7 @@ struct ListenScrobblerApp: App {
     @AppStorage("ui.showDockIcon") private var showDockIcon = true
     @AppStorage("app.launchAtLogin") private var launchAtLoginEnabled = false
     @State private var handledInitialWindowPresentation = false
+    @State private var didOpenUITestWindow = false
 
     var body: some Scene {
         Window("ListenScrobbler", id: "main") {
@@ -106,6 +107,9 @@ struct ListenScrobblerApp: App {
         } label: {
             MenuBarStatusIcon(isEnabled: scrobbleService.scrobblingEnabled)
                 .environment(\.locale, localizationController.effectiveLocale)
+                .onAppear {
+                    openWindowForUITestIfNeeded()
+                }
         }
         .menuBarExtraStyle(.window)
         .environment(\.locale, localizationController.effectiveLocale)
@@ -154,6 +158,15 @@ struct ListenScrobblerApp: App {
     private func openMainWindow() {
         openWindow(id: "main")
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func openWindowForUITestIfNeeded() {
+        guard ProcessInfo.processInfo.arguments.contains("--ui-test"),
+              !didOpenUITestWindow else { return }
+        didOpenUITestWindow = true
+        DispatchQueue.main.async {
+            openMainWindow()
+        }
     }
 
     private func openLegacySettingsWindow() {
