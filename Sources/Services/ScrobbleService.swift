@@ -184,7 +184,7 @@ final class ScrobbleService: ObservableObject {
     @Published private(set) var inspectStatus = AppLocalization.string("Select a listen to inspect")
     @Published private(set) var profile: CompatibilityUserProfile?
     @Published private(set) var latestScrobbles: [CompatibilityRecentScrobble] = []
-    private var listenArtworkCache: [String: String] = [:]
+    private var listenArtworkCache: [String: ArtworkResolution] = [:]
     @Published private(set) var friendsListening: [CompatibilityFriendListening] = []
     @Published private(set) var neighbours: [CompatibilityNeighbour] = []
     @Published private(set) var separationByUser: [String: Int] = [:]
@@ -1315,25 +1315,65 @@ final class ScrobbleService: ObservableObject {
         preloadedTrackDetailsLoaded: Bool = false,
         preloadedOpenDetailsLoaded: Bool = false
     ) async -> String? {
+        let cachedResolution = await artworkResolution(
+            for: scrobble,
+            preloadedTrackImageURL: preloadedTrackImageURL,
+            preloadedOpenImageURL: preloadedOpenImageURL,
+            preloadedTrackDetailsLoaded: preloadedTrackDetailsLoaded,
+            preloadedOpenDetailsLoaded: preloadedOpenDetailsLoaded
+        )
+        return cachedResolution?.url
+    }
+
+    private func artworkResolution(
+        for scrobble: CompatibilityRecentScrobble,
+        preloadedTrackImageURL: String? = nil,
+        preloadedOpenImageURL: String? = nil,
+        preloadedTrackDetailsLoaded: Bool = false,
+        preloadedOpenDetailsLoaded: Bool = false
+    ) async -> ArtworkResolution? {
+        let key = [scrobble.artist, scrobble.track, scrobble.album ?? ""].joined(separator: "::")
+        var candidates: [ArtworkResolutionCandidate] = []
         if let imageURL = scrobble.imageURL?.nilIfBlank {
-            return imageURL
+            candidates.append(ArtworkResolutionCandidate(
+                url: imageURL,
+                level: .album,
+                provider: .listenBrainz
+            ))
         }
         if let imageURL = preloadedTrackImageURL {
-            return imageURL
+            candidates.append(ArtworkResolutionCandidate(
+                url: imageURL,
+                level: .track,
+                provider: .compatibilityAPI
+            ))
         }
         if let imageURL = preloadedOpenImageURL {
-            return imageURL
+            candidates.append(ArtworkResolutionCandidate(
+                url: imageURL,
+                level: .album,
+                provider: .coverArtArchive
+            ))
         }
-        let key = [scrobble.artist, scrobble.track, scrobble.album ?? ""].joined(separator: "::")
+        if let resolution = ArtworkResolutionPolicy.resolve(candidates: candidates, target: .track) {
+            listenArtworkCache[key] = resolution
+            return resolution
+        }
         if let cached = listenArtworkCache[key] {
             return cached
         }
+
         if apiConfigured,
            !preloadedTrackDetailsLoaded,
            let trackDetails = try? await api.fetchTrackDetails(artist: scrobble.artist, track: scrobble.track),
            let imageURL = trackDetails.imageURL?.nilIfBlank {
-            listenArtworkCache[key] = imageURL
-            return imageURL
+            let resolution = ArtworkResolution(
+                url: imageURL,
+                level: .track,
+                provider: .compatibilityAPI
+            )
+            listenArtworkCache[key] = resolution
+            return resolution
         }
         let details = preloadedOpenDetailsLoaded
             ? nil
@@ -1342,11 +1382,21 @@ final class ScrobbleService: ObservableObject {
                 artist: scrobble.artist,
                 release: scrobble.album
             )
-        let imageURL = details?.imageURL?.nilIfBlank ?? details?.artistImageURL?.nilIfBlank
-        if let imageURL {
-            listenArtworkCache[key] = imageURL
+        if let details {
+            let openCandidates = [
+                details.artworkResolution.map {
+                    ArtworkResolutionCandidate(url: $0.url, level: $0.level, provider: $0.provider)
+                },
+                details.artistArtworkResolution.map {
+                    ArtworkResolutionCandidate(url: $0.url, level: $0.level, provider: $0.provider)
+                }
+            ].compactMap { $0 }
+            if let resolution = ArtworkResolutionPolicy.resolve(candidates: openCandidates, target: .track) {
+                listenArtworkCache[key] = resolution
+                return resolution
+            }
         }
-        return imageURL
+        return nil
     }
 
     func refreshFriends() async {
@@ -2295,6 +2345,53 @@ final class ScrobbleService: ObservableObject {
 
         let preloadedTrackImage = currentTrackDetails?.imageURL?.nilIfBlank
         let preloadedOpenImage = currentOpenEntityDetails?.imageURL?.nilIfBlank
+        var currentCandidates: [ArtworkResolutionCandidate] = []
+        if let imageURL = track.artworkURL?.nilIfBlank {
+            currentCandidates.append(ArtworkResolutionCandidate(
+                url: imageURL,
+                level: .track,
+                provider: .player
+            ))
+        }
+        if let imageURL = preloadedTrackImage {
+            currentCandidates.append(ArtworkResolutionCandidate(
+                url: imageURL,
+                level: .track,
+                provider: .compatibilityAPI
+            ))
+        }
+        if let imageURL = preloadedOpenImage {
+            currentCandidates.append(ArtworkResolutionCandidate(
+                url: imageURL,
+                level: .album,
+                provider: .coverArtArchive
+            ))
+        }
+        if let resolution = currentOpenEntityDetails?.artworkResolution {
+            currentCandidates.append(ArtworkResolutionCandidate(
+                url: resolution.url,
+                level: resolution.level,
+                provider: resolution.provider
+            ))
+        }
+        if let resolution = currentOpenEntityDetails?.artistArtworkResolution {
+            currentCandidates.append(ArtworkResolutionCandidate(
+                url: resolution.url,
+                level: resolution.level,
+                provider: resolution.provider
+            ))
+        }
+        if let imageURL = currentArtistDetails?.imageURL?.nilIfBlank {
+            currentCandidates.append(ArtworkResolutionCandidate(
+                url: imageURL,
+                level: .artist,
+                provider: .compatibilityAPI
+            ))
+        }
+        if let resolution = ArtworkResolutionPolicy.resolve(candidates: currentCandidates, target: .track) {
+            currentTrackArtworkURL = resolution.url
+            return
+        }
         let candidate = CompatibilityRecentScrobble(
             id: "now-playing|\(track.id.uuidString)",
             track: track.title,
@@ -2308,7 +2405,7 @@ final class ScrobbleService: ObservableObject {
             recordingMbid: currentOpenEntityDetails?.recordingMBID,
             recordingMsid: nil
         )
-        let resolved = await artworkURL(
+        let resolved = await artworkResolution(
             for: candidate,
             preloadedTrackImageURL: preloadedTrackImage,
             preloadedOpenImageURL: preloadedOpenImage,
@@ -2316,7 +2413,7 @@ final class ScrobbleService: ObservableObject {
             preloadedOpenDetailsLoaded: preloadedOpenDetailsLoaded || currentOpenEntityDetails != nil
         )
         guard currentTrack?.id == track.id else { return }
-        currentTrackArtworkURL = resolved
+        currentTrackArtworkURL = resolved?.url
     }
 
     private func loadOpenEnrichment(

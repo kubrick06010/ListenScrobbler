@@ -192,6 +192,7 @@ final class ScrobbleServiceTests: XCTestCase {
     func testCurrentTrackDetailsLoadFromConfiguredAPIWhenSignedOut() async {
         let api = MockAPI()
         api.isAuthenticated = false
+        api.trackImageURL = "https://example.test/track-artwork.jpg"
         let monitor = TestMonitor()
         let musicBrainz = MusicBrainzService(urlSession: makeMockedSession { request in
             let response = HTTPURLResponse(
@@ -222,12 +223,20 @@ final class ScrobbleServiceTests: XCTestCase {
         )
 
         monitor.emit(.trackStarted(makeTrack(duration: 180)))
-        try? await Task.sleep(nanoseconds: 40_000_000)
+        for _ in 0..<100 {
+            if service.currentTrackDetails != nil,
+               service.currentArtistDetails != nil,
+               service.currentOpenEntityDetails != nil {
+                break
+            }
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
 
         XCTAssertFalse(service.isAuthenticated)
         XCTAssertEqual(service.currentTrackDetails?.name, "Track")
         XCTAssertEqual(service.currentArtistDetails?.name, "Artist")
         XCTAssertEqual(service.currentOpenEntityDetails?.artistName, "Artist")
+        XCTAssertEqual(service.currentTrackArtworkURL, api.trackImageURL)
         XCTAssertEqual(api.trackDetailRequests.count, 1)
         XCTAssertEqual(api.artistDetailRequests.count, 1)
         withExtendedLifetime(service) {}
@@ -698,6 +707,7 @@ private final class MockAPI: CompatibilityAPI {
     var nowPlayingTracks: [Track] = []
     var isConfigured: Bool = true
     var isAuthenticated: Bool = true
+    var trackImageURL: String?
     var sessionUsername: String?
     var scrobbledTracks: [Track] = []
     var trackDetailRequests: [(artist: String, track: String)] = []
@@ -769,7 +779,7 @@ private final class MockAPI: CompatibilityAPI {
             name: track,
             artist: artist,
             album: "Album",
-            imageURL: nil,
+            imageURL: trackImageURL,
             listeners: 1,
             playcount: 1,
             userPlaycount: 1,

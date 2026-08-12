@@ -63,14 +63,14 @@ struct EditorialInformation: Equatable {
 
 /// The image can be used only for the entity level it was resolved for. In
 /// particular, an album cover must never be presented as the artist portrait.
-enum ArtworkLevel: String, Hashable {
+enum ArtworkLevel: String, Hashable, Codable {
     case track
     case album
     case ep
     case artist
 }
 
-enum ArtworkProvider: String, Hashable {
+enum ArtworkProvider: String, Hashable, Codable {
     case player
     case compatibilityAPI
     case coverArtArchive
@@ -86,10 +86,40 @@ enum ArtworkProvider: String, Hashable {
     case fanartTV
 }
 
-struct ArtworkResolution: Equatable {
+struct ArtworkResolution: Equatable, Codable {
     let url: String
     let level: ArtworkLevel
     let provider: ArtworkProvider
+}
+
+struct ArtworkResolutionCandidate: Equatable, Codable {
+    let url: String
+    let level: ArtworkLevel
+    let provider: ArtworkProvider
+
+    var resolution: ArtworkResolution {
+        ArtworkResolution(url: url, level: level, provider: provider)
+    }
+}
+
+enum ArtworkResolutionPolicy {
+    static func resolve(
+        candidates: [ArtworkResolutionCandidate],
+        target: ArtworkLevel
+    ) -> ArtworkResolution? {
+        let levels: [ArtworkLevel] = target == .artist
+            ? [.artist]
+            : [.track, .album, .ep, .artist]
+
+        for level in levels {
+            if let candidate = candidates.first(where: {
+                $0.level == level && $0.url.nilIfBlank != nil
+            }) {
+                return candidate.resolution
+            }
+        }
+        return nil
+    }
 }
 
 extension OpenMusicEntityDetails {

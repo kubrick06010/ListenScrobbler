@@ -2,6 +2,25 @@ import XCTest
 @testable import ListenScrobbler
 
 final class ArtworkResolutionTests: XCTestCase {
+    func testResolutionFixturesFollowTheSharedFallbackPolicy() throws {
+        let bundle = Bundle(for: Self.self)
+        let url = bundle.url(
+            forResource: "artwork-resolution-fixtures",
+            withExtension: "json",
+            subdirectory: "Artwork"
+        ) ?? bundle.url(forResource: "artwork-resolution-fixtures", withExtension: "json")
+        let fixtureURL = try XCTUnwrap(url)
+        let fixtures = try JSONDecoder().decode([ArtworkResolutionFixture].self, from: Data(contentsOf: fixtureURL))
+
+        for fixture in fixtures {
+            let resolution = ArtworkResolutionPolicy.resolve(
+                candidates: fixture.candidates,
+                target: fixture.target
+            )
+            XCTAssertEqual(resolution?.url, fixture.expected, fixture.name)
+        }
+    }
+
     func testArtworkLevelsKeepArtistPortraitSeparateFromReleaseArtwork() {
         let release = ArtworkResolution(
             url: "https://coverartarchive.org/release/release/front-500",
@@ -38,4 +57,11 @@ final class ArtworkResolutionTests: XCTestCase {
         XCTAssertTrue(providers.contains(.theAudioDB))
         XCTAssertTrue(providers.contains(.fanartTV))
     }
+}
+
+private struct ArtworkResolutionFixture: Decodable {
+    let name: String
+    let target: ArtworkLevel
+    let candidates: [ArtworkResolutionCandidate]
+    let expected: String
 }
