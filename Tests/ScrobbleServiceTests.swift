@@ -243,6 +243,77 @@ final class ScrobbleServiceTests: XCTestCase {
     }
 
     @MainActor
+    func testConcurrentArtworkRequestsShareOneProviderLookup() async {
+        let api = MockAPI()
+        api.trackImageURL = "https://example.test/shared-track-artwork.jpg"
+        api.trackDetailDelayNanoseconds = 50_000_000
+        let service = ScrobbleService(
+            api: api,
+            listenBrainz: isolatedListenBrainzService(),
+            monitor: TestMonitor(),
+            sessionStore: InMemorySessionStore(),
+            queueStore: InMemoryQueueStore()
+        )
+        let scrobble = CompatibilityRecentScrobble(
+            id: "shared-artwork",
+            track: "Track",
+            artist: "Artist",
+            album: "Album",
+            imageURL: nil,
+            url: nil,
+            loved: false,
+            playedAt: .now,
+            nowPlaying: false,
+            recordingMbid: nil,
+            recordingMsid: nil
+        )
+
+        async let first = service.artworkURL(for: scrobble)
+        async let second = service.artworkURL(for: scrobble)
+        let results = await [first, second]
+
+        XCTAssertEqual(results, [api.trackImageURL, api.trackImageURL])
+        XCTAssertEqual(api.trackDetailRequests.count, 1)
+        withExtendedLifetime(service) {}
+    }
+
+    @MainActor
+    func testResolvedListenArtworkPropagatesToMatchingCurrentTrack() async {
+        let api = MockAPI()
+        api.isConfigured = false
+        let monitor = TestMonitor()
+        let service = ScrobbleService(
+            api: api,
+            listenBrainz: isolatedListenBrainzService(),
+            monitor: monitor,
+            sessionStore: InMemorySessionStore(),
+            queueStore: InMemoryQueueStore()
+        )
+        let track = makeTrack(duration: 180)
+        monitor.emit(.trackStarted(track))
+        await Task.yield()
+        let scrobble = CompatibilityRecentScrobble(
+            id: "matching-current-track",
+            track: track.title,
+            artist: track.artist,
+            album: track.album,
+            imageURL: "https://example.test/history-artwork.jpg",
+            url: nil,
+            loved: false,
+            playedAt: .now,
+            nowPlaying: false,
+            recordingMbid: nil,
+            recordingMsid: nil
+        )
+
+        let resolved = await service.artworkURL(for: scrobble)
+
+        XCTAssertEqual(resolved, scrobble.imageURL)
+        XCTAssertEqual(service.currentTrackArtworkURL, scrobble.imageURL)
+        withExtendedLifetime(service) {}
+    }
+
+    @MainActor
     func testRecentListensLoadFromListenBrainzWhenCompatibilitySignedOut() async throws {
         let api = MockAPI()
         api.isAuthenticated = false
@@ -708,6 +779,7 @@ private final class MockAPI: CompatibilityAPI {
     var isConfigured: Bool = true
     var isAuthenticated: Bool = true
     var trackImageURL: String?
+    var trackDetailDelayNanoseconds: UInt64 = 0
     var sessionUsername: String?
     var scrobbledTracks: [Track] = []
     var trackDetailRequests: [(artist: String, track: String)] = []
@@ -775,6 +847,9 @@ private final class MockAPI: CompatibilityAPI {
 
     func fetchTrackDetails(artist: String, track: String) async throws -> CompatibilityTrackDetails {
         trackDetailRequests.append((artist: artist, track: track))
+        if trackDetailDelayNanoseconds > 0 {
+            try await Task.sleep(nanoseconds: trackDetailDelayNanoseconds)
+        }
         return CompatibilityTrackDetails(
             name: track,
             artist: artist,
