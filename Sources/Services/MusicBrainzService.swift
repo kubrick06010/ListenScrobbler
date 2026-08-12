@@ -219,13 +219,38 @@ final class MusicBrainzService {
         let releaseMBID = selectedRelease?.id
         let releaseGroupMBID = selectedRelease?.releaseGroup?.id
         let resolvedReleaseName = release?.nilIfBlank ?? selectedRelease?.title
-        let artworkResolution = await fetchBestCoverArt(
+        let coverArtResolution = await fetchBestCoverArt(
             releaseMBID: releaseMBID,
             releaseGroupMBID: releaseGroupMBID,
             releaseType: selectedRelease?.releaseGroup?.primaryType
         )
         let artistSupplement = await fetchArtistSupplement(from: artistIdentity)
         let releaseGroupWithRelations = await fetchReleaseGroupWithRelations(id: releaseGroupMBID)
+        let anonymousProviderCandidates: [AnonymousArtworkCandidate]
+        if baseURL.host == "musicbrainz.org" {
+            anonymousProviderCandidates = await AnonymousArtworkProviders.candidates(
+                artistRelations: artistIdentity?.relations ?? [],
+                recordingRelations: resolvedRecording?.relations ?? [],
+                releaseRelations: selectedRelease?.relations ?? [],
+                urlSession: urlSession
+            )
+        } else {
+            // Test/local metadata endpoints must not unexpectedly fan out to
+            // live providers; callers can exercise those clients directly.
+            anonymousProviderCandidates = []
+        }
+        let anonymousCandidates = anonymousProviderCandidates.map {
+            ArtworkResolutionCandidate(url: $0.url, level: $0.level, provider: $0.provider)
+        }
+        var allArtworkCandidates = anonymousCandidates
+        if let coverArtResolution {
+            allArtworkCandidates.append(ArtworkResolutionCandidate(url: coverArtResolution.url, level: coverArtResolution.level, provider: coverArtResolution.provider))
+        }
+        if let artistImageURL = artistSupplement.imageURL {
+            allArtworkCandidates.append(ArtworkResolutionCandidate(url: artistImageURL, level: .artist, provider: .wikipediaWikidata))
+        }
+        let artworkResolution = ArtworkResolutionPolicy.resolve(candidates: allArtworkCandidates, target: .track)
+        let artistArtworkResolution = ArtworkResolutionPolicy.resolve(candidates: allArtworkCandidates, target: .artist)
         var resolvedTags: [MusicBrainzTag] = []
         if let recordingTags = resolvedRecording?.tags {
             resolvedTags.append(contentsOf: recordingTags)
@@ -251,9 +276,7 @@ final class MusicBrainzService {
             imageURL: artworkResolution?.url,
             artistImageURL: artistSupplement.imageURL,
             artworkResolution: artworkResolution,
-            artistArtworkResolution: artistSupplement.imageURL.map {
-                ArtworkResolution(url: $0, level: .artist, provider: .wikipediaWikidata)
-            },
+            artistArtworkResolution: artistArtworkResolution,
             artistSummary: artistSupplement.summary,
             artistSummaryURL: artistSupplement.summaryURL,
             artistSummaryLanguageCode: artistSupplement.summaryLanguageCode,
@@ -1106,7 +1129,7 @@ private struct CoverArtArchiveImage: Decodable {
     let thumbnails: [String: String]?
 }
 
-private struct MusicBrainzRelation: Decodable {
+struct MusicBrainzRelation: Decodable {
     let type: String?
     let url: MusicBrainzRelationURL?
     let artist: MusicBrainzRelatedArtist?
@@ -1143,12 +1166,12 @@ private struct MusicBrainzRelation: Decodable {
     }
 }
 
-private struct MusicBrainzRelatedArtist: Decodable {
+struct MusicBrainzRelatedArtist: Decodable {
     let id: String
     let name: String
 }
 
-private struct MusicBrainzRelationURL: Decodable {
+struct MusicBrainzRelationURL: Decodable {
     let resource: String
 }
 

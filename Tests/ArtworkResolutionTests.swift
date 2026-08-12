@@ -47,15 +47,17 @@ final class ArtworkResolutionTests: XCTestCase {
         XCTAssertEqual(ep.level, .ep)
     }
 
-    func testProviderCatalogIncludesNonMusicBrainzCandidates() {
+    func testProviderCatalogContainsOnlyDistributedSafeArtworkProviders() {
         let providers = Set(ArtworkProviderCatalog.options.map(\.provider))
 
         XCTAssertTrue(providers.contains(.discogs))
-        XCTAssertTrue(providers.contains(.allMusic))
-        XCTAssertTrue(providers.contains(.appleMusic))
-        XCTAssertTrue(providers.contains(.spotify))
-        XCTAssertTrue(providers.contains(.theAudioDB))
-        XCTAssertTrue(providers.contains(.fanartTV))
+        XCTAssertTrue(providers.contains(.deezer))
+        XCTAssertFalse(providers.contains(.theAudioDB))
+        XCTAssertFalse(providers.contains(.fanartTV))
+        XCTAssertFalse(providers.contains(.lastFM))
+        XCTAssertTrue(ArtworkProviderCatalog.options
+            .filter { $0.status == .active }
+            .allSatisfy { !$0.requiresAuthentication })
     }
 }
 

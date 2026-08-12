@@ -18,6 +18,7 @@
 		13BD9E04A68467058AE1912D /* MobileDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0E819758E3F3C11F5B962A /* MobileDiscoverView.swift */; };
 		1781896C5C7511FFF67FF869 /* ListenBrainzSetupGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220C364DF93E2F3F8C6F298F /* ListenBrainzSetupGuideTests.swift */; };
 		17A16B6DE73ECBEB0D348080 /* LaunchAtLoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D4488A8F8016AAC1758D35 /* LaunchAtLoginController.swift */; };
+		194D8AAD8B2C0511F7BEB62C /* AnonymousArtworkProviders.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BBFD4F7BC05B9D23C15D35 /* AnonymousArtworkProviders.swift */; };
 		19FF7F6A8966747FDE9A8BC4 /* ScrobbleQueueStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B99D9102A477CEC8A32AD8 /* ScrobbleQueueStoreTests.swift */; };
 		1C9C6CA2BD527FA20D1FECDA /* MobileManualScrobbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C29DCC6F8466BF61C6A919E /* MobileManualScrobbleView.swift */; };
 		1CC0E196AB861BCC104CC25C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 920AF8C83ADAC19D67CC3BED /* Assets.xcassets */; };
@@ -32,6 +33,7 @@
 		292B500D27667B3EF0417D62 /* ShareComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 964FEDE06979D76DB8E15BE2 /* ShareComposerView.swift */; };
 		2A8431E613DDF2A21A1B5B48 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DA35C05A986A9D098E697B /* ContentView.swift */; };
 		2EBAA2E8671A78E51A758AA1 /* CompatibilityAPIErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B03CCF1CF7F208D9E0F001E9 /* CompatibilityAPIErrorTests.swift */; };
+		324F36E07DA824F3FFA25167 /* AnonymousArtworkProviders.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5BBFD4F7BC05B9D23C15D35 /* AnonymousArtworkProviders.swift */; };
 		3549C0479E556CFE64D5FB16 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61B338CB2086DD5755BA9617 /* ProfileView.swift */; };
 		3549D03CFAA497F7D09E4B77 /* MacOpenMusicOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFB8006F0633B63C5AC1376 /* MacOpenMusicOnboardingView.swift */; };
 		357CB554DD884BE723559370 /* CompatibilityAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78A11E59B47320FA1BDBD51 /* CompatibilityAPI.swift */; };
@@ -291,6 +293,7 @@
 		BD95A03E08E3C747E938BB90 /* VaultStores.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultStores.swift; sourceTree = "<group>"; };
 		C15987756CEF34B31D15C88E /* ArtworkResolutionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkResolutionTests.swift; sourceTree = "<group>"; };
 		C37401A8DD5E1F66AEBB0861 /* MobileLibraryScanEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileLibraryScanEngineTests.swift; sourceTree = "<group>"; };
+		C5BBFD4F7BC05B9D23C15D35 /* AnonymousArtworkProviders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnonymousArtworkProviders.swift; sourceTree = "<group>"; };
 		C5DA35C05A986A9D098E697B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C800090577C437719D0F720A /* ObsessionsVaultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObsessionsVaultView.swift; sourceTree = "<group>"; };
 		C84E7DC5282C57ACC74B50D9 /* ScrobbleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrobbleService.swift; sourceTree = "<group>"; };
@@ -387,6 +390,7 @@
 		2016A3B54D68F8CCC65856D9 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				C5BBFD4F7BC05B9D23C15D35 /* AnonymousArtworkProviders.swift */,
 				84389FA2A00C6ADD8B09BC41 /* ArtworkProviderCatalog.swift */,
 				E8E1000A4B3975C98808345A /* CompatibilityAccountsStore.swift */,
 				A78A11E59B47320FA1BDBD51 /* CompatibilityAPI.swift */,
@@ -945,6 +949,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				194D8AAD8B2C0511F7BEB62C /* AnonymousArtworkProviders.swift in Sources */,
 				27D207DA72BEE9BFADC7C893 /* AppLanguage.swift in Sources */,
 				E9BA33547D42F334B15FCD2D /* AppLocalization.swift in Sources */,
 				720A2B528792EA8DF0006E20 /* ArtworkProviderCatalog.swift in Sources */,
@@ -997,6 +1002,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FB5494E952C54EE8478F9F61 /* AccountView.swift in Sources */,
+				324F36E07DA824F3FFA25167 /* AnonymousArtworkProviders.swift in Sources */,
 				7363CA7AEF500EDE697F4472 /* AppKitRepresentables.swift in Sources */,
 				713C3CD033261BA2E23790E5 /* AppLanguage.swift in Sources */,
 				896BF9155E36D03E47454250 /* AppLocalization.swift in Sources */,
