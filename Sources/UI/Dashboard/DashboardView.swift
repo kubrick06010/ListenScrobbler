@@ -794,34 +794,10 @@ struct DashboardView: View {
     }
 
     private var dashboardTrackImageURL: String? {
-        // Artwork resolution chain:
-        // 1) track.getInfo image
-        // 2) player-supplied artwork
-        // 3) MusicBrainz/Cover Art Archive release artwork
-        // 4) matching recent scrobble image (same title + artist)
-        // 5) artist image as final fallback.
-        if let explicit = scrobbleService.currentTrackDetails?.imageURL, !explicit.isEmpty {
-            return explicit
-        }
-        if let localArtwork = scrobbleService.currentTrack?.artworkURL, !localArtwork.isEmpty {
-            return localArtwork
-        }
-        if let openArtwork = scrobbleService.currentOpenEntityDetails?.imageURL, !openArtwork.isEmpty {
-            return openArtwork
-        }
-        guard let now = scrobbleService.currentTrack else {
-            return scrobbleService.currentArtistDetails?.imageURL
-        }
-        let normalizedTitle = now.title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        let normalizedArtist = now.artist.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        if let matched = scrobbleService.latestScrobbles.first(where: {
-            $0.track.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedTitle &&
-            $0.artist.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedArtist &&
-            ($0.imageURL?.isEmpty == false)
-        })?.imageURL {
-            return matched
-        }
-        return scrobbleService.currentArtistDetails?.imageURL
+        scrobbleService.currentTrackArtworkURL
+            ?? scrobbleService.currentTrackDetails?.imageURL?.nilIfBlank
+            ?? scrobbleService.currentOpenEntityDetails?.imageURL?.nilIfBlank
+            ?? scrobbleService.currentArtistDetails?.imageURL?.nilIfBlank
     }
 
     private var dashboardTags: [String] {

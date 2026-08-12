@@ -107,6 +107,7 @@ final class ScrobbleService: ObservableObject {
     // UI views should read these published snapshots and call focused methods
     // below; provider-specific networking belongs in the service clients.
     @Published private(set) var currentTrack: Track?
+    @Published private(set) var currentTrackArtworkURL: String?
     @Published private(set) var queuedScrobbles: [Track] = []
     @Published private(set) var queuedSubmissionJobs: [ScrobbleSubmissionJob] = []
     @Published private(set) var scrobblingEnabled = true
@@ -1307,8 +1308,20 @@ final class ScrobbleService: ObservableObject {
         await refreshScrobblesData()
     }
 
-    func artworkURL(for scrobble: CompatibilityRecentScrobble) async -> String? {
+    func artworkURL(
+        for scrobble: CompatibilityRecentScrobble,
+        preloadedTrackImageURL: String? = nil,
+        preloadedOpenImageURL: String? = nil,
+        preloadedTrackDetailsLoaded: Bool = false,
+        preloadedOpenDetailsLoaded: Bool = false
+    ) async -> String? {
         if let imageURL = scrobble.imageURL?.nilIfBlank {
+            return imageURL
+        }
+        if let imageURL = preloadedTrackImageURL {
+            return imageURL
+        }
+        if let imageURL = preloadedOpenImageURL {
             return imageURL
         }
         let key = [scrobble.artist, scrobble.track, scrobble.album ?? ""].joined(separator: "::")
@@ -1316,16 +1329,19 @@ final class ScrobbleService: ObservableObject {
             return cached
         }
         if apiConfigured,
+           !preloadedTrackDetailsLoaded,
            let trackDetails = try? await api.fetchTrackDetails(artist: scrobble.artist, track: scrobble.track),
            let imageURL = trackDetails.imageURL?.nilIfBlank {
             listenArtworkCache[key] = imageURL
             return imageURL
         }
-        let details = try? await musicBrainz.lookup(
-            track: scrobble.track,
-            artist: scrobble.artist,
-            release: scrobble.album
-        )
+        let details = preloadedOpenDetailsLoaded
+            ? nil
+            : try? await musicBrainz.lookup(
+                track: scrobble.track,
+                artist: scrobble.artist,
+                release: scrobble.album
+            )
         let imageURL = details?.imageURL?.nilIfBlank ?? details?.artistImageURL?.nilIfBlank
         if let imageURL {
             listenArtworkCache[key] = imageURL
@@ -1883,6 +1899,7 @@ final class ScrobbleService: ObservableObject {
         finalizeCurrentTrackIfNeeded()
 
         currentTrack = track
+        currentTrackArtworkURL = track.artworkURL?.nilIfBlank
         currentTrackStart = .now
         accumulatedPlayTime = min(
             max(0, Date().timeIntervalSince(track.startedAt)),
@@ -2136,6 +2153,7 @@ final class ScrobbleService: ObservableObject {
         thresholdTask = nil
         nowPlayingTask = nil
         currentTrack = nil
+        currentTrackArtworkURL = nil
         currentTrackStart = nil
         currentTrackDetails = nil
         currentArtistDetails = nil
@@ -2195,6 +2213,7 @@ final class ScrobbleService: ObservableObject {
                 lastAPIError = error.localizedDescription
             }
             currentTrackDetails = nil
+            await resolveCurrentTrackArtwork(for: track)
             exploreStatus = loadedAnything
                 ? (degraded
                     ? AppLocalization.string("Loaded open metadata (limited)")
@@ -2262,6 +2281,42 @@ final class ScrobbleService: ObservableObject {
         exploreStatus = loadedAnything
             ? (degraded ? AppLocalization.string("Loaded (limited)") : AppLocalization.string("Loaded"))
             : AppLocalization.string("Failed to load details")
+        await resolveCurrentTrackArtwork(for: track)
+    }
+
+    /// Resolves the artwork for the active player track once, through the same
+    /// provider chain used by listening history. Views consume this published
+    /// value instead of implementing their own partial fallback logic.
+    private func resolveCurrentTrackArtwork(
+        for track: Track,
+        preloadedOpenDetailsLoaded: Bool = false
+    ) async {
+        guard currentTrack?.id == track.id else { return }
+
+        let preloadedTrackImage = currentTrackDetails?.imageURL?.nilIfBlank
+        let preloadedOpenImage = currentOpenEntityDetails?.imageURL?.nilIfBlank
+        let candidate = CompatibilityRecentScrobble(
+            id: "now-playing|\(track.id.uuidString)",
+            track: track.title,
+            artist: track.artist,
+            album: track.album,
+            imageURL: track.artworkURL?.nilIfBlank,
+            url: nil,
+            loved: false,
+            playedAt: track.startedAt,
+            nowPlaying: true,
+            recordingMbid: currentOpenEntityDetails?.recordingMBID,
+            recordingMsid: nil
+        )
+        let resolved = await artworkURL(
+            for: candidate,
+            preloadedTrackImageURL: preloadedTrackImage,
+            preloadedOpenImageURL: preloadedOpenImage,
+            preloadedTrackDetailsLoaded: currentTrackDetails != nil,
+            preloadedOpenDetailsLoaded: preloadedOpenDetailsLoaded || currentOpenEntityDetails != nil
+        )
+        guard currentTrack?.id == track.id else { return }
+        currentTrackArtworkURL = resolved
     }
 
     private func loadOpenEnrichment(
