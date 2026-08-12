@@ -21,6 +21,19 @@ final class ArtworkResolutionTests: XCTestCase {
         }
     }
 
+    private enum Fixture {
+        static let album = ArtworkResolution(
+            url: "https://coverartarchive.org/release/release/front-500",
+            level: .album,
+            provider: .coverArtArchive
+        )
+        static let artist = ArtworkResolution(
+            url: "https://commons.wikimedia.org/wiki/Special:FilePath/artist.jpg",
+            level: .artist,
+            provider: .wikipediaWikidata
+        )
+    }
+
     func testArtworkLevelsKeepArtistPortraitSeparateFromReleaseArtwork() {
         let release = ArtworkResolution(
             url: "https://coverartarchive.org/release/release/front-500",
@@ -58,6 +71,87 @@ final class ArtworkResolutionTests: XCTestCase {
         XCTAssertTrue(ArtworkProviderCatalog.options
             .filter { $0.status == .active }
             .allSatisfy { !$0.requiresAuthentication })
+    }
+
+    func testArtworkResolutionRoundTripsWithProvenance() throws {
+        let encoded = try JSONEncoder().encode(Fixture.album)
+        let decoded = try JSONDecoder().decode(ArtworkResolution.self, from: encoded)
+
+        XCTAssertEqual(decoded, Fixture.album)
+        XCTAssertEqual(decoded.imageURL, Fixture.album.url)
+    }
+
+    func testTrackReadsLegacyArtworkURLIntoTypedResolution() throws {
+        struct LegacyTrack: Encodable {
+            let id: UUID
+            let title: String
+            let artist: String
+            let album: String?
+            let duration: TimeInterval
+            let startedAt: Date
+            let sourceApp: String?
+            let sourceMetadata: TrackSourceMetadata?
+            let artworkURL: String
+        }
+
+        let legacy = LegacyTrack(
+            id: UUID(),
+            title: "Cherry-coloured Funk",
+            artist: "Cocteau Twins",
+            album: "Heaven or Las Vegas",
+            duration: 215,
+            startedAt: Date(timeIntervalSince1970: 1_700_000_000),
+            sourceApp: "Apple Music",
+            sourceMetadata: nil,
+            artworkURL: "https://example.com/legacy-cover.jpg"
+        )
+
+        let track = try JSONDecoder().decode(Track.self, from: JSONEncoder().encode(legacy))
+
+        XCTAssertEqual(track.artworkURL, legacy.artworkURL)
+        XCTAssertEqual(track.artworkResolution?.level, .track)
+        XCTAssertEqual(track.artworkResolution?.provider, .player)
+    }
+
+    func testArtworkAdaptersKeepEntityLevelsAcrossHistoryDetailsSimilarAndProfileModels() {
+        let history = CompatibilityRecentScrobble(
+            id: "listen-1",
+            track: "Track",
+            artist: "Artist",
+            album: "Album",
+            imageURL: Fixture.album.url,
+            url: nil,
+            loved: false,
+            playedAt: nil,
+            nowPlaying: false,
+            recordingMbid: nil,
+            recordingMsid: nil
+        )
+        let similarAlbum = CompatibilitySimilarAlbum(
+            id: "album-1",
+            name: "Album",
+            artist: "Artist",
+            imageURL: Fixture.album.url,
+            url: nil
+        )
+        let similarArtist = CompatibilitySimilarArtist(
+            id: "artist-1",
+            name: "Artist",
+            imageURL: Fixture.artist.url,
+            url: nil
+        )
+        let topArtist = CompatibilityTopArtist(
+            id: "top-1",
+            name: "Artist",
+            playcount: 10,
+            imageURL: Fixture.artist.url,
+            url: nil
+        )
+
+        XCTAssertEqual(history.artworkResolution?.level, .track)
+        XCTAssertEqual(similarAlbum.artworkResolution?.level, .album)
+        XCTAssertEqual(similarArtist.artworkResolution?.level, .artist)
+        XCTAssertEqual(topArtist.artworkResolution?.provider, .compatibilityAPI)
     }
 }
 

@@ -106,6 +106,12 @@ struct ListenBrainzListen: Identifiable, Equatable {
     let imageURL: String?
 }
 
+extension ListenBrainzListen {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .track, provider: .listenBrainz)
+    }
+}
+
 struct ListenBrainzSocialListen: Identifiable, Equatable {
     let id: String
     let userName: String
@@ -133,6 +139,12 @@ struct ListenBrainzSimilarArtist: Identifiable, Equatable {
     let totalListenCount: Int
     let isSeedArtist: Bool
     let imageURL: String?
+}
+
+extension ListenBrainzSimilarArtist {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .artist, provider: .listenBrainz)
+    }
 }
 
 struct ListenBrainzRecommendedRecording: Identifiable, Equatable {

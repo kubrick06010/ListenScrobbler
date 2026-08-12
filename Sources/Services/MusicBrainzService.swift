@@ -63,14 +63,14 @@ struct EditorialInformation: Equatable {
 
 /// The image can be used only for the entity level it was resolved for. In
 /// particular, an album cover must never be presented as the artist portrait.
-enum ArtworkLevel: String, Hashable, Codable {
+public enum ArtworkLevel: String, Codable, Hashable, Sendable {
     case track
     case album
     case ep
     case artist
 }
 
-enum ArtworkProvider: String, Hashable, Codable {
+public enum ArtworkProvider: String, Codable, Hashable, Sendable {
     case player
     case compatibilityAPI
     case coverArtArchive
@@ -84,12 +84,61 @@ enum ArtworkProvider: String, Hashable, Codable {
     case lastFM
     case theAudioDB
     case fanartTV
+    /// Used only when reading a legacy URL that did not retain provenance.
+    case legacy
 }
 
-struct ArtworkResolution: Equatable, Codable {
-    let url: String
-    let level: ArtworkLevel
-    let provider: ArtworkProvider
+public struct ArtworkResolution: Codable, Equatable, Hashable, Sendable {
+    public let url: String
+    public let level: ArtworkLevel
+    public let provider: ArtworkProvider
+
+    public init(url: String, level: ArtworkLevel, provider: ArtworkProvider) {
+        self.url = url
+        self.level = level
+        self.provider = provider
+    }
+
+    /// Converts an older URL-only field into the central artwork value. The
+    /// legacy provider is intentionally explicit so callers never infer a
+    /// provider from a URL string in a view.
+    public static func legacy(
+        url: String?,
+        level: ArtworkLevel,
+        provider: ArtworkProvider = .legacy
+    ) -> ArtworkResolution? {
+        guard let url = url?.nilIfBlank else { return nil }
+        return ArtworkResolution(url: url, level: level, provider: provider)
+    }
+
+    public var imageURL: String { url }
+}
+
+extension OpenMusicEntityDetails {
+    /// Prefer the resolver's typed result, while allowing old compatibility
+    /// payloads to remain usable until they are refreshed.
+    var effectiveArtworkResolution: ArtworkResolution? {
+        artworkResolution ?? .legacy(url: imageURL, level: .album)
+    }
+
+    var effectiveArtistArtworkResolution: ArtworkResolution? {
+        artistArtworkResolution ?? .legacy(url: artistImageURL, level: .artist)
+    }
+}
+
+extension OpenMusicSearchResult {
+    var artworkResolution: ArtworkResolution? {
+        let level: ArtworkLevel
+        switch kind {
+        case .recording:
+            level = .track
+        case .release:
+            level = .album
+        case .artist:
+            level = .artist
+        }
+        return .legacy(url: imageURL, level: level)
+    }
 }
 
 struct ArtworkResolutionCandidate: Equatable, Codable {
@@ -179,11 +228,13 @@ final class MusicBrainzService {
     private let coverArtBaseURL: URL
     private let urlSession: URLSession
     private let preferredAppLanguageCodes: () -> [String]
+    private let anonymousArtworkEnabled: Bool
 
     init(
         baseURL: URL = URL(string: "https://musicbrainz.org/ws/2")!,
         coverArtBaseURL: URL = URL(string: "https://coverartarchive.org/release")!,
         urlSession: URLSession = .shared,
+        anonymousArtworkEnabled: Bool = true,
         preferredAppLanguageCodes: @escaping () -> [String] = {
             AppLocalization.effectiveLanguageIdentifiers
         }
@@ -191,6 +242,7 @@ final class MusicBrainzService {
         self.baseURL = baseURL
         self.coverArtBaseURL = coverArtBaseURL
         self.urlSession = urlSession
+        self.anonymousArtworkEnabled = anonymousArtworkEnabled
         self.preferredAppLanguageCodes = preferredAppLanguageCodes
     }
 
@@ -227,7 +279,7 @@ final class MusicBrainzService {
         let artistSupplement = await fetchArtistSupplement(from: artistIdentity)
         let releaseGroupWithRelations = await fetchReleaseGroupWithRelations(id: releaseGroupMBID)
         let anonymousProviderCandidates: [AnonymousArtworkCandidate]
-        if baseURL.host == "musicbrainz.org" {
+        if anonymousArtworkEnabled {
             anonymousProviderCandidates = await AnonymousArtworkProviders.candidates(
                 artistRelations: artistIdentity?.relations ?? [],
                 recordingRelations: resolvedRecording?.relations ?? [],

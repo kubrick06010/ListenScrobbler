@@ -188,6 +188,7 @@ final class SharedMusicVaultStore: ObservableObject {
         isPublic: Bool,
         sourceURL: String? = nil,
         imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil,
         artistMBID: String? = nil,
         recordingMBID: String? = nil,
         releaseMBID: String? = nil
@@ -211,6 +212,7 @@ final class SharedMusicVaultStore: ObservableObject {
             musicBrainzRecordingID: recordingMBID?.nilIfBlank,
             musicBrainzReleaseID: releaseMBID?.nilIfBlank,
             imageURL: imageURL?.nilIfBlank,
+            artworkResolution: artworkResolution,
             createdAt: now,
             sentAt: direction == .sent ? now : nil,
             receivedAt: direction == .received ? now : nil,
@@ -383,6 +385,7 @@ final class ObsessionVaultStore: ObservableObject {
         note: String?,
         sourceURL: String? = nil,
         imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil,
         artistMBID: String? = nil,
         recordingMBID: String? = nil,
         releaseMBID: String? = nil
@@ -396,6 +399,7 @@ final class ObsessionVaultStore: ObservableObject {
             album: album?.nilIfBlank,
             note: note?.nilIfBlank,
             imageURL: imageURL?.nilIfBlank,
+            artworkResolution: artworkResolution,
             compatibilityURL: sourceURL?.nilIfBlank ?? fallbackTrackURL(artist: artist, track: track),
             musicBrainzArtistID: artistMBID?.nilIfBlank,
             musicBrainzRecordingID: recordingMBID?.nilIfBlank,

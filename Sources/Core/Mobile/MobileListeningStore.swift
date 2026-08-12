@@ -47,11 +47,41 @@ public struct MobileListenSummary: Identifiable, Equatable {
     public let artistName: String
     public let releaseName: String?
     public let listenedAt: Date?
-    public let imageURL: String?
+    public let artworkResolution: ArtworkResolution?
     public let recordingMBID: String?
     public let recordingMSID: String?
     public let artistMBID: String?
     public let releaseMBID: String?
+
+    public var imageURL: String? {
+        artworkResolution?.url
+    }
+
+    public init(
+        id: String,
+        trackName: String,
+        artistName: String,
+        releaseName: String?,
+        listenedAt: Date?,
+        imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil,
+        recordingMBID: String?,
+        recordingMSID: String?,
+        artistMBID: String?,
+        releaseMBID: String?
+    ) {
+        self.id = id
+        self.trackName = trackName
+        self.artistName = artistName
+        self.releaseName = releaseName
+        self.listenedAt = listenedAt
+        self.artworkResolution = artworkResolution
+            ?? .legacy(url: imageURL, level: .track, provider: .listenBrainz)
+        self.recordingMBID = recordingMBID
+        self.recordingMSID = recordingMSID
+        self.artistMBID = artistMBID
+        self.releaseMBID = releaseMBID
+    }
 }
 
 public struct MobilePinnedRecording: Identifiable, Equatable {
@@ -95,7 +125,11 @@ public struct MobileMusicDetailSeed: Identifiable, Equatable, Hashable {
     public let recordingMSID: String?
     public let artistMBID: String?
     public let releaseMBID: String?
-    public let imageURL: String?
+    public let artworkResolution: ArtworkResolution?
+
+    public var imageURL: String? {
+        artworkResolution?.url
+    }
 
     public init(
         kind: MobileMusicEntityKind,
@@ -106,7 +140,8 @@ public struct MobileMusicDetailSeed: Identifiable, Equatable, Hashable {
         recordingMSID: String? = nil,
         artistMBID: String? = nil,
         releaseMBID: String? = nil,
-        imageURL: String? = nil
+        imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil
     ) {
         let normalizedTrackName = trackName?.nilIfBlank
         let normalizedArtistName = artistName.nilIfBlank ?? AppLocalization.string("Unknown artist")
@@ -125,7 +160,11 @@ public struct MobileMusicDetailSeed: Identifiable, Equatable, Hashable {
         self.recordingMSID = normalizedRecordingMSID
         self.artistMBID = normalizedArtistMBID
         self.releaseMBID = normalizedReleaseMBID
-        self.imageURL = normalizedImageURL
+        self.artworkResolution = artworkResolution
+            ?? .legacy(
+                url: normalizedImageURL,
+                level: kind == .artist ? .artist : (kind == .release ? .album : .track)
+            )
         let idParts: [String?] = [
             kind.rawValue,
             normalizedRecordingMBID,
@@ -169,8 +208,16 @@ public struct MobileMusicDetail: Equatable {
     public let recordingMSID: String?
     public let artistMBID: String?
     public let releaseMBID: String?
-    public let imageURL: String?
-    public let artistImageURL: String?
+    public let artworkResolution: ArtworkResolution?
+    public let artistArtworkResolution: ArtworkResolution?
+
+    public var imageURL: String? {
+        artworkResolution?.url
+    }
+
+    public var artistImageURL: String? {
+        artistArtworkResolution?.url
+    }
     public let artistSummary: String?
     public let artistSummaryURL: URL?
     public let artistSummaryLanguageCode: String?
@@ -1093,7 +1140,7 @@ private extension MobileListenSummary {
             artistName: listen.artistName,
             releaseName: listen.releaseName,
             listenedAt: listen.listenedAt,
-            imageURL: listen.imageURL,
+            artworkResolution: listen.artworkResolution,
             recordingMBID: listen.recordingMBID,
             recordingMSID: listen.recordingMSID,
             artistMBID: listen.artistMBID,
@@ -1205,7 +1252,7 @@ private extension MobileMusicDetailSeed {
             recordingMSID: listen.recordingMSID,
             artistMBID: listen.artistMBID,
             releaseMBID: listen.releaseMBID,
-            imageURL: listen.imageURL
+            artworkResolution: listen.artworkResolution
         )
     }
 
@@ -1231,8 +1278,8 @@ private extension MobileMusicDetail {
             recordingMSID: seed.recordingMSID,
             artistMBID: details.artistMBID ?? seed.artistMBID,
             releaseMBID: details.releaseMBID ?? seed.releaseMBID,
-            imageURL: details.imageURL ?? seed.imageURL,
-            artistImageURL: details.artistImageURL,
+            artworkResolution: details.artworkResolution ?? seed.artworkResolution,
+            artistArtworkResolution: details.artistArtworkResolution,
             artistSummary: details.artistSummary,
             artistSummaryURL: details.artistSummaryURL,
             artistSummaryLanguageCode: details.artistSummaryLanguageCode,
@@ -1268,7 +1315,7 @@ private extension MobileDiscoverySearchResult {
             recordingMBID: result.recordingMBID,
             artistMBID: result.artistMBID,
             releaseMBID: result.releaseMBID,
-            imageURL: result.imageURL
+            artworkResolution: result.artworkResolution
         )
 
         self.init(

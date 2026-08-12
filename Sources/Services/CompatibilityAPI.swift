@@ -237,6 +237,59 @@ struct CompatibilityTopArtist: Equatable, Identifiable {
     let url: String?
 }
 
+// Compatibility payloads still expose imageURL for API/source compatibility,
+// but the app-facing artwork value carries the entity level and provenance.
+// Keeping these adapters on the models gives history, detail, profile, and
+// similar-item consumers one result to pass through instead of resolving in a
+// view for each surface.
+extension CompatibilityTrackDetails {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilitySimilarTrack {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilitySimilarAlbum {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .album, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilitySimilarArtist {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .artist, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilityArtistDetails {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .artist, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilityRecentScrobble {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilityFriendListening {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilityTopArtist {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .artist, provider: .compatibilityAPI)
+    }
+}
+
 enum CompatibilityAPIError: LocalizedError {
     case missingSession
     case invalidResponse
