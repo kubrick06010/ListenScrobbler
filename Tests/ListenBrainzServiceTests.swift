@@ -490,7 +490,10 @@ final class ListenBrainzServiceTests: XCTestCase {
         XCTAssertEqual(artist?.totalUserCount, 80)
         XCTAssertEqual(release?.totalListenCount, 90)
         XCTAssertEqual(top.first?.title, "Track")
-        XCTAssertEqual(top.first?.imageURL, "https://coverartarchive.org/release/cover-release/front-250")
+        XCTAssertNil(
+            top.first?.imageURL,
+            "ListenBrainz metadata must not synthesize an unverified Cover Art Archive URL."
+        )
     }
 
     func testFetchArtistProfileDecodesListenBrainzMetadata() async throws {

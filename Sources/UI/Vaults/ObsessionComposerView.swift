@@ -39,6 +39,7 @@ struct ObsessionComposerView: View {
                         note: note,
                         sourceURL: resolvedSourceURL,
                         imageURL: resolvedImageURL,
+                        artworkResolution: resolvedArtworkResolution,
                         artistMBID: resolvedArtistMBID,
                         recordingMBID: resolvedRecordingMBID,
                         releaseMBID: resolvedReleaseMBID
@@ -60,6 +61,7 @@ struct ObsessionComposerView: View {
                         note: note,
                         sourceURL: resolvedSourceURL,
                         imageURL: resolvedImageURL,
+                        artworkResolution: resolvedArtworkResolution,
                         artistMBID: resolvedArtistMBID,
                         recordingMBID: resolvedRecordingMBID,
                         releaseMBID: resolvedReleaseMBID
@@ -92,7 +94,28 @@ struct ObsessionComposerView: View {
     }
 
     private var resolvedImageURL: String? {
-        draft?.imageURL ?? scrobbleService.currentOpenEntityDetails?.imageURL ?? scrobbleService.currentTrackDetails?.imageURL
+        resolvedArtworkResolution?.url
+    }
+
+    private var resolvedArtworkResolution: ArtworkResolution? {
+        if let draft,
+           currentTrackMatches(artist: draft.artist, track: draft.track),
+           let resolution = scrobbleService.currentTrackArtworkResolution?.automaticArtworkResolution {
+            return resolution
+        }
+        if let currentTrack,
+           currentTrackMatches(artist: currentTrack.artist, track: currentTrack.title),
+           let resolution = currentTrack.artworkResolution?.automaticArtworkResolution {
+            return resolution
+        }
+        return draft?.artworkResolution?.automaticArtworkResolution
+    }
+
+    private func currentTrackMatches(artist: String, track: String) -> Bool {
+        let currentArtist = scrobbleService.currentTrackDetails?.artist ?? scrobbleService.currentTrack?.artist
+        let currentTrack = scrobbleService.currentTrackDetails?.name ?? scrobbleService.currentTrack?.title
+        return currentArtist?.caseInsensitiveCompare(artist) == .orderedSame &&
+            currentTrack?.caseInsensitiveCompare(track) == .orderedSame
     }
 
     private var resolvedArtistMBID: String? {

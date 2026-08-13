@@ -103,12 +103,34 @@ struct ListenBrainzListen: Identifiable, Equatable {
     let recordingMSID: String?
     let artistMBID: String?
     let releaseMBID: String?
-    let imageURL: String?
-}
+    let artworkResolution: ArtworkResolution?
 
-extension ListenBrainzListen {
-    var artworkResolution: ArtworkResolution? {
-        .legacy(url: imageURL, level: .track, provider: .listenBrainz)
+    var imageURL: String? { artworkResolution?.automaticArtworkResolution?.url }
+
+    init(
+        id: String,
+        trackName: String,
+        artistName: String,
+        releaseName: String?,
+        listenedAt: Date?,
+        recordingMBID: String?,
+        recordingMSID: String?,
+        artistMBID: String?,
+        releaseMBID: String?,
+        imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil
+    ) {
+        self.id = id
+        self.trackName = trackName
+        self.artistName = artistName
+        self.releaseName = releaseName
+        self.listenedAt = listenedAt
+        self.recordingMBID = recordingMBID
+        self.recordingMSID = recordingMSID
+        self.artistMBID = artistMBID
+        self.releaseMBID = releaseMBID
+        self.artworkResolution = artworkResolution
+            ?? .legacy(url: imageURL, level: .album, provider: .listenBrainz)
     }
 }
 
@@ -193,6 +215,11 @@ struct ListenBrainzPopularRecording: Identifiable, Equatable {
     let totalListenCount: Int?
     let totalUserCount: Int?
     let imageURL: String?
+
+    /// ListenBrainz currently exposes this field without a typed image source.
+    /// Keep it for payload compatibility, but force UI surfaces through the
+    /// central resolver instead of trusting an unverified URL.
+    var artworkResolution: ArtworkResolution? { nil }
 }
 
 struct ListenBrainzSimilarUser: Identifiable, Equatable {
@@ -560,7 +587,7 @@ final class ListenBrainzService {
                 recordingMSID: additional?.recordingMSID?.nilIfBlank,
                 artistMBID: additional?.artistMBIDs?.first?.nilIfBlank,
                 releaseMBID: additional?.releaseMBID?.nilIfBlank,
-                imageURL: coverArtURL(releaseMBID: additional?.releaseMBID)
+                imageURL: nil
             )
         }
     }
@@ -956,7 +983,10 @@ final class ListenBrainzService {
                 releaseName: $0.releaseName?.nilIfBlank,
                 totalListenCount: $0.totalListenCount,
                 totalUserCount: $0.totalUserCount,
-                imageURL: coverArtURL(releaseMBID: $0.caaReleaseMbid ?? $0.releaseMbid)
+                // A release MBID correlates the entity but does not prove that
+                // Cover Art Archive has a front image. The shared artwork
+                // resolver validates CAA's JSON index before publishing a URL.
+                imageURL: nil
             )
         }
     }
@@ -1187,11 +1217,6 @@ final class ListenBrainzService {
 
     private func normalizedMBIDs(_ values: [String]) -> [String] {
         Array(Set(values.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }))
-    }
-
-    private func coverArtURL(releaseMBID: String?) -> String? {
-        guard let releaseMBID = releaseMBID?.nilIfBlank else { return nil }
-        return "https://coverartarchive.org/release/\(releaseMBID)/front-250"
     }
 
     private func fetchRecordingMetadata(recordingMBIDs: [String]) async throws -> [String: ListenBrainzRecordingMetadata] {

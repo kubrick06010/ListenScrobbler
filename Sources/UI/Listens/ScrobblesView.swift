@@ -42,7 +42,7 @@ struct ScrobblesView: View {
                                 title: item.track,
                                 artist: item.artist,
                                 album: item.album,
-                                imageURL: item.imageURL,
+                                artworkResolution: item.artworkResolution,
                                 url: item.url,
                                 loved: item.loved,
                                 playedAt: item.playedAt,
@@ -79,7 +79,7 @@ struct ListenActionRow: View {
     let title: String
     let artist: String
     let album: String?
-    let imageURL: String?
+    let artworkResolution: ArtworkResolution?
     let url: String?
     let loved: Bool
     let playedAt: Date?
@@ -93,12 +93,12 @@ struct ListenActionRow: View {
     let onOpen: () -> Void
     let onShare: (ShareDraft) -> Void
     @State private var isConfirmingDelete = false
-    @State private var resolvedImageURL: String?
+    @State private var resolvedArtworkResolution: ArtworkResolution?
 
     var body: some View {
         HStack(spacing: 10) {
             HStack(spacing: 10) {
-                scrobbleArtwork(imageURL?.nilIfBlank ?? resolvedImageURL, nowPlaying: nowPlaying)
+                scrobbleArtwork(effectiveArtworkResolution?.url, nowPlaying: nowPlaying)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.custom("Avenir Next Medium", size: 13))
@@ -188,13 +188,13 @@ struct ListenActionRow: View {
         .padding(.vertical, 6)
         .background(nowPlaying ? Color.yellow.opacity(0.25) : Color.clear, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .task(id: artworkTaskID) {
-            guard imageURL?.nilIfBlank == nil else { return }
-            resolvedImageURL = await scrobbleService.artworkURL(for: CompatibilityRecentScrobble(
+            guard effectiveArtworkResolution == nil else { return }
+            resolvedArtworkResolution = await scrobbleService.artworkResolution(for: CompatibilityRecentScrobble(
                 id: sourceScrobbleID ?? "listen-row",
                 track: title,
                 artist: artist,
                 album: album,
-                imageURL: nil,
+                artworkResolution: artworkResolution,
                 url: url,
                 loved: loved,
                 playedAt: playedAt,
@@ -221,8 +221,13 @@ struct ListenActionRow: View {
     }
 
     private var artworkTaskID: String? {
-        guard imageURL?.nilIfBlank == nil else { return nil }
+        guard effectiveArtworkResolution == nil else { return nil }
         return "\(artist)::\(title)::\(album ?? "")"
+    }
+
+    private var effectiveArtworkResolution: ArtworkResolution? {
+        artworkResolution?.automaticArtworkResolution
+            ?? resolvedArtworkResolution?.automaticArtworkResolution
     }
 
     private var canDeleteListen: Bool {
@@ -236,7 +241,7 @@ struct ListenActionRow: View {
             track: title,
             album: album,
             sourceURL: url,
-            imageURL: imageURL,
+            artworkResolution: effectiveArtworkResolution,
             artistMBID: artistMBID,
             recordingMBID: recordingMBID,
             releaseMBID: releaseMBID

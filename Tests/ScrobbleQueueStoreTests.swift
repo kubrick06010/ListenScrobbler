@@ -50,6 +50,44 @@ final class ScrobbleQueueStoreTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: legacyURL.path))
     }
 
+    func testQueueRoundTripPreservesTypedCredentialFreeArtwork() throws {
+        let artwork = ArtworkResolution(
+            url: "https://cdn.example.test/cover.jpg",
+            level: .album,
+            provider: .discogs,
+            sourceURL: "https://www.discogs.com/release/release-1"
+        )
+        let track = makeTrack().replacingArtworkResolution(artwork)
+        let job = ScrobbleSubmissionJob(backend: .listenBrainz, track: track)
+        let store = ScrobbleQueueStore(fileManager: .default, appSupportRoot: tempRoot)
+
+        store.saveJobs([job])
+
+        XCTAssertEqual(store.loadJobs().first?.track.artworkResolution, artwork)
+        XCTAssertEqual(store.loadJobs().first?.track.artworkResolution?.level, .album)
+        XCTAssertEqual(store.loadJobs().first?.track.artworkResolution?.provider, .discogs)
+        XCTAssertEqual(store.loadJobs().first?.track.artworkResolution?.sourceURL, artwork.sourceURL)
+    }
+
+    func testQueueDropsCredentialedArtworkWhenPersisting() throws {
+        let artwork = ArtworkResolution(
+            url: "https://api.example.test/private-cover.jpg",
+            level: .track,
+            provider: .spotify
+        )
+        let job = ScrobbleSubmissionJob(
+            backend: .compatibility,
+            track: makeTrack().replacingArtworkResolution(artwork)
+        )
+        let store = ScrobbleQueueStore(fileManager: .default, appSupportRoot: tempRoot)
+
+        store.saveJobs([job])
+
+        XCTAssertNil(store.loadJobs().first?.track.artworkResolution)
+        let persistedData = try Data(contentsOf: store.queueFileURL)
+        XCTAssertFalse(String(decoding: persistedData, as: UTF8.self).contains("private-cover.jpg"))
+    }
+
     private func makeLegacyQueueURL(_ directoryName: String) throws -> URL {
         let legacyDir = tempRoot.appendingPathComponent(directoryName, isDirectory: true)
         try FileManager.default.createDirectory(at: legacyDir, withIntermediateDirectories: true)

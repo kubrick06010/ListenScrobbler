@@ -55,7 +55,7 @@ struct MobileMusicDetailView: View {
 
     private var header: some View {
         HStack(alignment: .top, spacing: 16) {
-            artwork(seed.imageURL ?? detail?.imageURL ?? detail?.artistImageURL, size: 92)
+            artwork(headerArtworkURL, size: 92)
 
             VStack(alignment: .leading, spacing: 6) {
                 Label(seed.kind.title, systemImage: seed.kind.symbolName)
@@ -224,6 +224,18 @@ struct MobileMusicDetailView: View {
         }
     }
 
+    private var headerArtworkURL: String? {
+        switch seed.kind {
+        case .artist:
+            // An artist entity is represented by the artist portrait only.
+            return detail?.artistImageURL ?? seed.imageURL
+        case .track, .release:
+            // Track/release art has priority; the artist portrait is the final
+            // fallback when the entity has no artwork of its own.
+            return detail?.imageURL ?? seed.imageURL ?? detail?.artistImageURL
+        }
+    }
+
     private var resolvedSeed: MobileMusicDetailSeed {
         guard let detail else { return seed }
         return MobileMusicDetailSeed(
@@ -235,7 +247,9 @@ struct MobileMusicDetailView: View {
             recordingMSID: detail.recordingMSID,
             artistMBID: detail.artistMBID,
             releaseMBID: detail.releaseMBID,
-            imageURL: detail.imageURL ?? detail.artistImageURL
+            artworkResolution: seed.kind == .artist
+                ? (detail.artistArtworkResolution ?? seed.artworkResolution)
+                : (detail.artworkResolution ?? detail.artistArtworkResolution ?? seed.artworkResolution)
         )
     }
 

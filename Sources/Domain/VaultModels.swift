@@ -1,5 +1,25 @@
 import Foundation
 
+extension Track {
+    var persistableArtworkResolution: ArtworkResolution? {
+        artworkResolution?.persistableArtworkResolution
+    }
+
+    func replacingArtworkResolution(_ resolution: ArtworkResolution?) -> Track {
+        Track(
+            id: id,
+            title: title,
+            artist: artist,
+            album: album,
+            duration: duration,
+            startedAt: startedAt,
+            sourceApp: sourceApp,
+            sourceMetadata: sourceMetadata,
+            artworkResolution: resolution?.persistableArtworkResolution
+        )
+    }
+}
+
 struct SharedMusicEntry: Codable, Identifiable, Equatable {
     enum EntityKind: String, Codable, CaseIterable, Identifiable {
         case track
@@ -74,7 +94,7 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
     /// Compatibility accessor for existing vault UI and JSPF export. The
     /// persisted source of truth is the typed resolution above.
     var imageURL: String? {
-        artworkResolution?.url
+        artworkResolution?.automaticArtworkResolution?.url
     }
 
     init(
@@ -117,10 +137,12 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
         self.musicBrainzArtistID = musicBrainzArtistID
         self.musicBrainzRecordingID = musicBrainzRecordingID
         self.musicBrainzReleaseID = musicBrainzReleaseID
-        self.artworkResolution = artworkResolution ?? .legacy(
-            url: imageURL,
-            level: entityKind == .artist ? .artist : (entityKind == .album ? .album : .track)
-        )
+        let hasTypedResolution = artworkResolution != nil
+        self.artworkResolution = artworkResolution?.automaticArtworkResolution
+            ?? (hasTypedResolution ? nil : .legacy(
+                url: imageURL,
+                level: entityKind == .artist ? .artist : (entityKind == .album ? .album : .track)
+            ))
         self.createdAt = createdAt
         self.sentAt = sentAt
         self.receivedAt = receivedAt
@@ -152,11 +174,12 @@ struct SharedMusicEntry: Codable, Identifiable, Equatable {
         musicBrainzArtistID = try container.decodeIfPresent(String.self, forKey: .musicBrainzArtistID)
         musicBrainzRecordingID = try container.decodeIfPresent(String.self, forKey: .musicBrainzRecordingID)
         musicBrainzReleaseID = try container.decodeIfPresent(String.self, forKey: .musicBrainzReleaseID)
-        artworkResolution = try container.decodeIfPresent(ArtworkResolution.self, forKey: .artworkResolution)
-            ?? .legacy(
+        let hasTypedResolution = container.contains(.artworkResolution)
+        artworkResolution = try container.decodeIfPresent(ArtworkResolution.self, forKey: .artworkResolution)?.persistableArtworkResolution
+            ?? (hasTypedResolution ? nil : .legacy(
                 url: try container.decodeIfPresent(String.self, forKey: .imageURL),
                 level: entityKind == .artist ? .artist : (entityKind == .album ? .album : .track)
-            )
+            ))
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         sentAt = try container.decodeIfPresent(Date.self, forKey: .sentAt)
         receivedAt = try container.decodeIfPresent(Date.self, forKey: .receivedAt)
@@ -248,7 +271,7 @@ struct ObsessionEntry: Codable, Identifiable, Equatable {
     var source: Source
 
     var imageURL: String? {
-        artworkResolution?.url
+        artworkResolution?.automaticArtworkResolution?.url
     }
 
     init(
@@ -276,7 +299,9 @@ struct ObsessionEntry: Codable, Identifiable, Equatable {
         self.track = track
         self.album = album
         self.note = note
-        self.artworkResolution = artworkResolution ?? .legacy(url: imageURL, level: .track)
+        let hasTypedResolution = artworkResolution != nil
+        self.artworkResolution = artworkResolution?.persistableArtworkResolution
+            ?? (hasTypedResolution ? nil : .legacy(url: imageURL, level: .track))
         self.compatibilityURL = compatibilityURL
         self.musicBrainzArtistID = musicBrainzArtistID
         self.musicBrainzRecordingID = musicBrainzRecordingID
@@ -302,8 +327,9 @@ struct ObsessionEntry: Codable, Identifiable, Equatable {
         track = try container.decode(String.self, forKey: .track)
         album = try container.decodeIfPresent(String.self, forKey: .album)
         note = try container.decodeIfPresent(String.self, forKey: .note)
-        artworkResolution = try container.decodeIfPresent(ArtworkResolution.self, forKey: .artworkResolution)
-            ?? .legacy(url: try container.decodeIfPresent(String.self, forKey: .imageURL), level: .track)
+        let hasTypedResolution = container.contains(.artworkResolution)
+        artworkResolution = try container.decodeIfPresent(ArtworkResolution.self, forKey: .artworkResolution)?.persistableArtworkResolution
+            ?? (hasTypedResolution ? nil : .legacy(url: try container.decodeIfPresent(String.self, forKey: .imageURL), level: .track))
         compatibilityURL = try container.decodeIfPresent(String.self, forKey: .compatibilityURL)
         musicBrainzArtistID = try container.decodeIfPresent(String.self, forKey: .musicBrainzArtistID)
         musicBrainzRecordingID = try container.decodeIfPresent(String.self, forKey: .musicBrainzRecordingID)

@@ -186,13 +186,43 @@ struct CompatibilityRecentScrobble: Equatable, Identifiable {
     let track: String
     let artist: String
     let album: String?
-    let imageURL: String?
+    let artworkResolution: ArtworkResolution?
     let url: String?
     let loved: Bool
     let playedAt: Date?
     let nowPlaying: Bool
     let recordingMbid: String?
     let recordingMsid: String?
+
+    var imageURL: String? { artworkResolution?.automaticArtworkResolution?.url }
+
+    init(
+        id: String,
+        track: String,
+        artist: String,
+        album: String?,
+        imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil,
+        url: String?,
+        loved: Bool,
+        playedAt: Date?,
+        nowPlaying: Bool,
+        recordingMbid: String?,
+        recordingMsid: String?
+    ) {
+        self.id = id
+        self.track = track
+        self.artist = artist
+        self.album = album
+        self.artworkResolution = artworkResolution
+            ?? .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+        self.url = url
+        self.loved = loved
+        self.playedAt = playedAt
+        self.nowPlaying = nowPlaying
+        self.recordingMbid = recordingMbid
+        self.recordingMsid = recordingMsid
+    }
 }
 
 struct CompatibilityFriendListening: Equatable, Identifiable {
@@ -269,12 +299,6 @@ extension CompatibilitySimilarArtist {
 extension CompatibilityArtistDetails {
     var artworkResolution: ArtworkResolution? {
         .legacy(url: imageURL, level: .artist, provider: .compatibilityAPI)
-    }
-}
-
-extension CompatibilityRecentScrobble {
-    var artworkResolution: ArtworkResolution? {
-        .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
     }
 }
 

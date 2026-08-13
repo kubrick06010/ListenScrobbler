@@ -12,7 +12,7 @@ struct ScrobbleDetailPanel: View {
     let onShare: (ShareDraft) -> Void
     let onCaptureObsession: (ObsessionDraft) -> Void
     @State private var biography: ArtistBiographySheetItem?
-    @State private var resolvedArtworkURL: String?
+    @State private var resolvedArtworkResolution: ArtworkResolution?
 
     var body: some View {
         let metrics = DetailPanelMetrics(width: availableWidth)
@@ -107,7 +107,11 @@ struct ScrobbleDetailPanel: View {
             ArtistBiographySheetView(item: item)
         }
         .task(id: item.id) {
-            resolvedArtworkURL = await scrobbleService.artworkURL(for: item)
+            guard kind != .artist else {
+                resolvedArtworkResolution = nil
+                return
+            }
+            resolvedArtworkResolution = await scrobbleService.artworkResolution(for: item)
         }
     }
 
@@ -160,7 +164,7 @@ struct ScrobbleDetailPanel: View {
             track: kind == .track ? item.track : nil,
             album: kind == .album ? (item.album ?? item.track) : item.album,
             sourceURL: item.url,
-            imageURL: detailArtworkURL,
+            artworkResolution: detailArtworkResolution,
             artistMBID: scrobbleService.inspectedOpenEntityDetails?.artistMBID,
             recordingMBID: scrobbleService.inspectedOpenEntityDetails?.recordingMBID,
             releaseMBID: scrobbleService.inspectedOpenEntityDetails?.releaseMBID
@@ -173,19 +177,26 @@ struct ScrobbleDetailPanel: View {
             track: item.track,
             album: scrobbleService.inspectedTrackDetails?.album ?? item.album,
             sourceURL: scrobbleService.inspectedTrackDetails?.url ?? item.url,
-            imageURL: detailArtworkURL,
+            artworkResolution: detailArtworkResolution,
             artistMBID: scrobbleService.inspectedOpenEntityDetails?.artistMBID,
             recordingMBID: scrobbleService.inspectedOpenEntityDetails?.recordingMBID,
             releaseMBID: scrobbleService.inspectedOpenEntityDetails?.releaseMBID
         )
     }
 
+    private var detailArtworkResolution: ArtworkResolution? {
+        switch kind {
+        case .artist:
+            return scrobbleService.inspectedOpenEntityDetails?.effectiveArtistArtworkResolution
+        case .track, .album:
+            return item.artworkResolution?.automaticArtworkResolution
+                ?? resolvedArtworkResolution?.automaticArtworkResolution
+                ?? scrobbleService.inspectedOpenEntityDetails?.effectiveArtworkResolution
+        }
+    }
+
     private var detailArtworkURL: String? {
-        scrobbleService.inspectedTrackDetails?.imageURL
-            ?? item.imageURL
-            ?? resolvedArtworkURL
-            ?? scrobbleService.inspectedOpenEntityDetails?.imageURL
-            ?? scrobbleService.inspectedOpenEntityDetails?.artistImageURL
+        detailArtworkResolution?.url
     }
 
     private var artistBiographyItem: ArtistBiographySheetItem? {
@@ -196,7 +207,7 @@ struct ScrobbleDetailPanel: View {
         return ArtistBiographySheetItem(
             artistName: details.artistName,
             summary: summary,
-            imageURL: details.artistImageURL ?? scrobbleService.inspectedArtistDetails?.imageURL,
+            imageURL: details.effectiveArtistArtworkResolution?.url,
             sourceURL: details.artistSummaryURL,
             languageCode: details.artistSummaryLanguageCode
         )
@@ -318,17 +329,21 @@ struct ScrobbleDetailPanel: View {
     private func artistSection(_ artist: CompatibilityArtistDetails, metrics: DetailPanelMetrics) -> some View {
         if metrics.isCompact {
             VStack(alignment: .leading, spacing: metrics.stackSpacing) {
-                artistArt(artist.imageURL, size: metrics.artworkSize)
+                artistArt(artistArtworkURL, size: metrics.artworkSize)
                 HTMLSummaryText(rawHTML: artist.summary ?? AppLocalization.string("No artist biography available."), fontSize: 14)
                     .fixedSize(horizontal: false, vertical: true)
             }
         } else {
             HStack(alignment: .top, spacing: metrics.stackSpacing) {
-                artistArt(artist.imageURL)
+                artistArt(artistArtworkURL)
                 HTMLSummaryText(rawHTML: artist.summary ?? AppLocalization.string("No artist biography available."), fontSize: 14)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+    }
+
+    private var artistArtworkURL: String? {
+        scrobbleService.inspectedOpenEntityDetails?.effectiveArtistArtworkResolution?.url
     }
 
     private func openMetadataSection(_ details: OpenMusicEntityDetails) -> some View {
@@ -493,7 +508,7 @@ struct ScrobbleDetailPanel: View {
                             id: "\(index)-\(artist.id)",
                             name: artist.name,
                             value: Double(max(1, artists.count - index)),
-                            imageURL: artist.imageURL
+                            artworkResolution: artist.artworkResolution?.automaticArtworkResolution
                         )
                     },
                     compact: compact
@@ -523,7 +538,7 @@ struct ScrobbleDetailPanel: View {
                             id: "\(index)-\(artist.id)",
                             name: artist.name,
                             value: Double(max(1, artist.totalListenCount)),
-                            imageURL: artist.imageURL
+                            artworkResolution: artist.artworkResolution?.automaticArtworkResolution
                         )
                     },
                     compact: compact
@@ -537,7 +552,12 @@ struct ScrobbleDetailPanel: View {
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 14) {
                     ForEach(artists.prefix(compact ? 6 : 8)) { artist in
                         VStack(alignment: .leading, spacing: 4) {
-                            artworkThumbnail(artist.imageURL, size: 74)
+                            resolvedArtworkThumbnail(
+                                artist: artist.name,
+                                target: .artist,
+                                sourceResolution: artist.artworkResolution,
+                                size: 74
+                            )
                             Text(artist.name)
                                 .font(.custom("Avenir Next Medium", size: 12))
                                 .lineLimit(2)
@@ -560,7 +580,14 @@ struct ScrobbleDetailPanel: View {
         return LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
             ForEach(recordings.prefix(compact ? 4 : 8)) { recording in
                 HStack(alignment: .top, spacing: 10) {
-                    artworkThumbnail(recording.imageURL, size: 54)
+                    resolvedArtworkThumbnail(
+                        artist: recording.artistName,
+                        track: recording.title,
+                        album: recording.releaseName,
+                        target: .track,
+                        sourceResolution: recording.artworkResolution,
+                        size: 54
+                    )
                     VStack(alignment: .leading, spacing: 3) {
                         Text(recording.title)
                             .font(.custom("Avenir Next Medium", size: 12))
@@ -710,7 +737,12 @@ struct ScrobbleDetailPanel: View {
 
     private func similarArtistLink(_ similar: CompatibilitySimilarArtist) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            artistArt(similar.imageURL, size: 74)
+            resolvedArtworkThumbnail(
+                artist: similar.name,
+                target: .artist,
+                sourceResolution: similar.artworkResolution,
+                size: 74
+            )
             Text(similar.name)
                 .font(.custom("Avenir Next Regular", size: 12))
                 .lineLimit(2)
@@ -721,7 +753,13 @@ struct ScrobbleDetailPanel: View {
 
     private func similarTrackLink(_ similar: CompatibilitySimilarTrack) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            artworkThumbnail(similar.imageURL, size: 74)
+            resolvedArtworkThumbnail(
+                artist: similar.artist,
+                track: similar.name,
+                target: .track,
+                sourceResolution: similar.artworkResolution,
+                size: 74
+            )
             Text(similar.name)
                 .font(.custom("Avenir Next Regular", size: 12))
                 .lineLimit(2)
@@ -737,7 +775,13 @@ struct ScrobbleDetailPanel: View {
 
     private func similarAlbumLink(_ similar: CompatibilitySimilarAlbum) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            artworkThumbnail(similar.imageURL, size: 74)
+            resolvedArtworkThumbnail(
+                artist: similar.artist,
+                album: similar.name,
+                target: .album,
+                sourceResolution: similar.artworkResolution,
+                size: 74
+            )
             Text(similar.name)
                 .font(.custom("Avenir Next Regular", size: 12))
                 .lineLimit(2)
@@ -751,21 +795,28 @@ struct ScrobbleDetailPanel: View {
         }
     }
 
-    @ViewBuilder
-    private func artworkThumbnail(_ urlString: String?, size: CGFloat) -> some View {
-        if let urlString, let url = URL(string: urlString) {
-            CachedAsyncImage(url: url) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                Color.white.opacity(0.06)
-            }
-            .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        } else {
+    private func resolvedArtworkThumbnail(
+        artist: String,
+        track: String? = nil,
+        album: String? = nil,
+        target: ArtworkLevel,
+        sourceResolution: ArtworkResolution?,
+        size: CGFloat
+    ) -> some View {
+        ResolvedArtworkImage(
+            artist: artist,
+            track: track,
+            album: album,
+            target: target,
+            sourceResolution: sourceResolution
+        ) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(Color.white.opacity(0.06))
-                .frame(width: size, height: size)
         }
+        .frame(width: size, height: size)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
 }

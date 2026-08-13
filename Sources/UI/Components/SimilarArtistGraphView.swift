@@ -21,22 +21,26 @@ struct SimilarArtistGraphNode: Identifiable, Equatable {
     let id: String
     let name: String
     let value: Double
-    let imageURL: String?
+    let artworkResolution: ArtworkResolution?
     let relationship: String?
     let kind: Kind
+
+    /// Compatibility accessor for non-rendering consumers. It can never expose
+    /// a credentialed or untyped legacy URL.
+    var imageURL: String? { artworkResolution?.automaticArtworkResolution?.url }
 
     init(
         id: String,
         name: String,
         value: Double,
-        imageURL: String?,
+        artworkResolution: ArtworkResolution? = nil,
         relationship: String? = nil,
         kind: Kind = .similarity
     ) {
         self.id = id
         self.name = name
         self.value = value
-        self.imageURL = imageURL
+        self.artworkResolution = artworkResolution
         self.relationship = relationship
         self.kind = kind
     }
@@ -46,7 +50,7 @@ struct SimilarArtistGraphView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let centerName: String
-    let centerImageURL: String?
+    let centerArtworkResolution: ArtworkResolution?
     let nodes: [SimilarArtistGraphNode]
     let compact: Bool
     let onSelect: ((SimilarArtistGraphNode) -> Void)?
@@ -56,13 +60,13 @@ struct SimilarArtistGraphView: View {
 
     init(
         centerName: String,
-        centerImageURL: String? = nil,
+        centerArtworkResolution: ArtworkResolution? = nil,
         nodes: [SimilarArtistGraphNode],
         compact: Bool,
         onSelect: ((SimilarArtistGraphNode) -> Void)? = nil
     ) {
         self.centerName = centerName
-        self.centerImageURL = centerImageURL
+        self.centerArtworkResolution = centerArtworkResolution
         self.nodes = nodes
         self.compact = compact
         self.onSelect = onSelect
@@ -148,7 +152,13 @@ struct SimilarArtistGraphView: View {
 
     private func centerNode(size: CGFloat) -> some View {
         ZStack(alignment: .bottom) {
-            graphArtwork(url: centerImageURL, name: centerName, size: size, tint: .accentColor)
+            graphArtwork(
+                artist: centerName,
+                resolution: centerArtworkResolution,
+                name: centerName,
+                size: size,
+                tint: .accentColor
+            )
                 .overlay {
                     Circle().stroke(Color.accentColor.opacity(0.88), lineWidth: 3)
                 }
@@ -171,7 +181,13 @@ struct SimilarArtistGraphView: View {
             onSelect?(node)
         } label: {
             VStack(spacing: 5) {
-                graphArtwork(url: node.imageURL, name: node.name, size: size, tint: nodeColor(node))
+                graphArtwork(
+                    artist: node.name,
+                    resolution: node.artworkResolution,
+                    name: node.name,
+                    size: size,
+                    tint: nodeColor(node)
+                )
                     .overlay {
                         Circle().stroke(
                             nodeColor(node).opacity(selectedNodeID == node.id || hoveredNodeID == node.id ? 1 : 0.72),
@@ -199,17 +215,21 @@ struct SimilarArtistGraphView: View {
         .accessibilityLabel("\(node.name), \(node.relationship ?? node.kind.label)")
     }
 
-    private func graphArtwork(url: String?, name: String, size: CGFloat, tint: Color) -> some View {
-        Group {
-            if let url, let imageURL = URL(string: url) {
-                CachedAsyncImage(url: imageURL) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    initials(name, tint: tint)
-                }
-            } else {
-                initials(name, tint: tint)
-            }
+    private func graphArtwork(
+        artist: String,
+        resolution: ArtworkResolution?,
+        name: String,
+        size: CGFloat,
+        tint: Color
+    ) -> some View {
+        ResolvedArtworkImage(
+            artist: artist,
+            target: .artist,
+            sourceResolution: resolution
+        ) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            initials(name, tint: tint)
         }
         .frame(width: size, height: size)
         .clipShape(Circle())

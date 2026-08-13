@@ -139,4 +139,63 @@ final class VaultStoreTests: XCTestCase {
         XCTAssertEqual(target.entries.first?.artworkResolution, artwork)
         XCTAssertEqual(target.entries.first?.imageURL, artwork.url)
     }
+
+    func testObsessionRoundTripPreservesTypedArtworkProvenance() throws {
+        let files = VaultFileStore(appSupportRoot: tempRoot)
+        let source = ObsessionVaultStore(username: "source", files: files)
+        let target = ObsessionVaultStore(username: "target", files: files)
+        let artwork = ArtworkResolution(
+            url: "https://commons.wikimedia.org/wiki/Special:FilePath/Artist.jpg",
+            level: .artist,
+            provider: .wikipediaWikidata,
+            sourceURL: "https://en.wikipedia.org/wiki/Artist"
+        )
+
+        let entry = source.makeEntry(
+            artist: "Artist",
+            track: "Track",
+            album: "Album",
+            note: "Typed provenance survives.",
+            artworkResolution: artwork
+        )
+        source.add(entry)
+
+        let exportURL = tempRoot.appendingPathComponent("artwork-obsession.json")
+        try source.export(to: exportURL)
+        try target.importBundle(from: exportURL)
+
+        XCTAssertEqual(target.entries.first?.artworkResolution, artwork)
+        XCTAssertEqual(target.entries.first?.artworkResolution?.level, .artist)
+        XCTAssertEqual(target.entries.first?.artworkResolution?.provider, .wikipediaWikidata)
+        XCTAssertEqual(target.entries.first?.artworkResolution?.sourceURL, artwork.sourceURL)
+    }
+
+    func testVaultDoesNotPersistCredentialedArtworkAsAutomaticResult() throws {
+        let files = VaultFileStore(appSupportRoot: tempRoot)
+        let store = SharedMusicVaultStore(username: "source", files: files)
+        let artwork = ArtworkResolution(
+            url: "https://api.example.test/private-cover.jpg",
+            level: .track,
+            provider: .appleMusic
+        )
+
+        let entry = store.makeEntry(
+            kind: .track,
+            direction: .sent,
+            artist: "Artist",
+            track: "Track",
+            album: "Album",
+            recipients: ["friend"],
+            sender: nil,
+            message: "Do not persist credentialed provider data.",
+            isPublic: false,
+            artworkResolution: artwork
+        )
+        store.add(entry)
+
+        XCTAssertNil(store.entries.first?.artworkResolution)
+        let persistedURL = files.accountDirectory(username: "source").appendingPathComponent("shared-music.json")
+        let persistedData = try Data(contentsOf: persistedURL)
+        XCTAssertFalse(String(decoding: persistedData, as: UTF8.self).contains("private-cover.jpg"))
+    }
 }

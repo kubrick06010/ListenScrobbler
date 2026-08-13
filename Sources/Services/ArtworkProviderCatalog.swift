@@ -50,24 +50,6 @@ enum ArtworkProviderCatalog {
             documentationURL: URL(string: "https://www.wikidata.org/wiki/Help:Wikimedia_Commons")!
         ),
         .init(
-            provider: .appleMusic,
-            displayName: "Apple Music API",
-            supportedLevels: [.track, .album, .artist],
-            requiresAuthentication: true,
-            requiresAttribution: true,
-            status: .candidate,
-            documentationURL: URL(string: "https://developer.apple.com/documentation/applemusicapi")!
-        ),
-        .init(
-            provider: .spotify,
-            displayName: "Spotify Web API",
-            supportedLevels: [.track, .album, .artist],
-            requiresAuthentication: true,
-            requiresAttribution: true,
-            status: .candidate,
-            documentationURL: URL(string: "https://developer.spotify.com/documentation/web-api/reference/get-an-album")!
-        ),
-        .init(
             provider: .deezer,
             displayName: "Deezer API",
             supportedLevels: [.track, .album, .artist],

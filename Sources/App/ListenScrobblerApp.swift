@@ -395,7 +395,8 @@ private struct MenuBarPanel: View {
 
     private var menuArtwork: some View {
         Group {
-            if let url = resolvedArtworkURL, let imageURL = URL(string: url) {
+            if let artwork = resolvedArtworkResolution,
+               let imageURL = URL(string: artwork.url) {
                 AsyncImage(url: imageURL) { phase in
                     switch phase {
                     case .success(let image):
@@ -502,20 +503,11 @@ private struct MenuBarPanel: View {
         return artist
     }
 
-    private var resolvedArtworkURL: String? {
-        if let explicit = scrobbleService.currentTrackDetails?.imageURL, !explicit.isEmpty {
-            return explicit
-        }
-        if let localArtwork = scrobbleService.currentTrack?.artworkURL, !localArtwork.isEmpty {
-            return localArtwork
-        }
-        if let openArtwork = scrobbleService.currentOpenEntityDetails?.imageURL, !openArtwork.isEmpty {
-            return openArtwork
-        }
-        if let artistImage = scrobbleService.currentArtistDetails?.imageURL, !artistImage.isEmpty {
-            return artistImage
-        }
-        return nil
+    private var resolvedArtworkResolution: ArtworkResolution? {
+        // The service owns the track/album/EP/artist fallback policy. Keeping
+        // this view on the typed result prevents compatibility artwork from
+        // being reintroduced by a URL-only fallback chain.
+        scrobbleService.currentTrackArtworkResolution
     }
 }
 

@@ -52,6 +52,9 @@ final class ArtistExperienceDataTests: XCTestCase {
         XCTAssertEqual(data.lifeSpan, "1956–2021")
         XCTAssertEqual(data.constellationNodes.map(\.name), ["Cabaret Voltaire", "Aphex Twin", "Sandoz"])
         XCTAssertEqual(data.constellationNodes.map(\.kind), [.connection, .similarity, .alias])
-        XCTAssertEqual(data.constellationNodes[1].imageURL, "https://example.com/aphex.jpg")
+        XCTAssertNil(
+            data.constellationNodes[1].imageURL,
+            "Compatibility artwork is provenance-only and must be resolved by the anonymous pipeline before display."
+        )
     }
 }

@@ -42,7 +42,7 @@ struct Track: Identifiable, Hashable, Codable {
     /// Compatibility accessor for older call sites. New consumers should use
     /// `artworkResolution` so the URL cannot lose its level or provenance.
     var artworkURL: String? {
-        artworkResolution?.url
+        artworkResolution?.automaticArtworkResolution?.url
     }
 
     init(

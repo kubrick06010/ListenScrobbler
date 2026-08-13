@@ -83,7 +83,7 @@ final class MusicBrainzServiceTests: XCTestCase {
         XCTAssertEqual(details.artworkResolution?.url, "https://cover.example/large.jpg")
     }
 
-    func testCoverArtArchiveFallsBackToStableFrontURLWhenIndexFails() async throws {
+    func testCoverArtArchiveFailureDoesNotPublishAnUnverifiedFrontURL() async throws {
         let service = makeService { request in
             let statusCode = request.url!.path == "/release/release-id" ? 503 : 200
             let response = HTTPURLResponse(
@@ -112,11 +112,93 @@ final class MusicBrainzServiceTests: XCTestCase {
 
         let details = try await service.lookup(track: "Track", artist: "Artist", release: "Album")
 
-        XCTAssertEqual(
-            details.imageURL,
-            "https://coverartarchive.org/release/release-id/front-500"
+        XCTAssertNil(details.imageURL)
+        XCTAssertNil(details.artworkResolution)
+    }
+
+    func testCoverArtArchiveBackImageIsNotPromotedToReleaseCover() async throws {
+        let service = makeService { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+
+            switch request.url!.path {
+            case "/ws/2/recording":
+                return (response, Data(Self.recordingPayload.utf8))
+            case "/ws/2/artist":
+                return (response, Data(Self.artistPayload.utf8))
+            case "/ws/2/artist/artist-id":
+                return (response, Data(Self.artistLookupPayload.utf8))
+            case "/ws/2/release":
+                return (response, Data(Self.releasePayload.utf8))
+            case "/release/release-id":
+                return (response, Data(#"{"images":[{"front":false,"back":true,"thumbnails":{"500":"https://cover.example/back.jpg"}}]}"#.utf8))
+            default:
+                XCTFail("Unexpected path \(request.url!.path)")
+                return (response, Data())
+            }
+        }
+
+        let details = try await service.lookup(track: "Track", artist: "Artist", release: "Album")
+
+        XCTAssertNil(details.artworkResolution)
+        XCTAssertNil(details.imageURL)
+    }
+
+    func testExactReleaseEnrichmentPreservesCorrelatedDiscogsArtwork() async throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MusicBrainzURLProtocol.self]
+        let session = URLSession(configuration: configuration)
+        let resolver = AnonymousArtworkResolver(
+            urlSession: session,
+            deezerBaseURL: URL(string: "https://api.deezer.test")!,
+            discogsBaseURL: URL(string: "https://api.discogs.test")!
         )
-        XCTAssertEqual(details.artworkResolution?.provider, .coverArtArchive)
+        MusicBrainzURLProtocol.requests = []
+        MusicBrainzURLProtocol.handler = { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+            switch (request.url?.host, request.url?.path) {
+            case ("musicbrainz.org", "/ws/2/recording"):
+                return (response, Data(#"{"recordings":[{"id":"recording-id","title":"Track","artist-credit":[{"artist":{"id":"artist-id","name":"Artist"}}],"releases":[{"id":"release-id","title":"Album","status":"Official"}]}]}"#.utf8))
+            case ("musicbrainz.org", "/ws/2/artist"):
+                return (response, Data(#"{"artists":[{"id":"artist-id","name":"Artist"}]}"#.utf8))
+            case ("musicbrainz.org", "/ws/2/artist/artist-id"):
+                return (response, Data(#"{"id":"artist-id","name":"Artist","relations":[]}"#.utf8))
+            case ("musicbrainz.org", "/ws/2/release"):
+                return (response, Data(#"{"releases":[{"id":"release-id","title":"Album","status":"Official","relations":[{"type":"discogs","url":{"resource":"https://www.discogs.com/release/249504-Album"}}]}]}"#.utf8))
+            case ("coverartarchive.org", "/release/release-id"):
+                return (response, Data(#"{"images":[]}"#.utf8))
+            case ("api.discogs.test", "/releases/249504"):
+                XCTAssertNil(request.value(forHTTPHeaderField: "Authorization"))
+                XCTAssertNil(request.url?.query)
+                return (response, Data(#"{"images":[{"type":"primary","uri":"https://cdn.example/discogs-release.jpg"}]}"#.utf8))
+            default:
+                XCTFail("Unexpected URL \(request.url?.absoluteString ?? "nil")")
+                return (response, Data(#"{}"#.utf8))
+            }
+        }
+        let service = MusicBrainzService(
+            baseURL: URL(string: "https://musicbrainz.org/ws/2")!,
+            urlSession: session,
+            artworkResolver: resolver,
+            preferredAppLanguageCodes: { ["en"] }
+        )
+
+        let details = try await service.lookup(track: "Track", artist: "Artist", release: "Album")
+
+        XCTAssertEqual(details.releaseMBID, "release-id")
+        XCTAssertEqual(details.artworkResolution?.url, "https://cdn.example/discogs-release.jpg")
+        XCTAssertEqual(details.artworkResolution?.provider, .discogs)
+        XCTAssertEqual(details.artworkResolution?.level, .album)
+        XCTAssertEqual(details.artworkResolution?.sourceURL, "https://www.discogs.com/release/249504-Album")
     }
 
     func testLookupBuildsRichArtistProfileFromOpenMetadata() async throws {
@@ -162,6 +244,91 @@ final class MusicBrainzServiceTests: XCTestCase {
         })
         XCTAssertTrue(MusicBrainzURLProtocol.requests.contains { $0.url?.host == "en.wikipedia.org" })
         XCTAssertFalse(MusicBrainzURLProtocol.requests.contains { $0.url?.host == "es.wikipedia.org" })
+    }
+
+    func testLookupResolvesPeakingLightsPortraitFromExplicitDeezerRelationAnonymously() async throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [MusicBrainzURLProtocol.self]
+        let session = URLSession(configuration: configuration)
+        let resolver = AnonymousArtworkResolver(
+            urlSession: session,
+            deezerBaseURL: URL(string: "https://api.deezer.test")!,
+            discogsBaseURL: URL(string: "https://api.discogs.test")!
+        )
+        MusicBrainzURLProtocol.requests = []
+        MusicBrainzURLProtocol.handler = { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+            switch (request.url?.host, request.url?.path) {
+            case ("musicbrainz.org", "/ws/2/artist"):
+                return (response, Data(#"{"artists":[{"id":"peaking-lights-id","name":"Peaking Lights"}]}"#.utf8))
+            case ("musicbrainz.org", "/ws/2/artist/peaking-lights-id"):
+                return (response, Data(#"{"id":"peaking-lights-id","name":"Peaking Lights","relations":[{"type":"streaming music","url":{"resource":"https://www.deezer.com/artist/466634"}}]}"#.utf8))
+            case ("api.deezer.test", "/artist/466634"):
+                XCTAssertNil(request.value(forHTTPHeaderField: "Authorization"))
+                XCTAssertNil(request.url?.query)
+                return (response, Data(#"{"picture_xl":"https://cdn.example/peaking-lights.jpg"}"#.utf8))
+            default:
+                XCTFail("Unexpected URL \(request.url?.absoluteString ?? "nil")")
+                return (response, Data(#"{}"#.utf8))
+            }
+        }
+        let service = MusicBrainzService(
+            baseURL: URL(string: "https://musicbrainz.org/ws/2")!,
+            urlSession: session,
+            artworkResolver: resolver,
+            preferredAppLanguageCodes: { ["en"] }
+        )
+
+        let details = try await service.lookup(track: nil, artist: "Peaking Lights", release: nil)
+
+        XCTAssertEqual(details.artistArtworkResolution?.url, "https://cdn.example/peaking-lights.jpg")
+        XCTAssertEqual(details.artistArtworkResolution?.provider, .deezer)
+        XCTAssertEqual(details.artistArtworkResolution?.level, .artist)
+        XCTAssertEqual(details.artistArtworkResolution?.sourceURL, "https://www.deezer.com/artist/466634")
+        XCTAssertEqual(details.artworkResolution, details.artistArtworkResolution)
+        XCTAssertEqual(
+            MusicBrainzURLProtocol.requests.filter { $0.url?.host == "api.deezer.test" }.count,
+            1,
+            "Track fallback and artist portrait must share the same provider request."
+        )
+    }
+
+    func testLookupNeverUsesAnUnrequestedBootlegAsArtworkFallback() async throws {
+        let service = makeService { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+            switch request.url?.path {
+            case "/ws/2/recording":
+                return (response, Data(#"{"recordings":[{"id":"wildlife-recording","title":"Wildlife Analysis","artist-credit":[{"artist":{"id":"boc-id","name":"Boards of Canada"}}],"releases":[{"id":"bootleg-release","title":"BOC Maxima","status":"Bootleg","cover-art-archive":{"front":true}}]}]}"#.utf8))
+            case "/ws/2/artist":
+                return (response, Data(#"{"artists":[{"id":"boc-id","name":"Boards of Canada"}]}"#.utf8))
+            case "/ws/2/artist/boc-id":
+                return (response, Data(#"{"id":"boc-id","name":"Boards of Canada","relations":[]}"#.utf8))
+            default:
+                XCTFail("The bootleg must not trigger a cover request: \(request.url?.absoluteString ?? "nil")")
+                return (response, Data(#"{}"#.utf8))
+            }
+        }
+
+        let details = try await service.lookup(
+            track: "Wildlife Analysis",
+            artist: "Boards of Canada",
+            release: nil
+        )
+
+        XCTAssertEqual(details.recordingMBID, "wildlife-recording")
+        XCTAssertNil(details.releaseMBID)
+        XCTAssertNil(details.imageURL)
+        XCTAssertFalse(MusicBrainzURLProtocol.requests.contains { $0.url?.path == "/release/bootleg-release" })
     }
 
     func testLookupUsesTheLanguageSelectedForTheAppForWikipedia() async throws {
@@ -426,6 +593,7 @@ final class MusicBrainzServiceTests: XCTestCase {
         return MusicBrainzService(
             baseURL: URL(string: "https://musicbrainz.org/ws/2")!,
             urlSession: URLSession(configuration: configuration),
+            anonymousArtworkEnabled: false,
             preferredAppLanguageCodes: { preferredAppLanguageCodes }
         )
     }

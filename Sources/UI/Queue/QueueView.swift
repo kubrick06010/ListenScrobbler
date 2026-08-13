@@ -43,7 +43,7 @@ struct QueueView: View {
 private struct QueueSubmissionRow: View {
     @EnvironmentObject private var scrobbleService: ScrobbleService
     let job: ScrobbleSubmissionJob
-    @State private var resolvedArtworkURL: String?
+    @State private var resolvedArtworkResolution: ArtworkResolution?
 
     var body: some View {
         HStack(spacing: 10) {
@@ -82,14 +82,15 @@ private struct QueueSubmissionRow: View {
         .padding(10)
         .appPanelStyle()
         .task(id: artworkTaskID) {
-            guard job.track.artworkURL?.nilIfBlank == nil else { return }
-            resolvedArtworkURL = await scrobbleService.artworkURL(for: recentScrobble)
+            guard job.track.artworkResolution?.automaticArtworkResolution == nil else { return }
+            guard let resolution = await scrobbleService.resolveArtworkForQueuedJob(job) else { return }
+            resolvedArtworkResolution = resolution
         }
     }
 
     @ViewBuilder
     private var artwork: some View {
-        if let urlString = job.track.artworkURL?.nilIfBlank ?? resolvedArtworkURL,
+        if let urlString = effectiveArtworkResolution?.url.nilIfBlank,
            let url = URL(string: urlString) {
             CachedAsyncImage(url: url) { image in
                 image.resizable().scaledToFill()
@@ -114,23 +115,12 @@ private struct QueueSubmissionRow: View {
     }
 
     private var artworkTaskID: String? {
-        guard job.track.artworkURL?.nilIfBlank == nil else { return nil }
+        guard job.track.artworkResolution?.automaticArtworkResolution == nil else { return nil }
         return "\(job.track.artist)::\(job.track.title)::\(job.track.album ?? "")"
     }
 
-    private var recentScrobble: CompatibilityRecentScrobble {
-        CompatibilityRecentScrobble(
-            id: "queue-\(job.id.uuidString)",
-            track: job.track.title,
-            artist: job.track.artist,
-            album: job.track.album,
-            imageURL: job.track.artworkURL,
-            url: nil,
-            loved: false,
-            playedAt: job.track.startedAt,
-            nowPlaying: false,
-            recordingMbid: nil,
-            recordingMsid: nil
-        )
+    private var effectiveArtworkResolution: ArtworkResolution? {
+        job.track.artworkResolution?.automaticArtworkResolution
+            ?? resolvedArtworkResolution?.automaticArtworkResolution
     }
 }

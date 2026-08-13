@@ -3,7 +3,7 @@ import Foundation
 /// A provider reference is accepted only when MusicBrainz has already linked
 /// the resolved entity to the external service. The resolver never searches an
 /// artist, track, or release by name.
-struct ArtworkProviderReference: Equatable {
+struct ArtworkProviderReference: Equatable, Sendable {
     let provider: ArtworkProvider
     let level: ArtworkLevel
     let sourceURL: URL
@@ -20,7 +20,7 @@ struct ArtworkProviderReference: Equatable {
     }
 }
 
-enum ArtworkTraceOutcome: String, Equatable {
+enum ArtworkTraceOutcome: String, Equatable, Sendable {
     case candidate
     case cacheHit
     case notFound
@@ -29,14 +29,14 @@ enum ArtworkTraceOutcome: String, Equatable {
     case unsupported
 }
 
-struct ArtworkTraceEvent: Equatable {
+struct ArtworkTraceEvent: Equatable, Sendable {
     let provider: ArtworkProvider
     let level: ArtworkLevel
     let sourceURL: URL?
     let outcome: ArtworkTraceOutcome
 }
 
-struct ArtworkResolutionResult: Equatable {
+struct ArtworkResolutionResult: Equatable, Sendable {
     let selected: ArtworkResolution?
     let candidates: [ArtworkResolutionCandidate]
     let trace: [ArtworkTraceEvent]
@@ -89,7 +89,9 @@ actor AnonymousArtworkResolver {
         references: [ArtworkProviderReference],
         target: ArtworkLevel
     ) async -> ArtworkResolutionResult {
-        var candidates = primaryCandidates.filter { $0.url.nilIfBlank != nil }
+        var candidates = primaryCandidates.filter {
+            $0.url.nilIfBlank != nil && $0.provider.isCredentialFreeArtworkSource
+        }
         var trace = candidates.map {
             ArtworkTraceEvent(
                 provider: $0.provider,
@@ -99,9 +101,17 @@ actor AnonymousArtworkResolver {
             )
         }
 
-        let levels: [ArtworkLevel] = target == .artist
-            ? [.artist]
-            : [.track, .album, .ep, .artist]
+        let levels: [ArtworkLevel]
+        switch target {
+        case .track:
+            levels = [.track, .album, .ep, .artist]
+        case .album:
+            levels = [.album, .ep, .artist]
+        case .ep:
+            levels = [.ep, .album, .artist]
+        case .artist:
+            levels = [.artist]
+        }
         let uniqueReferences = references.uniquedByResolutionIdentity()
 
         for level in levels {

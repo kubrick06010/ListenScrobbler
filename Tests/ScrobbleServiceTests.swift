@@ -189,7 +189,7 @@ final class ScrobbleServiceTests: XCTestCase {
     }
 
     @MainActor
-    func testCurrentTrackDetailsLoadFromConfiguredAPIWhenSignedOut() async {
+    func testCurrentTrackDetailsExcludeCredentialedCompatibilityArtworkWhenSignedOut() async {
         let api = MockAPI()
         api.isAuthenticated = false
         api.trackImageURL = "https://example.test/track-artwork.jpg"
@@ -236,20 +236,48 @@ final class ScrobbleServiceTests: XCTestCase {
         XCTAssertEqual(service.currentTrackDetails?.name, "Track")
         XCTAssertEqual(service.currentArtistDetails?.name, "Artist")
         XCTAssertEqual(service.currentOpenEntityDetails?.artistName, "Artist")
-        XCTAssertEqual(service.currentTrackArtworkURL, api.trackImageURL)
+        XCTAssertNil(service.currentTrackArtworkURL)
+        XCTAssertNil(service.currentTrackArtworkResolution)
         XCTAssertEqual(api.trackDetailRequests.count, 1)
         XCTAssertEqual(api.artistDetailRequests.count, 1)
         withExtendedLifetime(service) {}
     }
 
     @MainActor
-    func testConcurrentArtworkRequestsShareOneProviderLookup() async {
+    func testConcurrentArtworkRequestsShareOneCredentialFreeProviderLookup() async {
         let api = MockAPI()
         api.trackImageURL = "https://example.test/shared-track-artwork.jpg"
         api.trackDetailDelayNanoseconds = 50_000_000
+        let coverURL = "https://cover.example/shared-album.jpg"
+        let musicBrainz = MusicBrainzService(
+            urlSession: makeMockedSession { request in
+                let response = HTTPURLResponse(
+                    url: request.url!,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: ["Content-Type": "application/json"]
+                )!
+                switch request.url?.path {
+                case "/ws/2/recording":
+                    return (response, Data(#"{"recordings":[{"id":"recording-id","title":"Track","artist-credit":[{"artist":{"id":"artist-id","name":"Artist"}}],"releases":[{"id":"release-id","title":"Album","status":"Official"}]}]}"#.utf8))
+                case "/ws/2/artist":
+                    return (response, Data(#"{"artists":[{"id":"artist-id","name":"Artist"}]}"#.utf8))
+                case "/ws/2/artist/artist-id":
+                    return (response, Data(#"{"id":"artist-id","name":"Artist","relations":[]}"#.utf8))
+                case "/ws/2/release":
+                    return (response, Data(#"{"releases":[]}"#.utf8))
+                case "/release/release-id":
+                    return (response, Data(#"{"images":[{"front":true,"thumbnails":{"500":"https://cover.example/shared-album.jpg"}}]}"#.utf8))
+                default:
+                    return (response, Data(#"{}"#.utf8))
+                }
+            },
+            anonymousArtworkEnabled: false
+        )
         let service = ScrobbleService(
             api: api,
             listenBrainz: isolatedListenBrainzService(),
+            musicBrainz: musicBrainz,
             monitor: TestMonitor(),
             sessionStore: InMemorySessionStore(),
             queueStore: InMemoryQueueStore()
@@ -272,8 +300,9 @@ final class ScrobbleServiceTests: XCTestCase {
         async let second = service.artworkURL(for: scrobble)
         let results = await [first, second]
 
-        XCTAssertEqual(results, [api.trackImageURL, api.trackImageURL])
-        XCTAssertEqual(api.trackDetailRequests.count, 1)
+        XCTAssertEqual(results, [coverURL, coverURL])
+        XCTAssertEqual(MockURLProtocol.requests.filter { $0.url?.path == "/ws/2/recording" }.count, 1)
+        XCTAssertEqual(api.trackDetailRequests.count, 0)
         withExtendedLifetime(service) {}
     }
 
@@ -297,7 +326,11 @@ final class ScrobbleServiceTests: XCTestCase {
             track: track.title,
             artist: track.artist,
             album: track.album,
-            imageURL: "https://example.test/history-artwork.jpg",
+            artworkResolution: ArtworkResolution(
+                url: "https://example.test/history-artwork.jpg",
+                level: .album,
+                provider: .listenBrainz
+            ),
             url: nil,
             loved: false,
             playedAt: .now,
@@ -310,6 +343,63 @@ final class ScrobbleServiceTests: XCTestCase {
 
         XCTAssertEqual(resolved, scrobble.imageURL)
         XCTAssertEqual(service.currentTrackArtworkURL, scrobble.imageURL)
+        XCTAssertEqual(service.currentTrackArtworkResolution?.provider, .listenBrainz)
+        withExtendedLifetime(service) {}
+    }
+
+    @MainActor
+    func testQueuedArtworkResolutionUpdatesEveryBackendAndPersists() async {
+        let api = MockAPI()
+        api.isAuthenticated = true
+        let monitor = TestMonitor()
+        let queueStore = InMemoryQueueStore()
+        let coverURL = "https://cover.example/queued-album.jpg"
+        let session = makeMockedSession { request in
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"]
+            )!
+            switch request.url?.path {
+            case "/ws/2/recording":
+                return (response, Data(#"{"recordings":[{"id":"queued-recording","title":"Track","artist-credit":[{"artist":{"id":"queued-artist","name":"Artist"}}],"releases":[{"id":"queued-release","title":"Album","status":"Official"}]}]}"#.utf8))
+            case "/ws/2/artist":
+                return (response, Data(#"{"artists":[{"id":"queued-artist","name":"Artist"}]}"#.utf8))
+            case "/ws/2/artist/queued-artist":
+                return (response, Data(#"{"id":"queued-artist","name":"Artist","relations":[]}"#.utf8))
+            case "/ws/2/release":
+                return (response, Data(#"{"releases":[]}"#.utf8))
+            case "/release/queued-release":
+                return (response, Data(#"{"images":[{"front":true,"thumbnails":{"500":"https://cover.example/queued-album.jpg"}}]}"#.utf8))
+            default:
+                return (response, Data(#"{}"#.utf8))
+            }
+        }
+        let service = ScrobbleService(
+            api: api,
+            listenBrainz: configuredListenBrainzService(urlSession: session),
+            musicBrainz: MusicBrainzService(urlSession: session, anonymousArtworkEnabled: false),
+            monitor: monitor,
+            sessionStore: InMemorySessionStore(),
+            queueStore: queueStore
+        )
+        monitor.emit(.trackStarted(makeTrack(duration: 180)))
+        await Task.yield()
+        service.queueCurrentTrack()
+        let originalJob = try! XCTUnwrap(service.queuedSubmissionJobs.first)
+
+        let resolution = await service.resolveArtworkForQueuedJob(originalJob)
+
+        XCTAssertEqual(resolution?.url, coverURL)
+        XCTAssertEqual(service.queuedSubmissionJobs.count, 2)
+        XCTAssertTrue(service.queuedSubmissionJobs.allSatisfy {
+            $0.track.artworkResolution?.url == coverURL &&
+                $0.track.artworkResolution?.provider == .coverArtArchive
+        })
+        XCTAssertTrue(queueStore.loadJobs().allSatisfy {
+            $0.track.artworkResolution?.url == coverURL
+        })
         withExtendedLifetime(service) {}
     }
 
@@ -716,10 +806,10 @@ final class ScrobbleServiceTests: XCTestCase {
     private func makeMockedSession(
         handler: @escaping (URLRequest) throws -> (HTTPURLResponse, Data)
     ) -> URLSession {
-        MockURLProtocol.handler = handler
-        MockURLProtocol.requests = []
+        let sessionID = MockURLProtocol.register(handler: handler)
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
+        configuration.httpAdditionalHeaders = [MockURLProtocol.sessionHeader: sessionID]
         return URLSession(configuration: configuration)
     }
 }
@@ -745,8 +835,35 @@ private final class InMemoryListenBrainzTokenStore: ListenBrainzTokenStoring {
 }
 
 private final class MockURLProtocol: URLProtocol {
-    static var handler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
-    static var requests: [URLRequest] = []
+    typealias Handler = (URLRequest) throws -> (HTTPURLResponse, Data)
+
+    static let sessionHeader = "X-ListenScrobbler-Test-Session"
+
+    private static let lock = NSLock()
+    private static var handlers: [String: Handler] = [:]
+    private static var requestsBySession: [String: [URLRequest]] = [:]
+    private static var activeSessionID: String?
+
+    /// Keeps each ephemeral URLSession bound to the handler that created it.
+    /// ScrobbleService deliberately starts background enrichment tasks; a
+    /// process-wide mutable handler lets a task from the previous test consume
+    /// the next test's fixture and makes otherwise valid tests order-dependent.
+    static func register(handler: @escaping Handler) -> String {
+        let sessionID = UUID().uuidString
+        lock.lock()
+        handlers[sessionID] = handler
+        requestsBySession[sessionID] = []
+        activeSessionID = sessionID
+        lock.unlock()
+        return sessionID
+    }
+
+    static var requests: [URLRequest] {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let activeSessionID else { return [] }
+        return requestsBySession[activeSessionID] ?? []
+    }
 
     override class func canInit(with request: URLRequest) -> Bool {
         true
@@ -758,8 +875,15 @@ private final class MockURLProtocol: URLProtocol {
 
     override func startLoading() {
         do {
-            Self.requests.append(request)
-            guard let handler = Self.handler else {
+            guard let sessionID = request.value(forHTTPHeaderField: Self.sessionHeader) else {
+                throw URLError(.badURL)
+            }
+            let handler: Handler?
+            Self.lock.lock()
+            Self.requestsBySession[sessionID, default: []].append(request)
+            handler = Self.handlers[sessionID]
+            Self.lock.unlock()
+            guard let handler else {
                 throw URLError(.badServerResponse)
             }
             let (response, data) = try handler(request)
@@ -1032,6 +1156,7 @@ private final class InMemorySessionStore: CompatibilityAccountsStoring {
 private final class InMemoryQueueStore: ScrobbleQueueStoring {
     let queueFileURL = URL(fileURLWithPath: "/tmp/listenscrobbler-test-queue.json")
     private var tracks: [Track] = []
+    private var jobs: [ScrobbleSubmissionJob]?
 
     init(initialTracks: [Track] = []) {
         tracks = initialTracks
@@ -1043,6 +1168,15 @@ private final class InMemoryQueueStore: ScrobbleQueueStoring {
 
     func save(_ tracks: [Track]) {
         self.tracks = tracks
+    }
+
+    func loadJobs() -> [ScrobbleSubmissionJob] {
+        jobs ?? tracks.map { ScrobbleSubmissionJob(backend: .compatibility, track: $0) }
+    }
+
+    func saveJobs(_ jobs: [ScrobbleSubmissionJob]) {
+        self.jobs = jobs
+        tracks = jobs.map(\.track)
     }
 }
 

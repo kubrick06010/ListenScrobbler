@@ -77,6 +77,61 @@ final class MobileListeningStoreTests: XCTestCase {
         XCTAssertEqual(client.deletedListens.first?.recordingMsid, "msid-come-home")
     }
 
+    func testRefreshHydratesRepeatedListenArtworkOnceAndPropagatesItToEveryRow() async {
+        let settingsStore = makeSettingsStore(username: "open-user", token: "token")
+        let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
+        client.recentListens = [
+            ListenBrainzListen(
+                id: "listen-1",
+                trackName: "Vega",
+                artistName: "Penguin Cafe Orchestra",
+                releaseName: "Union Cafe",
+                listenedAt: .now,
+                recordingMBID: nil,
+                recordingMSID: nil,
+                artistMBID: nil,
+                releaseMBID: nil
+            ),
+            ListenBrainzListen(
+                id: "listen-2",
+                trackName: "Vega",
+                artistName: "Penguin Cafe Orchestra",
+                releaseName: "Union Cafe",
+                listenedAt: .now.addingTimeInterval(-60),
+                recordingMBID: nil,
+                recordingMSID: nil,
+                artistMBID: nil,
+                releaseMBID: nil
+            )
+        ]
+        let metadata = FakeMobileOpenMetadataClient()
+        metadata.lookupDetails = metadata.lookupDetails.replacingArtwork(
+            ArtworkResolution(
+                url: "https://cover.example/union-cafe.jpg",
+                level: .album,
+                provider: .coverArtArchive
+            )
+        )
+        let store = MobileListeningStore(
+            settingsStore: settingsStore,
+            listenBrainz: client,
+            openMetadata: metadata,
+            automaticallyHydratesArtwork: true
+        )
+
+        await store.refresh()
+        await store.waitForArtworkHydration()
+
+        XCTAssertEqual(metadata.lookups.count, 1)
+        XCTAssertEqual(
+            store.recentListens.compactMap(\.imageURL),
+            ["https://cover.example/union-cafe.jpg", "https://cover.example/union-cafe.jpg"]
+        )
+        XCTAssertTrue(store.recentListens.allSatisfy {
+            $0.artworkResolution?.provider == .coverArtArchive
+        })
+    }
+
     func testRefreshStatsPublishesMobileStatsSummary() async {
         let settingsStore = makeSettingsStore(username: "open-user", token: "token")
         let client = FakeMobileListenBrainzClient(settingsStore: settingsStore)
@@ -753,14 +808,47 @@ private final class FakeMobileOpenMetadataClient: MobileOpenMetadataClient {
         artistConnections: []
     )
     var searches: [(query: String, kind: OpenMusicSearchKind, limit: Int)] = []
+    var lookups: [(track: String?, artist: String, release: String?)] = []
 
     func lookup(track: String?, artist: String, release: String?) async throws -> OpenMusicEntityDetails {
-        lookupDetails
+        lookups.append((track: track, artist: artist, release: release))
+        return lookupDetails
     }
 
     func search(query: String, kind: OpenMusicSearchKind, limit: Int) async throws -> [OpenMusicSearchResult] {
         searches.append((query: query, kind: kind, limit: limit))
         return searchResults
+    }
+}
+
+private extension OpenMusicEntityDetails {
+    func replacingArtwork(_ resolution: ArtworkResolution) -> OpenMusicEntityDetails {
+        OpenMusicEntityDetails(
+            trackName: trackName,
+            artistName: artistName,
+            releaseName: releaseName,
+            recordingMBID: recordingMBID,
+            artistMBID: artistMBID,
+            releaseMBID: releaseMBID,
+            imageURL: resolution.url,
+            artistImageURL: artistImageURL,
+            artworkResolution: resolution,
+            artistArtworkResolution: artistArtworkResolution,
+            artistSummary: artistSummary,
+            artistSummaryURL: artistSummaryURL,
+            artistSummaryLanguageCode: artistSummaryLanguageCode,
+            editorialInformation: editorialInformation,
+            artistBeginDate: artistBeginDate,
+            artistEndDate: artistEndDate,
+            artistEnded: artistEnded,
+            artistArea: artistArea,
+            disambiguation: disambiguation,
+            country: country,
+            type: type,
+            tags: tags,
+            links: links,
+            artistConnections: artistConnections
+        )
     }
 }
 

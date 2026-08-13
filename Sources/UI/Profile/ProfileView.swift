@@ -81,7 +81,17 @@ struct ProfileView: View {
                         ForEach(scrobbleService.weeklyTopArtists) { artist in
                             VStack(alignment: .leading, spacing: 6) {
                                 HStack(spacing: 8) {
-                                artistImage(artist.imageURL, size: 30)
+                                ResolvedArtworkImage(
+                                    artist: artist.name,
+                                    target: .artist,
+                                    sourceResolution: artist.artworkResolution
+                                ) { image in
+                                    image.resizable().scaledToFill()
+                                } placeholder: {
+                                    artistPlaceholder(size: 30)
+                                }
+                                .frame(width: 30, height: 30)
+                                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(artist.name)
                                         .font(.custom("Avenir Next Medium", size: 13))
@@ -110,7 +120,17 @@ struct ProfileView: View {
                         ForEach(scrobbleService.overallTopArtists) { artist in
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(spacing: 8) {
-                                    artistImage(artist.imageURL, size: 24)
+                                    ResolvedArtworkImage(
+                                        artist: artist.name,
+                                        target: .artist,
+                                        sourceResolution: artist.artworkResolution
+                                    ) { image in
+                                        image.resizable().scaledToFill()
+                                    } placeholder: {
+                                        artistPlaceholder(size: 24)
+                                    }
+                                    .frame(width: 24, height: 24)
+                                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                                     Text(artist.name)
                                         .font(.custom("Avenir Next Regular", size: 12))
                                     Spacer()
@@ -160,26 +180,15 @@ struct ProfileView: View {
             .frame(height: 12)
     }
 
-    @ViewBuilder
-    private func artistImage(_ urlString: String?, size: CGFloat) -> some View {
-        if let urlString, let url = URL(string: urlString) {
-            CachedAsyncImage(url: url) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                Color.white.opacity(0.06)
-            }
-            .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        } else {
-            ZStack {
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color.white.opacity(0.06))
-                Image(systemName: "music.mic")
-                    .font(.system(size: max(10, size * 0.35)))
-                    .foregroundStyle(.secondary)
-            }
-            .frame(width: size, height: size)
+    private func artistPlaceholder(size: CGFloat) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(Color.white.opacity(0.06))
+            Image(systemName: "music.mic")
+                .font(.system(size: max(10, size * 0.35)))
+                .foregroundStyle(.secondary)
         }
+        .frame(width: size, height: size)
     }
 
     @ViewBuilder

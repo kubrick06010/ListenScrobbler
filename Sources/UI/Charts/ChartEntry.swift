@@ -7,6 +7,6 @@ struct ChartEntry {
     let id: String
     let title: String
     let artist: String
-    var imageURL: String?
+    var artworkResolution: ArtworkResolution?
     var count: Int
 }

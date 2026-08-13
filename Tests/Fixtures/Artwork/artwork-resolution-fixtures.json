@@ -5,7 +5,7 @@
     "candidates": [
       { "url": "https://example.test/album.jpg", "level": "album", "provider": "coverArtArchive" },
       { "url": "https://example.test/artist.jpg", "level": "artist", "provider": "wikipediaWikidata" },
-      { "url": "https://example.test/track.jpg", "level": "track", "provider": "compatibilityAPI" }
+      { "url": "https://example.test/track.jpg", "level": "track", "provider": "player" }
     ],
     "expected": "https://example.test/track.jpg"
   },

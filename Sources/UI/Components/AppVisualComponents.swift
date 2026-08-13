@@ -149,6 +149,81 @@ struct CachedAsyncImage<Content: View, Placeholder: View>: View {
     }
 }
 
+/// Resolves artwork by musical identity through `ScrobbleService` and renders
+/// only an allowlisted typed result. This is the reusable boundary for all
+/// macOS artist/track/release surfaces; views never implement provider chains.
+struct ResolvedArtworkImage<Content: View, Placeholder: View>: View {
+    @EnvironmentObject private var scrobbleService: ScrobbleService
+
+    let artist: String
+    let track: String?
+    let album: String?
+    let target: ArtworkLevel
+    let sourceResolution: ArtworkResolution?
+    let content: (Image) -> Content
+    let placeholder: () -> Placeholder
+
+    @State private var resolvedResolution: ArtworkResolution?
+
+    init(
+        artist: String,
+        track: String? = nil,
+        album: String? = nil,
+        target: ArtworkLevel,
+        sourceResolution: ArtworkResolution? = nil,
+        @ViewBuilder content: @escaping (Image) -> Content,
+        @ViewBuilder placeholder: @escaping () -> Placeholder
+    ) {
+        self.artist = artist
+        self.track = track
+        self.album = album
+        self.target = target
+        self.sourceResolution = sourceResolution
+        self.content = content
+        self.placeholder = placeholder
+    }
+
+    var body: some View {
+        Group {
+            if let urlString = effectiveResolution?.url,
+               let url = URL(string: urlString) {
+                CachedAsyncImage(url: url, content: content, placeholder: placeholder)
+            } else {
+                placeholder()
+            }
+        }
+        .task(id: requestID) {
+            guard sourceResolution?.automaticArtworkResolution == nil else {
+                resolvedResolution = nil
+                return
+            }
+            resolvedResolution = await scrobbleService.artworkResolution(
+                artist: artist,
+                track: track,
+                album: album,
+                target: target,
+                sourceResolution: sourceResolution
+            )
+        }
+    }
+
+    private var effectiveResolution: ArtworkResolution? {
+        sourceResolution?.automaticArtworkResolution
+            ?? resolvedResolution?.automaticArtworkResolution
+    }
+
+    private var requestID: String {
+        [
+            target.rawValue,
+            artist,
+            track ?? "",
+            album ?? "",
+            sourceResolution?.provider.rawValue ?? "",
+            sourceResolution?.url ?? ""
+        ].joined(separator: "::")
+    }
+}
+
 struct HTMLSummaryText: View {
     let rawHTML: String
     let fontSize: CGFloat
