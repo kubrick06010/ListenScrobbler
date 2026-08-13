@@ -1,6 +1,6 @@
 # ListenScrobbler
 
-[![Latest macOS release](https://img.shields.io/github/v/release/kubrick06010/ListenScrobbler?display_name=tag&label=latest%20macOS%20release&logo=apple&logoColor=white)](https://github.com/kubrick06010/ListenScrobbler/releases/latest)
+[![Latest macOS release](https://img.shields.io/github/v/release/kubrick06010/ListenScrobbler?display_name=tag&label=latest%20macOS%20release&logo=apple&logoColor=white&cacheSeconds=300)](https://github.com/kubrick06010/ListenScrobbler/releases/latest)
 
 ListenScrobbler is a macOS SwiftUI app for open listening history, centered on ListenBrainz, MusicBrainz, and local-first music memory.
 
