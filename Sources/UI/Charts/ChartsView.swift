@@ -131,10 +131,17 @@ struct ChartsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .task {
+        // Validation can finish after this view appears. Tie the task to the
+        // connection identity so a first attempt made while the username is
+        // still unknown cannot permanently leave the charts empty.
+        .task(id: listenBrainzLoadIdentity) {
             guard scrobbleService.listenBrainzEnabled else { return }
             await refreshListenBrainzArchive()
         }
+    }
+
+    private var listenBrainzLoadIdentity: String {
+        "\(scrobbleService.listenBrainzEnabled)-\(scrobbleService.listenBrainzUsername ?? "")"
     }
 
     @ViewBuilder
