@@ -122,9 +122,14 @@ struct FriendsView: View {
     }
 
     @ViewBuilder
-    private func friendTrackArtwork(_ urlString: String?, isNowPlaying: Bool) -> some View {
-        if let urlString, let url = URL(string: urlString) {
-            CachedAsyncImage(url: url) { image in
+    private func friendTrackArtwork(_ friend: CompatibilityFriendListening, isNowPlaying: Bool) -> some View {
+        if let track = friend.track, let artist = friend.artist {
+            ResolvedArtworkImage(
+                artist: artist,
+                track: track,
+                target: .track,
+                sourceResolution: friend.artworkResolution
+            ) { image in
                 image.resizable().scaledToFill()
             } placeholder: {
                 fallbackFriendTrackArtwork(isNowPlaying: isNowPlaying)
@@ -206,7 +211,7 @@ struct FriendsView: View {
         let nowPlaying = isNowPlaying(friend)
         return HStack(spacing: 10) {
             friendAvatar(friend.avatarURL, isNowPlaying: nowPlaying)
-            friendTrackArtwork(friend.imageURL, isNowPlaying: nowPlaying)
+            friendTrackArtwork(friend, isNowPlaying: nowPlaying)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     Text(friend.user)

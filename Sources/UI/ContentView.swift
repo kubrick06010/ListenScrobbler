@@ -102,10 +102,12 @@ struct ShareDraft: Identifiable, Equatable {
     let track: String?
     let album: String?
     let sourceURL: String?
-    let imageURL: String?
+    let artworkResolution: ArtworkResolution?
     let artistMBID: String?
     let recordingMBID: String?
     let releaseMBID: String?
+
+    var imageURL: String? { artworkResolution?.automaticArtworkResolution?.url }
 }
 
 struct RecommendationComposerDraft: Identifiable, Equatable {
@@ -120,10 +122,12 @@ struct ObsessionDraft: Identifiable, Equatable {
     let track: String
     let album: String?
     let sourceURL: String?
-    let imageURL: String?
+    let artworkResolution: ArtworkResolution?
     let artistMBID: String?
     let recordingMBID: String?
     let releaseMBID: String?
+
+    var imageURL: String? { artworkResolution?.automaticArtworkResolution?.url }
 }
 
 func accountBadgeLabel(for normalizedType: String) -> String {
@@ -161,26 +165,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            List(selection: $selectedTab) {
-                ForEach(WorkspaceTab.Group.allCases, id: \.self) { group in
-                    let tabs = availableTabs.filter { $0.group == group }
-                    if !tabs.isEmpty {
-                        Section {
-                            ForEach(tabs) { tab in
-                                Label(tab.title, systemImage: tab.symbol)
-                                    .tag(tab)
-                                    .font(.custom("Avenir Next Medium", size: 13))
-                                    .accessibilityIdentifier(tab.accessibilityIdentifier)
-                            }
-                        } header: {
-                            Text(group.title)
-                        }
-                    }
-                }
-            }
-            .navigationTitle("ListenScrobbler")
-            .listStyle(.sidebar)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
+            workspaceSidebar
         } detail: {
                 VStack(spacing: 0) {
                     VStack(spacing: 4) {
@@ -220,8 +205,8 @@ struct ContentView: View {
                                 onOpenQueue: {
                                     selectedTab = .queue
                                 },
-                                onOpenTrackDetail: { track, artist, album, imageURL in
-                                    openDeepLink(track: track, artist: artist, album: album, imageURL: imageURL)
+                                onOpenTrackDetail: { track, artist, album, _ in
+                                    openDeepLink(track: track, artist: artist, album: album)
                                 },
                                 onShareTrack: { draft in
                                     shareDraft = draft
@@ -250,39 +235,15 @@ struct ContentView: View {
                                 onOpenArtist: { artist in
                                     openDeepLink(track: nil, artist: artist)
                                 },
-                                onOpenAlbum: { album, artist, imageURL in
-                                    openAlbumDeepLink(album: album, artist: artist, imageURL: imageURL)
+                                onOpenAlbum: { album, artist, _ in
+                                    openAlbumDeepLink(album: album, artist: artist)
                                 },
                                 onShareListen: { draft in
                                     shareDraft = draft
                                 }
                             )
                         case .social:
-                            ListenBrainzSocialView(
-                                onOpenRecommendation: { recommendation in
-                                    openDeepLink(
-                                        track: recommendation.title,
-                                        artist: recommendation.artistName ?? AppLocalization.string("Unknown Artist"),
-                                        imageURL: nil
-                                    )
-                                },
-                                onShareRecommendation: { recommendation in
-                                    shareDraft = ShareDraft(
-                                        kind: .track,
-                                        artist: recommendation.artistName ?? AppLocalization.string("Unknown Artist"),
-                                        track: recommendation.title,
-                                        album: recommendation.releaseName,
-                                        sourceURL: nil,
-                                        imageURL: nil,
-                                        artistMBID: nil,
-                                        recordingMBID: recommendation.recordingMbid,
-                                        releaseMBID: nil
-                                    )
-                                },
-                                onRecommendToFollowers: { recommendation in
-                                    recommendationDraft = RecommendationComposerDraft(recommendation: recommendation)
-                                }
-                            )
+                            socialWorkspace
                         case .shared:
                             SharedVaultView(store: sharedVaultStore)
                         case .obsessions:
@@ -500,6 +461,62 @@ struct ContentView: View {
         }
     }
 
+    private var workspaceSidebar: some View {
+        List(selection: $selectedTab) {
+            ForEach(WorkspaceTab.Group.allCases, id: \.self) { group in
+                let tabs = availableTabs.filter { $0.group == group }
+                if !tabs.isEmpty {
+                    Section {
+                        ForEach(tabs) { tab in
+                            Label(tab.title, systemImage: tab.symbol)
+                                .tag(tab)
+                                .font(.custom("Avenir Next Medium", size: 13))
+                                .accessibilityIdentifier(tab.accessibilityIdentifier)
+                        }
+                    } header: {
+                        Text(group.title)
+                    }
+                }
+            }
+        }
+        .navigationTitle("ListenScrobbler")
+        .listStyle(.sidebar)
+        .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
+    }
+
+    private var socialWorkspace: some View {
+        ListenBrainzSocialView(
+            onOpenRecommendation: openRecommendation,
+            onShareRecommendation: shareRecommendation,
+            onRecommendToFollowers: recommendToFollowers
+        )
+    }
+
+    private func openRecommendation(_ recommendation: ListenBrainzRecommendedRecording) {
+        openDeepLink(
+            track: recommendation.title,
+            artist: recommendation.artistName ?? AppLocalization.string("Unknown Artist")
+        )
+    }
+
+    private func shareRecommendation(_ recommendation: ListenBrainzRecommendedRecording) {
+        shareDraft = ShareDraft(
+            kind: .track,
+            artist: recommendation.artistName ?? AppLocalization.string("Unknown Artist"),
+            track: recommendation.title,
+            album: recommendation.releaseName,
+            sourceURL: nil,
+            artworkResolution: nil,
+            artistMBID: nil,
+            recordingMBID: recommendation.recordingMbid,
+            releaseMBID: nil
+        )
+    }
+
+    private func recommendToFollowers(_ recommendation: ListenBrainzRecommendedRecording) {
+        recommendationDraft = RecommendationComposerDraft(recommendation: recommendation)
+    }
+
     private var availableTabs: [WorkspaceTab] {
         WorkspaceTab.allCases.filter { tab in
             switch tab {
@@ -628,7 +645,7 @@ struct ContentView: View {
         }
     }
 
-    private func openDeepLink(track: String?, artist: String, album: String? = nil, imageURL: String? = nil) {
+    private func openDeepLink(track: String?, artist: String, album: String? = nil) {
         let hasTrack = track?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
         let title = hasTrack ? track! : artist
         let item = CompatibilityRecentScrobble(
@@ -636,7 +653,7 @@ struct ContentView: View {
             track: title,
             artist: artist,
             album: album,
-            imageURL: imageURL,
+            artworkResolution: nil,
             url: nil,
             loved: false,
             playedAt: nil,
@@ -656,13 +673,13 @@ struct ContentView: View {
         }
     }
 
-    private func openAlbumDeepLink(album: String, artist: String, imageURL: String? = nil) {
+    private func openAlbumDeepLink(album: String, artist: String) {
         let item = CompatibilityRecentScrobble(
             id: "deep-album-\(artist)|\(album)",
             track: album,
             artist: artist,
             album: album,
-            imageURL: imageURL,
+            artworkResolution: nil,
             url: nil,
             loved: false,
             playedAt: nil,

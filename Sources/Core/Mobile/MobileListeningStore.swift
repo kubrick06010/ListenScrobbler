@@ -47,11 +47,56 @@ public struct MobileListenSummary: Identifiable, Equatable {
     public let artistName: String
     public let releaseName: String?
     public let listenedAt: Date?
-    public let imageURL: String?
+    public let artworkResolution: ArtworkResolution?
     public let recordingMBID: String?
     public let recordingMSID: String?
     public let artistMBID: String?
     public let releaseMBID: String?
+
+    public var imageURL: String? {
+        artworkResolution?.automaticArtworkResolution?.url
+    }
+
+    public init(
+        id: String,
+        trackName: String,
+        artistName: String,
+        releaseName: String?,
+        listenedAt: Date?,
+        imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil,
+        recordingMBID: String?,
+        recordingMSID: String?,
+        artistMBID: String?,
+        releaseMBID: String?
+    ) {
+        self.id = id
+        self.trackName = trackName
+        self.artistName = artistName
+        self.releaseName = releaseName
+        self.listenedAt = listenedAt
+        self.artworkResolution = artworkResolution
+            ?? .legacy(url: imageURL, level: .track, provider: .listenBrainz)
+        self.recordingMBID = recordingMBID
+        self.recordingMSID = recordingMSID
+        self.artistMBID = artistMBID
+        self.releaseMBID = releaseMBID
+    }
+
+    func replacingArtworkResolution(_ resolution: ArtworkResolution) -> MobileListenSummary {
+        MobileListenSummary(
+            id: id,
+            trackName: trackName,
+            artistName: artistName,
+            releaseName: releaseName,
+            listenedAt: listenedAt,
+            artworkResolution: resolution,
+            recordingMBID: recordingMBID,
+            recordingMSID: recordingMSID,
+            artistMBID: artistMBID,
+            releaseMBID: releaseMBID
+        )
+    }
 }
 
 public struct MobilePinnedRecording: Identifiable, Equatable {
@@ -95,7 +140,11 @@ public struct MobileMusicDetailSeed: Identifiable, Equatable, Hashable {
     public let recordingMSID: String?
     public let artistMBID: String?
     public let releaseMBID: String?
-    public let imageURL: String?
+    public let artworkResolution: ArtworkResolution?
+
+    public var imageURL: String? {
+        artworkResolution?.automaticArtworkResolution?.url
+    }
 
     public init(
         kind: MobileMusicEntityKind,
@@ -106,7 +155,8 @@ public struct MobileMusicDetailSeed: Identifiable, Equatable, Hashable {
         recordingMSID: String? = nil,
         artistMBID: String? = nil,
         releaseMBID: String? = nil,
-        imageURL: String? = nil
+        imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil
     ) {
         let normalizedTrackName = trackName?.nilIfBlank
         let normalizedArtistName = artistName.nilIfBlank ?? AppLocalization.string("Unknown artist")
@@ -125,7 +175,11 @@ public struct MobileMusicDetailSeed: Identifiable, Equatable, Hashable {
         self.recordingMSID = normalizedRecordingMSID
         self.artistMBID = normalizedArtistMBID
         self.releaseMBID = normalizedReleaseMBID
-        self.imageURL = normalizedImageURL
+        self.artworkResolution = artworkResolution
+            ?? .legacy(
+                url: normalizedImageURL,
+                level: kind == .artist ? .artist : (kind == .release ? .album : .track)
+            )
         let idParts: [String?] = [
             kind.rawValue,
             normalizedRecordingMBID,
@@ -169,8 +223,16 @@ public struct MobileMusicDetail: Equatable {
     public let recordingMSID: String?
     public let artistMBID: String?
     public let releaseMBID: String?
-    public let imageURL: String?
-    public let artistImageURL: String?
+    public let artworkResolution: ArtworkResolution?
+    public let artistArtworkResolution: ArtworkResolution?
+
+    public var imageURL: String? {
+        artworkResolution?.automaticArtworkResolution?.url
+    }
+
+    public var artistImageURL: String? {
+        artistArtworkResolution?.automaticArtworkResolution?.url
+    }
     public let artistSummary: String?
     public let artistSummaryURL: URL?
     public let artistSummaryLanguageCode: String?
@@ -423,6 +485,8 @@ public final class MobileListeningStore: ObservableObject {
     private let listenBrainz: MobileListenBrainzClient
     private let openMetadata: MobileOpenMetadataClient
     private let widgetSnapshotStore: MobileWidgetSnapshotStore
+    private let automaticallyHydratesArtwork: Bool
+    private var artworkHydrationTask: Task<Void, Never>?
     private let logger = Logger(subsystem: "org.listenscrobbler.app.ios", category: "listenbrainz")
 
     public convenience init() {
@@ -430,7 +494,8 @@ public final class MobileListeningStore: ObservableObject {
         self.init(
             settingsStore: settingsStore,
             listenBrainz: ListenBrainzService(settingsStore: settingsStore),
-            openMetadata: MusicBrainzService()
+            openMetadata: MusicBrainzService(),
+            automaticallyHydratesArtwork: true
         )
     }
 
@@ -438,12 +503,14 @@ public final class MobileListeningStore: ObservableObject {
         settingsStore: ListenBrainzSettingsStore,
         listenBrainz: MobileListenBrainzClient,
         openMetadata: MobileOpenMetadataClient = MusicBrainzService(),
-        widgetSnapshotStore: MobileWidgetSnapshotStore = MobileWidgetSnapshotStore()
+        widgetSnapshotStore: MobileWidgetSnapshotStore = MobileWidgetSnapshotStore(),
+        automaticallyHydratesArtwork: Bool = false
     ) {
         self.settingsStore = settingsStore
         self.listenBrainz = listenBrainz
         self.openMetadata = openMetadata
         self.widgetSnapshotStore = widgetSnapshotStore
+        self.automaticallyHydratesArtwork = automaticallyHydratesArtwork
         let settings = settingsStore.load()
         if let username = Self.nonBlank(settings.username), settingsStore.hasStoredToken() {
             self.connectionState = .connected(username: username)
@@ -524,6 +591,8 @@ public final class MobileListeningStore: ObservableObject {
 
     public func disconnect() {
         logger.info("ListenBrainz disconnect requested")
+        artworkHydrationTask?.cancel()
+        artworkHydrationTask = nil
         listenBrainz.clear()
         recentListens = []
         currentPin = nil
@@ -550,6 +619,8 @@ public final class MobileListeningStore: ObservableObject {
             return
         }
 
+        artworkHydrationTask?.cancel()
+        artworkHydrationTask = nil
         logger.info("ListenBrainz refresh started for user \(username, privacy: .public)")
         isRefreshing = true
         defer { isRefreshing = false }
@@ -558,10 +629,12 @@ public final class MobileListeningStore: ObservableObject {
             async let listens = listenBrainz.fetchRecentListens(username: username, count: 25)
             async let pin = listenBrainz.fetchCurrentPin(username: username)
 
-            recentListens = try await listens.map(MobileListenSummary.init(listen:))
+            let loadedListens = try await listens.map(MobileListenSummary.init(listen:))
+            recentListens = loadedListens
             currentPin = try await pin.map(MobilePinnedRecording.init(pin:))
             persistWidgetSnapshot()
             logger.info("ListenBrainz refresh succeeded with \(self.recentListens.count, privacy: .public) recent listens; pin present: \(self.currentPin != nil, privacy: .public)")
+            scheduleRecentListenArtworkHydration(loadedListens)
         } catch {
             logger.error("ListenBrainz refresh failed: \(error.localizedDescription, privacy: .public)")
             connectionState = .failed(error.localizedDescription)
@@ -781,6 +854,67 @@ public final class MobileListeningStore: ObservableObject {
             release: seed.kind == .release ? (seed.releaseName ?? seed.trackName) : seed.releaseName
         )
         return MobileMusicDetail(seed: seed, details: details)
+    }
+
+    /// Keeps iOS list rows on the same metadata resolver as detail, search, and
+    /// macOS. Lookups are deliberately capped and deduplicated so loading a
+    /// history page cannot fan out one request per repeated listen.
+    private func scheduleRecentListenArtworkHydration(_ listens: [MobileListenSummary]) {
+        guard automaticallyHydratesArtwork else { return }
+        artworkHydrationTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            await self.hydrateRecentListenArtwork(listens)
+        }
+    }
+
+    private func hydrateRecentListenArtwork(_ listens: [MobileListenSummary]) async {
+        var seen = Set<String>()
+        let unresolved = listens.filter { listen in
+            guard listen.artworkResolution?.automaticArtworkResolution == nil else { return false }
+            return seen.insert(Self.artworkIdentity(for: listen)).inserted
+        }
+
+        await withTaskGroup(of: (String, ArtworkResolution?).self) { group in
+            for listen in unresolved.prefix(12) {
+                group.addTask { [openMetadata] in
+                    let details = try? await openMetadata.lookup(
+                        track: listen.trackName,
+                        artist: listen.artistName,
+                        release: listen.releaseName
+                    )
+                    let resolution = details?.effectiveArtworkResolution
+                        ?? details?.effectiveArtistArtworkResolution
+                    return (Self.artworkIdentity(for: listen), resolution)
+                }
+            }
+
+            for await (identity, resolution) in group {
+                guard !Task.isCancelled else { continue }
+                guard let resolution = resolution?.automaticArtworkResolution else { continue }
+                recentListens = recentListens.map { listen in
+                    guard Self.artworkIdentity(for: listen) == identity else { return listen }
+                    return listen.replacingArtworkResolution(resolution)
+                }
+            }
+        }
+        guard !Task.isCancelled else { return }
+        persistWidgetSnapshot()
+    }
+
+    func waitForArtworkHydration() async {
+        await artworkHydrationTask?.value
+    }
+
+    nonisolated private static func artworkIdentity(for listen: MobileListenSummary) -> String {
+        [listen.artistName, listen.trackName, listen.releaseName ?? ""]
+            .map {
+                $0.folding(
+                    options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive],
+                    locale: .current
+                )
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            .joined(separator: "::")
     }
 
     public func refreshRadio(seed: MobileRadioSeed? = nil) async {
@@ -1093,7 +1227,7 @@ private extension MobileListenSummary {
             artistName: listen.artistName,
             releaseName: listen.releaseName,
             listenedAt: listen.listenedAt,
-            imageURL: listen.imageURL,
+            artworkResolution: listen.artworkResolution,
             recordingMBID: listen.recordingMBID,
             recordingMSID: listen.recordingMSID,
             artistMBID: listen.artistMBID,
@@ -1205,7 +1339,7 @@ private extension MobileMusicDetailSeed {
             recordingMSID: listen.recordingMSID,
             artistMBID: listen.artistMBID,
             releaseMBID: listen.releaseMBID,
-            imageURL: listen.imageURL
+            artworkResolution: listen.artworkResolution
         )
     }
 
@@ -1231,8 +1365,8 @@ private extension MobileMusicDetail {
             recordingMSID: seed.recordingMSID,
             artistMBID: details.artistMBID ?? seed.artistMBID,
             releaseMBID: details.releaseMBID ?? seed.releaseMBID,
-            imageURL: details.imageURL ?? seed.imageURL,
-            artistImageURL: details.artistImageURL,
+            artworkResolution: details.artworkResolution ?? seed.artworkResolution,
+            artistArtworkResolution: details.artistArtworkResolution,
             artistSummary: details.artistSummary,
             artistSummaryURL: details.artistSummaryURL,
             artistSummaryLanguageCode: details.artistSummaryLanguageCode,
@@ -1268,7 +1402,7 @@ private extension MobileDiscoverySearchResult {
             recordingMBID: result.recordingMBID,
             artistMBID: result.artistMBID,
             releaseMBID: result.releaseMBID,
-            imageURL: result.imageURL
+            artworkResolution: result.artworkResolution
         )
 
         self.init(

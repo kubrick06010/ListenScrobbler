@@ -186,13 +186,43 @@ struct CompatibilityRecentScrobble: Equatable, Identifiable {
     let track: String
     let artist: String
     let album: String?
-    let imageURL: String?
+    let artworkResolution: ArtworkResolution?
     let url: String?
     let loved: Bool
     let playedAt: Date?
     let nowPlaying: Bool
     let recordingMbid: String?
     let recordingMsid: String?
+
+    var imageURL: String? { artworkResolution?.automaticArtworkResolution?.url }
+
+    init(
+        id: String,
+        track: String,
+        artist: String,
+        album: String?,
+        imageURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil,
+        url: String?,
+        loved: Bool,
+        playedAt: Date?,
+        nowPlaying: Bool,
+        recordingMbid: String?,
+        recordingMsid: String?
+    ) {
+        self.id = id
+        self.track = track
+        self.artist = artist
+        self.album = album
+        self.artworkResolution = artworkResolution
+            ?? .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+        self.url = url
+        self.loved = loved
+        self.playedAt = playedAt
+        self.nowPlaying = nowPlaying
+        self.recordingMbid = recordingMbid
+        self.recordingMsid = recordingMsid
+    }
 }
 
 struct CompatibilityFriendListening: Equatable, Identifiable {
@@ -235,6 +265,53 @@ struct CompatibilityTopArtist: Equatable, Identifiable {
     let playcount: Int?
     let imageURL: String?
     let url: String?
+}
+
+// Compatibility payloads still expose imageURL for API/source compatibility,
+// but the app-facing artwork value carries the entity level and provenance.
+// Keeping these adapters on the models gives history, detail, profile, and
+// similar-item consumers one result to pass through instead of resolving in a
+// view for each surface.
+extension CompatibilityTrackDetails {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilitySimilarTrack {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilitySimilarAlbum {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .album, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilitySimilarArtist {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .artist, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilityArtistDetails {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .artist, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilityFriendListening {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .track, provider: .compatibilityAPI)
+    }
+}
+
+extension CompatibilityTopArtist {
+    var artworkResolution: ArtworkResolution? {
+        .legacy(url: imageURL, level: .artist, provider: .compatibilityAPI)
+    }
 }
 
 enum CompatibilityAPIError: LocalizedError {

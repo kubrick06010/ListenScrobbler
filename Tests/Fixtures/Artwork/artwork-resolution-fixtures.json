@@ -1,0 +1,49 @@
+[
+  {
+    "name": "track-wins-over-album-and-artist",
+    "target": "track",
+    "candidates": [
+      { "url": "https://example.test/album.jpg", "level": "album", "provider": "coverArtArchive" },
+      { "url": "https://example.test/artist.jpg", "level": "artist", "provider": "wikipediaWikidata" },
+      { "url": "https://example.test/track.jpg", "level": "track", "provider": "player" }
+    ],
+    "expected": "https://example.test/track.jpg"
+  },
+  {
+    "name": "album-wins-over-ep-and-artist",
+    "target": "track",
+    "candidates": [
+      { "url": "https://example.test/artist.jpg", "level": "artist", "provider": "wikipediaWikidata" },
+      { "url": "https://example.test/ep.jpg", "level": "ep", "provider": "coverArtArchive" },
+      { "url": "https://example.test/album.jpg", "level": "album", "provider": "coverArtArchive" }
+    ],
+    "expected": "https://example.test/album.jpg"
+  },
+  {
+    "name": "ep-wins-over-artist",
+    "target": "track",
+    "candidates": [
+      { "url": "https://example.test/artist.jpg", "level": "artist", "provider": "wikipediaWikidata" },
+      { "url": "https://example.test/ep.jpg", "level": "ep", "provider": "coverArtArchive" }
+    ],
+    "expected": "https://example.test/ep.jpg"
+  },
+  {
+    "name": "artist-is-final-track-fallback",
+    "target": "track",
+    "candidates": [
+      { "url": "", "level": "track", "provider": "compatibilityAPI" },
+      { "url": "https://example.test/artist.jpg", "level": "artist", "provider": "wikipediaWikidata" }
+    ],
+    "expected": "https://example.test/artist.jpg"
+  },
+  {
+    "name": "artist-target-never-uses-release-art",
+    "target": "artist",
+    "candidates": [
+      { "url": "https://example.test/album.jpg", "level": "album", "provider": "coverArtArchive" },
+      { "url": "https://example.test/artist.jpg", "level": "artist", "provider": "wikipediaWikidata" }
+    ],
+    "expected": "https://example.test/artist.jpg"
+  }
+]

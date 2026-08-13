@@ -7,7 +7,10 @@ struct ArtistExperienceData: Identifiable {
 
     var id: String { openDetails?.artistMBID ?? name }
     var name: String { openDetails?.artistName.nilIfBlank ?? artist?.name.nilIfBlank ?? AppLocalization.string("Unknown artist") }
-    var imageURL: String? { openDetails?.artistImageURL?.nilIfBlank ?? artist?.imageURL?.nilIfBlank }
+    var artistArtworkResolution: ArtworkResolution? {
+        openDetails?.effectiveArtistArtworkResolution
+    }
+    var imageURL: String? { artistArtworkResolution?.url }
     var summary: String? {
         if let localizedOpenSummary = openDetails?.artistSummaryForPreferredAppLanguage {
             return localizedOpenSummary
@@ -46,7 +49,6 @@ struct ArtistExperienceData: Identifiable {
                 id: "connection-\(connection.id)",
                 name: connection.name,
                 value: 1,
-                imageURL: nil,
                 relationship: localizedRelationship(connection.relationship),
                 kind: .connection
             ))
@@ -58,7 +60,7 @@ struct ArtistExperienceData: Identifiable {
                     id: "listenbrainz-\(related.id)",
                     name: related.name,
                     value: Double(max(1, related.totalListenCount)),
-                    imageURL: related.imageURL,
+                    artworkResolution: related.artworkResolution?.automaticArtworkResolution,
                     relationship: AppLocalization.string("Similar on ListenBrainz"),
                     kind: .similarity
                 ))
@@ -69,7 +71,7 @@ struct ArtistExperienceData: Identifiable {
                     id: "compatibility-\(related.id)",
                     name: related.name,
                     value: Double(max(1, compatibilitySimilarArtists.count - index)),
-                    imageURL: related.imageURL,
+                    artworkResolution: related.artworkResolution?.automaticArtworkResolution,
                     relationship: AppLocalization.string("Similar artist"),
                     kind: .similarity
                 ))
@@ -81,7 +83,6 @@ struct ArtistExperienceData: Identifiable {
                 id: "alias-\(connection.id)",
                 name: connection.name,
                 value: 1,
-                imageURL: nil,
                 relationship: AppLocalization.string("Alias"),
                 kind: .alias
             ))
@@ -228,7 +229,12 @@ struct ArtistSummaryCard: View {
     private var compactLayout: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 14) {
-                ArtistArtwork(url: data.imageURL, name: data.name, size: artworkSize)
+                ArtistArtwork(
+                    artist: data.name,
+                    resolution: data.artistArtworkResolution,
+                    name: data.name,
+                    size: artworkSize
+                )
                 identity
             }
             if let summary = data.summary {
@@ -251,7 +257,12 @@ struct ArtistSummaryCard: View {
                 .font(.custom("Avenir Next Demi Bold", size: 10))
                 .tracking(1.4)
                 .foregroundStyle(.secondary)
-            ArtistArtwork(url: data.imageURL, name: data.name, size: artworkSize)
+            ArtistArtwork(
+                artist: data.name,
+                resolution: data.artistArtworkResolution,
+                name: data.name,
+                size: artworkSize
+            )
             identity
             if let summary = data.summary {
                 Text(summary)
@@ -345,7 +356,7 @@ struct ArtistSummaryCard: View {
             }
             SimilarArtistGraphView(
                 centerName: data.name,
-                centerImageURL: data.imageURL,
+                centerArtworkResolution: data.artistArtworkResolution,
                 nodes: data.constellationNodes,
                 compact: compact
             )
@@ -391,7 +402,12 @@ struct ArtistDetailView: View {
 
     private var hero: some View {
         HStack(alignment: .top, spacing: 22) {
-            ArtistArtwork(url: data.imageURL, name: data.name, size: 180)
+            ArtistArtwork(
+                artist: data.name,
+                resolution: data.artistArtworkResolution,
+                name: data.name,
+                size: 180
+            )
             VStack(alignment: .leading, spacing: 8) {
                 Text(data.name)
                     .font(.custom("Avenir Next Demi Bold", size: 34))
@@ -446,7 +462,15 @@ struct ArtistDetailView: View {
             section("Popular recordings", systemImage: "music.note.list") {
                 ForEach(data.popularRecordings.prefix(8)) { recording in
                     HStack(spacing: 12) {
-                        ArtistArtwork(url: recording.imageURL, name: recording.title, size: 44)
+                        ArtistArtwork(
+                            artist: data.name,
+                            track: recording.title,
+                            album: recording.releaseName,
+                            target: .track,
+                            resolution: recording.artworkResolution?.automaticArtworkResolution,
+                            name: recording.title,
+                            size: 44
+                        )
                         VStack(alignment: .leading, spacing: 2) {
                             Text(recording.title).fontWeight(.semibold)
                             if let release = recording.releaseName {
@@ -471,7 +495,7 @@ struct ArtistDetailView: View {
                     .foregroundStyle(.secondary)
                 SimilarArtistGraphView(
                     centerName: data.name,
-                    centerImageURL: data.imageURL,
+                    centerArtworkResolution: data.artistArtworkResolution,
                     nodes: data.constellationNodes,
                     compact: false
                 )
@@ -517,11 +541,17 @@ struct ArtistDetailView: View {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
                     if !data.similarArtists.isEmpty {
                         ForEach(data.similarArtists.prefix(8)) { artist in
-                            relatedArtistRow(name: artist.name, imageURL: artist.imageURL)
+                            relatedArtistRow(
+                                name: artist.name,
+                                artworkResolution: artist.artworkResolution?.automaticArtworkResolution
+                            )
                         }
                     } else {
                         ForEach(data.compatibilitySimilarArtists.prefix(8)) { artist in
-                            relatedArtistRow(name: artist.name, imageURL: artist.imageURL)
+                            relatedArtistRow(
+                                name: artist.name,
+                                artworkResolution: artist.artworkResolution?.automaticArtworkResolution
+                            )
                         }
                     }
                 }
@@ -529,9 +559,14 @@ struct ArtistDetailView: View {
         }
     }
 
-    private func relatedArtistRow(name: String, imageURL: String?) -> some View {
+    private func relatedArtistRow(name: String, artworkResolution: ArtworkResolution?) -> some View {
         HStack(spacing: 10) {
-            ArtistArtwork(url: imageURL, name: name, size: 42)
+            ArtistArtwork(
+                artist: name,
+                resolution: artworkResolution,
+                name: name,
+                size: 42
+            )
             Text(name).fontWeight(.medium).lineLimit(2)
             Spacer(minLength: 0)
         }
@@ -574,23 +609,25 @@ struct ArtistDetailView: View {
 }
 
 private struct ArtistArtwork: View {
-    let url: String?
+    let artist: String
+    var track: String? = nil
+    var album: String? = nil
+    var target: ArtworkLevel = .artist
+    let resolution: ArtworkResolution?
     let name: String
     let size: CGFloat
 
     var body: some View {
-        Group {
-            if let url, let imageURL = URL(string: url) {
-                AsyncImage(url: imageURL) { phase in
-                    if let image = phase.image {
-                        image.resizable().scaledToFill()
-                    } else {
-                        placeholder
-                    }
-                }
-            } else {
-                placeholder
-            }
+        ResolvedArtworkImage(
+            artist: artist,
+            track: track,
+            album: album,
+            target: target,
+            sourceResolution: resolution
+        ) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            placeholder
         }
         .frame(width: size, height: size)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))

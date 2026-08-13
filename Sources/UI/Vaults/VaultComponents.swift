@@ -34,6 +34,16 @@ struct SharedTimelineRow: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .fill(tint.opacity(0.20))
+                if let url = entry.artworkResolution?.automaticArtworkResolution.flatMap({ URL(string: $0.url) }) {
+                    CachedAsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Color.clear
+                    }
+                    .frame(width: 52, height: 52)
+                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    .overlay(Color.black.opacity(0.24))
+                }
                 Image(systemName: icon)
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(tint)
@@ -108,6 +118,16 @@ struct ObsessionTimelineRow: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .fill(Color.purple.opacity(0.20))
+                if let url = entry.artworkResolution?.automaticArtworkResolution.flatMap({ URL(string: $0.url) }) {
+                    CachedAsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Color.clear
+                    }
+                    .frame(width: 52, height: 52)
+                    .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                    .overlay(Color.black.opacity(0.24))
+                }
                 Image(systemName: "heart.text.square")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(.purple)
@@ -176,7 +196,13 @@ struct SharedDetailView: View {
                 .font(.custom("Avenir Next Demi Bold", size: 16))
 
             if let entry {
-                VaultHeroCard(title: entry.title, subtitle: entry.artist, label: entry.entityKind.displayName, tint: .cyan)
+                VaultHeroCard(
+                    title: entry.title,
+                    subtitle: entry.artist,
+                    label: entry.entityKind.displayName,
+                    tint: .cyan,
+                    artworkResolution: entry.artworkResolution
+                )
                 Label(entry.participantSummary, systemImage: "person.2.fill")
                     .font(.custom("Avenir Next Medium", size: 13))
                 Label(vaultDate(entry.createdAt), systemImage: "calendar")
@@ -226,7 +252,8 @@ struct ObsessionDetailView: View {
                     title: entry.track,
                     subtitle: entry.artist,
                     label: AppLocalization.string("Track"),
-                    tint: .purple
+                    tint: .purple,
+                    artworkResolution: entry.artworkResolution
                 )
                 Label(vaultDate(entry.setAt ?? entry.firstSeenAt), systemImage: "calendar")
                     .font(.custom("Avenir Next Medium", size: 13))
@@ -300,11 +327,22 @@ struct VaultHeroCard: View {
     let subtitle: String
     let label: String
     let tint: Color
+    var artworkResolution: ArtworkResolution? = nil
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(tint.opacity(0.22))
+            if let url = artworkResolution?.automaticArtworkResolution.flatMap({ URL(string: $0.url) }) {
+                CachedAsyncImage(url: url) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Color.clear
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(Color.black.opacity(0.42))
+            }
             VStack(alignment: .leading, spacing: 5) {
                 Text(label)
                     .font(.custom("Avenir Next Demi Bold", size: 10))

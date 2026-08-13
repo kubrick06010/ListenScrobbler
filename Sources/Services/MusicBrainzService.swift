@@ -63,14 +63,14 @@ struct EditorialInformation: Equatable {
 
 /// The image can be used only for the entity level it was resolved for. In
 /// particular, an album cover must never be presented as the artist portrait.
-enum ArtworkLevel: String, Hashable {
+public enum ArtworkLevel: String, Codable, Hashable, Sendable {
     case track
     case album
     case ep
     case artist
 }
 
-enum ArtworkProvider: String, Hashable {
+public enum ArtworkProvider: String, Codable, Hashable, Sendable {
     case player
     case compatibilityAPI
     case coverArtArchive
@@ -84,12 +84,158 @@ enum ArtworkProvider: String, Hashable {
     case lastFM
     case theAudioDB
     case fanartTV
+    /// Used only when reading a legacy URL that did not retain provenance.
+    case legacy
+
+    /// Only these providers may participate in automatic artwork resolution.
+    /// The remaining enum cases are retained solely to decode old archives and
+    /// queues without losing provenance.
+    var isCredentialFreeArtworkSource: Bool {
+        switch self {
+        case .player, .coverArtArchive, .wikipediaWikidata, .listenBrainz, .deezer, .discogs:
+            return true
+        case .compatibilityAPI, .appleMusic, .spotify, .allMusic, .lastFM, .theAudioDB, .fanartTV, .legacy:
+            return false
+        }
+    }
 }
 
-struct ArtworkResolution: Equatable {
+public struct ArtworkResolution: Codable, Equatable, Hashable, Sendable {
+    public let url: String
+    public let level: ArtworkLevel
+    public let provider: ArtworkProvider
+    /// Public entity page that correlated the image with the artist, track, or
+    /// release. This is kept separately from the image CDN URL so attribution
+    /// never has to be reverse-engineered in a view.
+    public let sourceURL: String?
+
+    public init(
+        url: String,
+        level: ArtworkLevel,
+        provider: ArtworkProvider,
+        sourceURL: String? = nil
+    ) {
+        self.url = url
+        self.level = level
+        self.provider = provider
+        self.sourceURL = sourceURL
+    }
+
+    /// Converts an older URL-only field into the central artwork value. The
+    /// legacy provider is intentionally explicit so callers never infer a
+    /// provider from a URL string in a view.
+    public static func legacy(
+        url: String?,
+        level: ArtworkLevel,
+        provider: ArtworkProvider = .legacy
+    ) -> ArtworkResolution? {
+        guard let url = url?.nilIfBlank else { return nil }
+        return ArtworkResolution(url: url, level: level, provider: provider)
+    }
+
+    public var imageURL: String { url }
+
+    /// The only value that may be rendered or selected automatically. Legacy
+    /// and credential-backed providers remain decodable for migration and
+    /// provenance, but can never leak back into the runtime fallback chain.
+    var automaticArtworkResolution: ArtworkResolution? {
+        guard url.nilIfBlank != nil, provider.isCredentialFreeArtworkSource else { return nil }
+        return self
+    }
+
+    /// Persistence accepts old URL-only records so existing vault data remains
+    /// readable. Every newly resolved value still has to pass
+    /// `automaticArtworkResolution` before it is displayed or propagated.
+    var persistableArtworkResolution: ArtworkResolution? {
+        guard url.nilIfBlank != nil else { return nil }
+        guard provider.isCredentialFreeArtworkSource || provider == .legacy else { return nil }
+        return self
+    }
+}
+
+extension OpenMusicEntityDetails {
+    /// Views must consume only resolver results with explicit, credential-free
+    /// provenance. Raw compatibility URLs are metadata, not artwork evidence.
+    var effectiveArtworkResolution: ArtworkResolution? {
+        artworkResolution?.automaticArtworkResolution
+    }
+
+    var effectiveArtistArtworkResolution: ArtworkResolution? {
+        artistArtworkResolution?.automaticArtworkResolution
+    }
+}
+
+extension OpenMusicSearchResult {
+    var artworkResolution: ArtworkResolution? {
+        let level: ArtworkLevel
+        switch kind {
+        case .recording:
+            level = .track
+        case .release:
+            level = .album
+        case .artist:
+            level = .artist
+        }
+        return .legacy(url: imageURL, level: level)
+    }
+}
+
+struct ArtworkResolutionCandidate: Equatable, Codable, Sendable {
     let url: String
     let level: ArtworkLevel
     let provider: ArtworkProvider
+    let sourceURL: String?
+
+    init(
+        url: String,
+        level: ArtworkLevel,
+        provider: ArtworkProvider,
+        sourceURL: String? = nil
+    ) {
+        self.url = url
+        self.level = level
+        self.provider = provider
+        self.sourceURL = sourceURL
+    }
+
+    var resolution: ArtworkResolution {
+        ArtworkResolution(
+            url: url,
+            level: level,
+            provider: provider,
+            sourceURL: sourceURL
+        )
+    }
+}
+
+enum ArtworkResolutionPolicy {
+    static func resolve(
+        candidates: [ArtworkResolutionCandidate],
+        target: ArtworkLevel
+    ) -> ArtworkResolution? {
+        let levels: [ArtworkLevel]
+        switch target {
+        case .track:
+            levels = [.track, .album, .ep, .artist]
+        case .album:
+            levels = [.album, .ep, .artist]
+        case .ep:
+            levels = [.ep, .album, .artist]
+        case .artist:
+            levels = [.artist]
+        }
+
+        for level in levels {
+            if let candidate = candidates.first(where: {
+                $0.level == level
+                    && $0.url.nilIfBlank != nil
+                    && $0.provider.isCredentialFreeArtworkSource
+            }) {
+                return candidate.resolution
+            }
+        }
+        return nil
+    }
 }
 
 extension OpenMusicEntityDetails {
@@ -142,18 +288,20 @@ struct OpenMusicSearchResult: Identifiable, Equatable {
 
 final class MusicBrainzService {
     // ListenScrobbler treats MusicBrainz as the identity layer and supplements it
-    // with Cover Art Archive, Wikidata, and Wikipedia. If a future contributor
-    // adds Discogs/AcousticBrainz/etc., prefer enriching this open entity value
-    // rather than leaking more provider-specific models into SwiftUI.
+    // through the central anonymous resolver. Provider-specific models stay out
+    // of SwiftUI; views receive only a typed ArtworkResolution.
     private let baseURL: URL
     private let coverArtBaseURL: URL
     private let urlSession: URLSession
     private let preferredAppLanguageCodes: () -> [String]
+    private let artworkResolver: AnonymousArtworkResolver?
 
     init(
         baseURL: URL = URL(string: "https://musicbrainz.org/ws/2")!,
         coverArtBaseURL: URL = URL(string: "https://coverartarchive.org/release")!,
         urlSession: URLSession = .shared,
+        anonymousArtworkEnabled: Bool = true,
+        artworkResolver: AnonymousArtworkResolver? = nil,
         preferredAppLanguageCodes: @escaping () -> [String] = {
             AppLocalization.effectiveLanguageIdentifiers
         }
@@ -161,6 +309,9 @@ final class MusicBrainzService {
         self.baseURL = baseURL
         self.coverArtBaseURL = coverArtBaseURL
         self.urlSession = urlSession
+        self.artworkResolver = anonymousArtworkEnabled
+            ? (artworkResolver ?? AnonymousArtworkResolver(urlSession: urlSession))
+            : nil
         self.preferredAppLanguageCodes = preferredAppLanguageCodes
     }
 
@@ -189,13 +340,59 @@ final class MusicBrainzService {
         let releaseMBID = selectedRelease?.id
         let releaseGroupMBID = selectedRelease?.releaseGroup?.id
         let resolvedReleaseName = release?.nilIfBlank ?? selectedRelease?.title
-        let artworkResolution = await fetchBestCoverArt(
+        let coverArtResolution = await fetchBestCoverArt(
             releaseMBID: releaseMBID,
             releaseGroupMBID: releaseGroupMBID,
             releaseType: selectedRelease?.releaseGroup?.primaryType
         )
         let artistSupplement = await fetchArtistSupplement(from: artistIdentity)
         let releaseGroupWithRelations = await fetchReleaseGroupWithRelations(id: releaseGroupMBID)
+        var primaryArtworkCandidates: [ArtworkResolutionCandidate] = []
+        if let coverArtResolution {
+            primaryArtworkCandidates.append(ArtworkResolutionCandidate(
+                url: coverArtResolution.url,
+                level: coverArtResolution.level,
+                provider: coverArtResolution.provider,
+                sourceURL: coverArtResolution.sourceURL
+            ))
+        }
+        if let artistImageURL = artistSupplement.imageURL {
+            primaryArtworkCandidates.append(ArtworkResolutionCandidate(url: artistImageURL, level: .artist, provider: .wikipediaWikidata))
+        }
+        let providerReferences = artworkProviderReferences(
+            artistRelations: artistIdentity?.relations ?? [],
+            recordingRelations: resolvedRecording?.relations ?? [],
+            releaseRelations: selectedRelease?.relations ?? [],
+            releaseGroupRelations: releaseGroupWithRelations?.relations ?? selectedRelease?.releaseGroup?.relations ?? [],
+            releaseType: selectedRelease?.releaseGroup?.primaryType
+        )
+        let resolvedTrackArtwork: ArtworkResolutionResult?
+        let resolvedArtistArtwork: ArtworkResolutionResult?
+        if let artworkResolver {
+            let immutablePrimaryArtworkCandidates = primaryArtworkCandidates
+            // Track/release artwork and artist portraits are independent
+            // products. Resolve both against the same actor so requests and
+            // cache entries are shared without allowing an album cover to
+            // short-circuit the artist portrait lookup.
+            async let trackArtwork = artworkResolver.resolve(
+                primaryCandidates: immutablePrimaryArtworkCandidates,
+                references: providerReferences,
+                target: .track
+            )
+            async let artistArtwork = artworkResolver.resolve(
+                primaryCandidates: immutablePrimaryArtworkCandidates,
+                references: providerReferences,
+                target: .artist
+            )
+            (resolvedTrackArtwork, resolvedArtistArtwork) = await (trackArtwork, artistArtwork)
+        } else {
+            resolvedTrackArtwork = nil
+            resolvedArtistArtwork = nil
+        }
+        let artworkResolution = resolvedTrackArtwork?.selected
+            ?? ArtworkResolutionPolicy.resolve(candidates: primaryArtworkCandidates, target: .track)
+        let artistArtworkResolution = resolvedArtistArtwork?.selected
+            ?? ArtworkResolutionPolicy.resolve(candidates: primaryArtworkCandidates, target: .artist)
         var resolvedTags: [MusicBrainzTag] = []
         if let recordingTags = resolvedRecording?.tags {
             resolvedTags.append(contentsOf: recordingTags)
@@ -219,11 +416,9 @@ final class MusicBrainzService {
             artistMBID: artistMBID,
             releaseMBID: releaseMBID,
             imageURL: artworkResolution?.url,
-            artistImageURL: artistSupplement.imageURL,
+            artistImageURL: artistArtworkResolution?.url,
             artworkResolution: artworkResolution,
-            artistArtworkResolution: artistSupplement.imageURL.map {
-                ArtworkResolution(url: $0, level: .artist, provider: .wikipediaWikidata)
-            },
+            artistArtworkResolution: artistArtworkResolution,
             artistSummary: artistSupplement.summary,
             artistSummaryURL: artistSupplement.summaryURL,
             artistSummaryLanguageCode: artistSupplement.summaryLanguageCode,
@@ -322,31 +517,20 @@ final class MusicBrainzService {
                 return ArtworkResolution(
                     url: image,
                     level: artworkLevel(for: releaseType),
-                    provider: .coverArtArchive
+                    provider: .coverArtArchive,
+                    sourceURL: "https://coverartarchive.org/release/\(releaseMBID)"
                 )
             }
-            // The CAA index can fail independently of its stable front-image
-            // endpoint. Keep the release MBID correlation and let the image
-            // loader validate the direct resource.
-            return ArtworkResolution(
-                url: "https://coverartarchive.org/release/\(releaseMBID)/front-500",
-                level: artworkLevel(for: releaseType),
-                provider: .coverArtArchive
-            )
         }
         if let releaseGroupMBID {
             if let image = try? await fetchReleaseGroupCoverArt(releaseGroupMBID: releaseGroupMBID) {
                 return ArtworkResolution(
                     url: image,
                     level: artworkLevel(for: releaseType),
-                    provider: .coverArtArchive
+                    provider: .coverArtArchive,
+                    sourceURL: "https://coverartarchive.org/release-group/\(releaseGroupMBID)"
                 )
             }
-            return ArtworkResolution(
-                url: "https://coverartarchive.org/release-group/\(releaseGroupMBID)/front-500",
-                level: artworkLevel(for: releaseType),
-                provider: .coverArtArchive
-            )
         }
         return nil
     }
@@ -356,9 +540,9 @@ final class MusicBrainzService {
     }
 
     private func bestCoverArtURL(from response: CoverArtArchiveResponse) -> String? {
-        let images = response.images.sorted { lhs, rhs in
-            (lhs.front ?? false) && !(rhs.front ?? false)
-        }
+        // A valid CAA response can contain only back covers, booklets, media, or
+        // liner art. Those assets are not substitutes for the release cover.
+        let images = response.images.filter { $0.front == true }
         for image in images {
             for key in ["1200", "large", "500", "250", "small"] {
                 if let candidate = image.thumbnails?[key]?.nilIfBlank {
@@ -520,7 +704,9 @@ final class MusicBrainzService {
             recordingMBID: recording.id,
             artistMBID: artist?.id.nilIfBlank,
             releaseMBID: release?.id.nilIfBlank,
-            imageURL: release?.id.nilIfBlank.map { "https://coverartarchive.org/release/\($0)/front-250" }
+            // A release MBID does not prove that Cover Art Archive has an
+            // image. Detail resolution validates CAA's JSON response first.
+            imageURL: nil
         )
     }
 
@@ -553,7 +739,7 @@ final class MusicBrainzService {
             recordingMBID: nil,
             artistMBID: artist?.id.nilIfBlank,
             releaseMBID: release.id,
-            imageURL: "https://coverartarchive.org/release/\(release.id)/front-250"
+            imageURL: nil
         )
     }
 
@@ -795,13 +981,63 @@ final class MusicBrainzService {
         fallback: MusicBrainzRelease?,
         requestedRelease: String?
     ) -> MusicBrainzRelease? {
-        let candidates = (releases ?? []) + [fallback].compactMap { $0 }
+        let recordingReleases = releases ?? []
+        let candidates = recordingReleases + [fallback].compactMap { $0 }
         guard !candidates.isEmpty else { return nil }
+        let selected: MusicBrainzRelease?
         if let requested = requestedRelease?.nilIfBlank,
            let exact = candidates.first(where: { normalized($0.title) == normalized(requested) }) {
-            return exact
+            selected = exact
+        } else {
+            // A same-title bootleg is not a safe identity fallback. It can carry
+            // unrelated fan-made artwork (the failure seen with Wildlife Analysis).
+            // Keep an explicitly requested exact bootleg, but never infer one.
+            let correlatable = candidates.filter { normalized($0.status) != "bootleg" }
+            selected = correlatable.first(where: { $0.coverArtArchive?.front == true })
+                ?? correlatable.first
         }
-        return candidates.first(where: { $0.coverArtArchive?.front == true }) ?? candidates.first
+        guard let selected else { return nil }
+
+        // Recording results carry the strongest release identity, while an
+        // exact release search often carries URL relationships omitted from the
+        // nested recording payload. Merge only an identical MBID: a same-title
+        // edition is never considered equivalent.
+        guard let fallback, fallback.id == selected.id else { return selected }
+        return mergeReleaseIdentity(selected, enrichment: fallback)
+    }
+
+    private func mergeReleaseIdentity(
+        _ identity: MusicBrainzRelease,
+        enrichment: MusicBrainzRelease
+    ) -> MusicBrainzRelease {
+        MusicBrainzRelease(
+            id: identity.id,
+            title: identity.title,
+            status: identity.status ?? enrichment.status,
+            artistCredit: identity.artistCredit ?? enrichment.artistCredit,
+            tags: nonEmpty(enrichment.tags) ?? identity.tags,
+            releaseGroup: mergeReleaseGroup(identity.releaseGroup, enrichment.releaseGroup),
+            coverArtArchive: identity.coverArtArchive ?? enrichment.coverArtArchive,
+            relations: nonEmpty(enrichment.relations) ?? identity.relations
+        )
+    }
+
+    private func mergeReleaseGroup(
+        _ identity: MusicBrainzReleaseGroup?,
+        _ enrichment: MusicBrainzReleaseGroup?
+    ) -> MusicBrainzReleaseGroup? {
+        guard let identity else { return enrichment }
+        guard let enrichment, enrichment.id == identity.id else { return identity }
+        return MusicBrainzReleaseGroup(
+            id: identity.id,
+            primaryType: identity.primaryType ?? enrichment.primaryType,
+            relations: nonEmpty(enrichment.relations) ?? identity.relations
+        )
+    }
+
+    private func nonEmpty<Element>(_ values: [Element]?) -> [Element]? {
+        guard let values, !values.isEmpty else { return nil }
+        return values
     }
 
     private func bestRecording(
@@ -862,6 +1098,37 @@ final class MusicBrainzService {
             .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .lowercased() ?? ""
+    }
+
+    private func artworkProviderReferences(
+        artistRelations: [MusicBrainzRelation],
+        recordingRelations: [MusicBrainzRelation],
+        releaseRelations: [MusicBrainzRelation],
+        releaseGroupRelations: [MusicBrainzRelation],
+        releaseType: String?
+    ) -> [ArtworkProviderReference] {
+        var references: [ArtworkProviderReference] = []
+        var seen = Set<String>()
+
+        func append(_ relations: [MusicBrainzRelation], level: ArtworkLevel) {
+            for relation in relations {
+                guard let resource = relation.url?.resource,
+                      let url = URL(string: resource),
+                      let reference = ArtworkProviderReference.correlated(url: url, level: level) else {
+                    continue
+                }
+                let key = "\(reference.provider.rawValue)|\(level.rawValue)|\(url.absoluteString)"
+                guard seen.insert(key).inserted else { continue }
+                references.append(reference)
+            }
+        }
+
+        append(recordingRelations, level: .track)
+        let releaseLevel = artworkLevel(for: releaseType)
+        append(releaseRelations, level: releaseLevel)
+        append(releaseGroupRelations, level: releaseLevel)
+        append(artistRelations, level: .artist)
+        return references
     }
 
     private func links(
@@ -1076,7 +1343,7 @@ private struct CoverArtArchiveImage: Decodable {
     let thumbnails: [String: String]?
 }
 
-private struct MusicBrainzRelation: Decodable {
+struct MusicBrainzRelation: Decodable {
     let type: String?
     let url: MusicBrainzRelationURL?
     let artist: MusicBrainzRelatedArtist?
@@ -1113,12 +1380,12 @@ private struct MusicBrainzRelation: Decodable {
     }
 }
 
-private struct MusicBrainzRelatedArtist: Decodable {
+struct MusicBrainzRelatedArtist: Decodable {
     let id: String
     let name: String
 }
 
-private struct MusicBrainzRelationURL: Decodable {
+struct MusicBrainzRelationURL: Decodable {
     let resource: String
 }
 

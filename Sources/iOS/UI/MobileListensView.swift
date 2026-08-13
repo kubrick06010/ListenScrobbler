@@ -19,15 +19,19 @@ struct MobileListensView: View {
                     NavigationLink {
                         MobileMusicDetailView(seed: listenSeed(listen))
                     } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(listen.trackName)
-                                .font(.headline)
-                            Text(listen.artistName)
-                                .foregroundStyle(.secondary)
-                            if let releaseName = listen.releaseName, !releaseName.isEmpty {
-                                Text(releaseName)
-                                    .font(.caption)
-                                    .foregroundStyle(.tertiary)
+                        HStack(alignment: .center, spacing: 12) {
+                            MobileArtworkThumbnail(urlString: listen.imageURL, size: 52)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(listen.trackName)
+                                    .font(.headline)
+                                Text(listen.artistName)
+                                    .foregroundStyle(.secondary)
+                                if let releaseName = listen.releaseName, !releaseName.isEmpty {
+                                    Text(releaseName)
+                                        .font(.caption)
+                                        .foregroundStyle(.tertiary)
+                                }
                             }
                         }
                         .padding(.vertical, 4)
@@ -143,7 +147,41 @@ struct MobileListensView: View {
             recordingMSID: listen.recordingMSID,
             artistMBID: listen.artistMBID,
             releaseMBID: listen.releaseMBID,
-            imageURL: listen.imageURL
+            artworkResolution: listen.artworkResolution
         )
+    }
+}
+
+private struct MobileArtworkThumbnail: View {
+    let urlString: String?
+    let size: CGFloat
+
+    var body: some View {
+        Group {
+            if let urlString, let url = URL(string: urlString) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case let .success(image):
+                        image.resizable().scaledToFill()
+                    default:
+                        placeholder
+                    }
+                }
+            } else {
+                placeholder
+            }
+        }
+        .frame(width: size, height: size)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .accessibilityHidden(true)
+    }
+
+    private var placeholder: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(.thinMaterial)
+            Image(systemName: "music.note")
+                .foregroundStyle(.secondary)
+        }
     }
 }

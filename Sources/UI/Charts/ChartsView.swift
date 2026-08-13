@@ -31,8 +31,12 @@ struct ChartsView: View {
                         LazyVGrid(columns: metrics.cardColumns, alignment: .leading, spacing: 16) {
                             ForEach(scrobbleService.weeklyTopArtists.prefix(8)) { artist in
                                 VStack(alignment: .leading, spacing: 6) {
-                                    cover(
-                                        artist.imageURL,
+                                    resolvedCover(
+                                        artist: artist.name,
+                                        track: nil,
+                                        album: nil,
+                                        target: .artist,
+                                        sourceResolution: artist.artworkResolution,
                                         size: metrics.coverSize,
                                         placeholder: artist.name
                                     )
@@ -58,7 +62,14 @@ struct ChartsView: View {
                     LazyVGrid(columns: metrics.cardColumns, alignment: .leading, spacing: 16) {
                         ForEach(topAlbums.prefix(8), id: \.id) { album in
                             VStack(alignment: .leading, spacing: 6) {
-                                cover(album.imageURL, size: metrics.coverSize)
+                                resolvedCover(
+                                    artist: album.artist,
+                                    track: nil,
+                                    album: album.title,
+                                    target: .album,
+                                    sourceResolution: album.artworkResolution,
+                                    size: metrics.coverSize
+                                )
                                 Text(album.title)
                                     .font(.custom("Avenir Next Medium", size: metrics.cardTitleFont))
                                     .lineLimit(2)
@@ -73,7 +84,7 @@ struct ChartsView: View {
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                onOpenAlbum(album.title, album.artist, album.imageURL)
+                                onOpenAlbum(album.title, album.artist, album.artworkResolution?.automaticArtworkResolution?.url)
                             }
                         }
                     }
@@ -84,7 +95,14 @@ struct ChartsView: View {
                     VStack(spacing: 10) {
                         ForEach(topTracks.prefix(10), id: \.id) { track in
                             HStack(alignment: .top, spacing: 10) {
-                                cover(track.imageURL, size: metrics.trackCoverSize)
+                                resolvedCover(
+                                    artist: track.artist,
+                                    track: track.title,
+                                    album: nil,
+                                    target: .track,
+                                    sourceResolution: track.artworkResolution,
+                                    size: metrics.trackCoverSize
+                                )
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(track.title)
                                         .font(.custom("Avenir Next Medium", size: metrics.trackTitleFont))
@@ -113,10 +131,17 @@ struct ChartsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .task {
+        // Validation can finish after this view appears. Tie the task to the
+        // connection identity so a first attempt made while the username is
+        // still unknown cannot permanently leave the charts empty.
+        .task(id: listenBrainzLoadIdentity) {
             guard scrobbleService.listenBrainzEnabled else { return }
             await refreshListenBrainzArchive()
         }
+    }
+
+    private var listenBrainzLoadIdentity: String {
+        "\(scrobbleService.listenBrainzEnabled)-\(scrobbleService.listenBrainzUsername ?? "")"
     }
 
     @ViewBuilder
@@ -193,7 +218,15 @@ struct ChartsView: View {
                     LazyVGrid(columns: metrics.cardColumns, alignment: .leading, spacing: 16) {
                         ForEach(snapshot.topReleases.prefix(8)) { release in
                             VStack(alignment: .leading, spacing: 6) {
-                                cover(nil, size: metrics.coverSize, placeholder: release.name)
+                                resolvedCover(
+                                    artist: release.artistName,
+                                    track: nil,
+                                    album: release.name,
+                                    target: .album,
+                                    sourceResolution: nil,
+                                    size: metrics.coverSize,
+                                    placeholder: release.name
+                                )
                                 Text(release.name)
                                     .font(.custom("Avenir Next Medium", size: metrics.cardTitleFont))
                                     .lineLimit(2)
@@ -221,7 +254,7 @@ struct ChartsView: View {
                                 title: listen.trackName,
                                 artist: listen.artistName,
                                 album: listen.releaseName,
-                                imageURL: listen.imageURL,
+                                artworkResolution: listen.artworkResolution,
                                 url: nil,
                                 loved: false,
                                 playedAt: listen.listenedAt,
@@ -238,7 +271,7 @@ struct ChartsView: View {
                                                 track: listen.trackName,
                                                 artist: listen.artistName,
                                                 album: listen.releaseName,
-                                                imageURL: listen.imageURL,
+                                                artworkResolution: listen.artworkResolution,
                                                 url: listen.recordingMBID.map { "https://listenbrainz.org/player/?recording_mbids=\($0)" },
                                                 loved: false,
                                                 playedAt: listen.listenedAt,
@@ -570,6 +603,30 @@ struct ChartsView: View {
         }
     }
 
+    private func resolvedCover(
+        artist: String,
+        track: String?,
+        album: String?,
+        target: ArtworkLevel,
+        sourceResolution: ArtworkResolution?,
+        size: CGFloat,
+        placeholder: String? = nil
+    ) -> some View {
+        ResolvedArtworkImage(
+            artist: artist,
+            track: track,
+            album: album,
+            target: target,
+            sourceResolution: sourceResolution
+        ) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            coverPlaceholder(size: size, text: placeholder)
+        }
+        .frame(width: size, height: size)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
     private func coverPlaceholder(size: CGFloat, text: String?) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -604,19 +661,19 @@ struct ChartsView: View {
 
     private var topTracks: [ChartEntry] {
         groupedEntries { item in
-            (title: item.track, artist: item.artist, imageURL: item.imageURL)
+            (title: item.track, artist: item.artist, artworkResolution: item.artworkResolution)
         }
     }
 
     private var topAlbums: [ChartEntry] {
         groupedEntries { item in
             let title = item.album ?? AppLocalization.string("Unknown Album")
-            return (title: title, artist: item.artist, imageURL: item.imageURL)
+            return (title: title, artist: item.artist, artworkResolution: item.artworkResolution)
         }
     }
 
     private func groupedEntries(
-        _ key: (CompatibilityRecentScrobble) -> (title: String, artist: String, imageURL: String?)
+        _ key: (CompatibilityRecentScrobble) -> (title: String, artist: String, artworkResolution: ArtworkResolution?)
     ) -> [ChartEntry] {
         var map: [String: ChartEntry] = [:]
         for item in scrobbleService.latestScrobbles {
@@ -624,14 +681,16 @@ struct ChartsView: View {
             let id = "\(parts.artist)|\(parts.title)"
             if var existing = map[id] {
                 existing.count += 1
-                if existing.imageURL == nil { existing.imageURL = parts.imageURL }
+                if existing.artworkResolution?.automaticArtworkResolution == nil {
+                    existing.artworkResolution = parts.artworkResolution?.automaticArtworkResolution
+                }
                 map[id] = existing
             } else {
                 map[id] = ChartEntry(
                     id: id,
                     title: parts.title,
                     artist: parts.artist,
-                    imageURL: parts.imageURL,
+                    artworkResolution: parts.artworkResolution?.automaticArtworkResolution,
                     count: 1
                 )
             }

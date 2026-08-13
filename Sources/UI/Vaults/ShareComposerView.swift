@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 
 struct ShareComposerView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var scrobbleService: ScrobbleService
     @ObservedObject var store: SharedMusicVaultStore
     let draft: ShareDraft?
     let onSave: (SharedMusicEntry) -> Void
@@ -76,6 +77,7 @@ struct ShareComposerView: View {
                         isPublic: makePublic,
                         sourceURL: draft?.sourceURL,
                         imageURL: draft?.imageURL,
+                        artworkResolution: resolvedArtworkResolution,
                         artistMBID: draft?.artistMBID,
                         recordingMBID: draft?.recordingMBID,
                         releaseMBID: draft?.releaseMBID
@@ -104,5 +106,22 @@ struct ShareComposerView: View {
         if direction == .sent, recipients.isBlank { return false }
         if direction == .received, sender.isBlank { return false }
         return true
+    }
+
+    private var resolvedArtworkResolution: ArtworkResolution? {
+        guard let draft else { return nil }
+        if currentTrackMatches(artist: draft.artist, track: draft.track),
+           let resolution = scrobbleService.currentTrackArtworkResolution?.automaticArtworkResolution {
+            return resolution
+        }
+        return draft.artworkResolution?.automaticArtworkResolution
+    }
+
+    private func currentTrackMatches(artist: String, track: String?) -> Bool {
+        let currentArtist = scrobbleService.currentTrackDetails?.artist ?? scrobbleService.currentTrack?.artist
+        let currentTrack = scrobbleService.currentTrackDetails?.name ?? scrobbleService.currentTrack?.title
+        guard currentArtist?.caseInsensitiveCompare(artist) == .orderedSame else { return false }
+        guard let track else { return true }
+        return currentTrack?.caseInsensitiveCompare(track) == .orderedSame
     }
 }

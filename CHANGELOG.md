@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+## 1.1.5 - 2026-08-13
+
+### Added
+
+- Centralized artwork resolution with typed provider provenance, source URLs,
+  entity-level fallback rules, and credential-free automatic providers.
+- Artwork propagation across macOS and iOS listening, artist, chart, queue,
+  profile, social, sharing, and vault surfaces.
+
+### Fixed
+
+- ListenBrainz charts now retry automatically when validation finishes after
+  the Charts view has already appeared.
+- Artwork fallback no longer crosses track, release, EP, and artist entity
+  boundaries or displays credential-backed and legacy provider URLs
+  automatically.
+
+### Changed
+
+- Advanced macOS to version `1.1.5` build `11`.
+
 ## 1.1.4 - 2026-08-12
 
 ### Added

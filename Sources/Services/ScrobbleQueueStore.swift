@@ -45,12 +45,49 @@ struct ScrobbleSubmissionJob: Identifiable, Codable, Hashable {
     }
 }
 
+extension ScrobbleSubmissionJob {
+    /// Strips credentialed artwork that may have been written by an older
+    /// build while retaining the queue job itself.
+    var persistableJob: ScrobbleSubmissionJob {
+        let sanitizedTrack = track.replacingArtworkResolution(track.persistableArtworkResolution)
+        guard sanitizedTrack != track else { return self }
+        return ScrobbleSubmissionJob(
+            id: id,
+            backend: backend,
+            track: sanitizedTrack,
+            createdAt: createdAt,
+            attempts: attempts,
+            lastError: lastError
+        )
+    }
+}
+
 protocol ScrobbleQueueStoring {
     var queueFileURL: URL { get }
     func load() -> [Track]
     func save(_ tracks: [Track])
     func loadJobs() -> [ScrobbleSubmissionJob]
     func saveJobs(_ jobs: [ScrobbleSubmissionJob])
+}
+
+extension ScrobbleQueueStoring {
+    /// Updates only the typed artwork value for an existing job. This default
+    /// implementation keeps lightweight test stores source-compatible while
+    /// allowing queue surfaces to persist a newly resolved result.
+    func persistArtworkResolution(_ resolution: ArtworkResolution, for jobID: UUID) {
+        let updatedJobs = loadJobs().map { job -> ScrobbleSubmissionJob in
+            guard job.id == jobID else { return job }
+            return ScrobbleSubmissionJob(
+                id: job.id,
+                backend: job.backend,
+                track: job.track.replacingArtworkResolution(resolution.automaticArtworkResolution),
+                createdAt: job.createdAt,
+                attempts: job.attempts,
+                lastError: job.lastError
+            )
+        }
+        saveJobs(updatedJobs)
+    }
 }
 
 extension ScrobbleQueueStoring {
@@ -63,7 +100,7 @@ extension ScrobbleQueueStoring {
         let tracks = jobs.compactMap { job -> Track? in
             guard !seen.contains(job.track.fingerprint) else { return nil }
             seen.insert(job.track.fingerprint)
-            return job.track
+            return job.persistableJob.track
         }
         save(tracks)
     }
@@ -96,25 +133,27 @@ final class ScrobbleQueueStore: ScrobbleQueueStoring {
 
     func load() -> [Track] {
         guard let data = try? Data(contentsOf: queueFileURL) else { return [] }
-        return (try? JSONDecoder().decode([Track].self, from: data)) ?? []
+        return ((try? JSONDecoder().decode([Track].self, from: data)) ?? [])
+            .map { $0.replacingArtworkResolution($0.persistableArtworkResolution) }
     }
 
     func save(_ tracks: [Track]) {
-        guard let data = try? JSONEncoder().encode(tracks) else { return }
+        let sanitizedTracks = tracks.map { $0.replacingArtworkResolution($0.persistableArtworkResolution) }
+        guard let data = try? JSONEncoder().encode(sanitizedTracks) else { return }
         try? data.write(to: queueFileURL, options: .atomic)
     }
 
     func loadJobs() -> [ScrobbleSubmissionJob] {
         guard let data = try? Data(contentsOf: queueFileURL) else { return [] }
         if let jobs = try? JSONDecoder().decode([ScrobbleSubmissionJob].self, from: data) {
-            return jobs
+            return jobs.map(\.persistableJob)
         }
         let legacyTracks = (try? JSONDecoder().decode([Track].self, from: data)) ?? []
-        return legacyTracks.map { ScrobbleSubmissionJob(backend: .compatibility, track: $0) }
+        return legacyTracks.map { ScrobbleSubmissionJob(backend: .compatibility, track: $0.replacingArtworkResolution($0.persistableArtworkResolution)) }
     }
 
     func saveJobs(_ jobs: [ScrobbleSubmissionJob]) {
-        guard let data = try? JSONEncoder().encode(jobs) else { return }
+        guard let data = try? JSONEncoder().encode(jobs.map(\.persistableJob)) else { return }
         try? data.write(to: queueFileURL, options: .atomic)
     }
 

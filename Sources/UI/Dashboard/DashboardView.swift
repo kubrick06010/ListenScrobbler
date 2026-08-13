@@ -356,7 +356,7 @@ struct DashboardView: View {
                             id: "\(index)-\(artist.name)",
                             name: artist.name,
                             value: Double(max(1, artists.count - index)),
-                            imageURL: artist.imageURL
+                            artworkResolution: artist.artworkResolution?.automaticArtworkResolution
                         )
                     },
                     compact: metrics.isNarrow
@@ -382,7 +382,7 @@ struct DashboardView: View {
                             id: "\(index)-\(artist.id)",
                             name: artist.name,
                             value: Double(max(1, artist.totalListenCount)),
-                            imageURL: artist.imageURL
+                            artworkResolution: artist.artworkResolution?.automaticArtworkResolution
                         )
                     },
                     compact: metrics.isNarrow
@@ -392,7 +392,12 @@ struct DashboardView: View {
                 LazyVGrid(columns: metrics.similarArtistColumns, alignment: .leading, spacing: 14) {
                     ForEach(artists) { item in
                         VStack(alignment: .leading, spacing: 4) {
-                            dashboardArt(item.imageURL, size: metrics.isNarrow ? 64 : 72)
+                            resolvedDashboardArt(
+                                artist: item.name,
+                                target: .artist,
+                                sourceResolution: item.artworkResolution,
+                                size: metrics.isNarrow ? 64 : 72
+                            )
                             Text(item.name)
                                 .font(.custom("Avenir Next Medium", size: metrics.isNarrow ? 13 : 14))
                                 .lineLimit(2)
@@ -413,7 +418,14 @@ struct DashboardView: View {
         VStack(spacing: 8) {
             ForEach(recordings) { recording in
                 HStack(spacing: 10) {
-                    dashboardArt(recording.imageURL, size: 42)
+                    resolvedDashboardArt(
+                        artist: recording.artistName,
+                        track: recording.title,
+                        album: recording.releaseName,
+                        target: .track,
+                        sourceResolution: recording.artworkResolution,
+                        size: 42
+                    )
                     VStack(alignment: .leading, spacing: 2) {
                         Text(recording.title)
                             .font(.custom("Avenir Next Medium", size: 13))
@@ -756,7 +768,7 @@ struct DashboardView: View {
             track: scrobbleService.currentTrackDetails?.name ?? track.title,
             album: scrobbleService.currentTrackDetails?.album ?? track.album,
             sourceURL: scrobbleService.currentTrackDetails?.url,
-            imageURL: dashboardTrackImageURL,
+            artworkResolution: dashboardTrackArtworkResolution,
             artistMBID: scrobbleService.currentOpenEntityDetails?.artistMBID,
             recordingMBID: scrobbleService.currentOpenEntityDetails?.recordingMBID,
             releaseMBID: scrobbleService.currentOpenEntityDetails?.releaseMBID
@@ -769,7 +781,7 @@ struct DashboardView: View {
             track: scrobbleService.currentTrackDetails?.name ?? track.title,
             album: scrobbleService.currentTrackDetails?.album ?? track.album,
             sourceURL: scrobbleService.currentTrackDetails?.url,
-            imageURL: dashboardTrackImageURL,
+            artworkResolution: dashboardTrackArtworkResolution,
             artistMBID: scrobbleService.currentOpenEntityDetails?.artistMBID,
             recordingMBID: scrobbleService.currentOpenEntityDetails?.recordingMBID,
             releaseMBID: scrobbleService.currentOpenEntityDetails?.releaseMBID
@@ -778,9 +790,8 @@ struct DashboardView: View {
 
     private var dashboardHeroImageURL: String? {
         // Prefer artist hero art for background bokeh; fallback to resolved track artwork.
-        scrobbleService.currentArtistDetails?.imageURL
-            ?? dashboardTrackImageURL
-            ?? scrobbleService.currentOpenEntityDetails?.imageURL
+        scrobbleService.currentOpenEntityDetails?.effectiveArtistArtworkResolution?.url
+            ?? dashboardTrackArtworkResolution?.url
     }
 
     private var dashboardMoodKey: String {
@@ -794,34 +805,12 @@ struct DashboardView: View {
     }
 
     private var dashboardTrackImageURL: String? {
-        // Artwork resolution chain:
-        // 1) track.getInfo image
-        // 2) player-supplied artwork
-        // 3) MusicBrainz/Cover Art Archive release artwork
-        // 4) matching recent scrobble image (same title + artist)
-        // 5) artist image as final fallback.
-        if let explicit = scrobbleService.currentTrackDetails?.imageURL, !explicit.isEmpty {
-            return explicit
-        }
-        if let localArtwork = scrobbleService.currentTrack?.artworkURL, !localArtwork.isEmpty {
-            return localArtwork
-        }
-        if let openArtwork = scrobbleService.currentOpenEntityDetails?.imageURL, !openArtwork.isEmpty {
-            return openArtwork
-        }
-        guard let now = scrobbleService.currentTrack else {
-            return scrobbleService.currentArtistDetails?.imageURL
-        }
-        let normalizedTitle = now.title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        let normalizedArtist = now.artist.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        if let matched = scrobbleService.latestScrobbles.first(where: {
-            $0.track.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedTitle &&
-            $0.artist.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == normalizedArtist &&
-            ($0.imageURL?.isEmpty == false)
-        })?.imageURL {
-            return matched
-        }
-        return scrobbleService.currentArtistDetails?.imageURL
+        dashboardTrackArtworkResolution?.url
+    }
+
+    private var dashboardTrackArtworkResolution: ArtworkResolution? {
+        scrobbleService.currentTrackArtworkResolution?.automaticArtworkResolution
+            ?? scrobbleService.currentOpenEntityDetails?.effectiveArtworkResolution
     }
 
     private var dashboardTags: [String] {
@@ -890,13 +879,42 @@ struct DashboardView: View {
 
     private func similarArtistLink(_ similar: CompatibilitySimilarArtist, compact: Bool) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            dashboardArt(similar.imageURL, size: compact ? 64 : 72)
+            resolvedDashboardArt(
+                artist: similar.name,
+                target: .artist,
+                sourceResolution: similar.artworkResolution,
+                size: compact ? 64 : 72
+            )
             Text(similar.name)
                 .font(.custom("Avenir Next Medium", size: compact ? 13 : 14))
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(width: compact ? 84 : 90, alignment: .leading)
         }
+    }
+
+    private func resolvedDashboardArt(
+        artist: String,
+        track: String? = nil,
+        album: String? = nil,
+        target: ArtworkLevel,
+        sourceResolution: ArtworkResolution?,
+        size: CGFloat
+    ) -> some View {
+        ResolvedArtworkImage(
+            artist: artist,
+            track: track,
+            album: album,
+            target: target,
+            sourceResolution: sourceResolution
+        ) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(placeholderFill)
+        }
+        .frame(width: size, height: size)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private var placeholderFill: Color {

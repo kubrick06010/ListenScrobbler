@@ -481,7 +481,19 @@ struct ListenBrainzSocialView: View {
 
     private func socialListenRow(_ activity: ListenBrainzSocialListen) -> some View {
         HStack(alignment: .top, spacing: 10) {
-            socialListenArtwork(activity.listen.imageURL)
+            ResolvedArtworkImage(
+                artist: activity.listen.artistName,
+                track: activity.listen.trackName,
+                album: activity.listen.releaseName,
+                target: .track,
+                sourceResolution: activity.listen.artworkResolution
+            ) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                socialListenArtworkPlaceholder
+            }
+            .frame(width: 34, height: 34)
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
                 Text(activity.listen.trackName)
                     .font(.custom("Avenir Next Demi Bold", size: 13))
@@ -515,21 +527,6 @@ struct ListenBrainzSocialView: View {
                     score: 0
                 )
             )
-        }
-    }
-
-    @ViewBuilder
-    private func socialListenArtwork(_ urlString: String?) -> some View {
-        if let urlString, let url = URL(string: urlString) {
-            CachedAsyncImage(url: url) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                socialListenArtworkPlaceholder
-            }
-            .frame(width: 34, height: 34)
-            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        } else {
-            socialListenArtworkPlaceholder
         }
     }
 

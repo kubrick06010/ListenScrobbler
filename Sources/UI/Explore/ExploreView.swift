@@ -28,7 +28,19 @@ struct ExploreView: View {
                         Text("Track Details")
                             .font(.custom("Avenir Next Medium", size: 14))
                         HStack(alignment: .top, spacing: 12) {
-                            trackArt(track.imageURL)
+                            ResolvedArtworkImage(
+                                artist: track.artist,
+                                track: track.name,
+                                album: track.album,
+                                target: .track,
+                                sourceResolution: track.artworkResolution
+                            ) { image in
+                                image.resizable().scaledToFill()
+                            } placeholder: {
+                                artworkPlaceholder(size: 110)
+                            }
+                            .frame(width: 110, height: 110)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                             VStack(alignment: .leading, spacing: 5) {
                                 detailRow("Track", track.name)
                                 detailRow("Artist", track.artist)
@@ -64,7 +76,17 @@ struct ExploreView: View {
                         Text("Artist Details")
                             .font(.custom("Avenir Next Medium", size: 14))
                         HStack(alignment: .top, spacing: 12) {
-                            trackArt(artist.imageURL)
+                            ResolvedArtworkImage(
+                                artist: artist.name,
+                                target: .artist,
+                                sourceResolution: artist.artworkResolution
+                            ) { image in
+                                image.resizable().scaledToFill()
+                            } placeholder: {
+                                artworkPlaceholder(size: 110)
+                            }
+                            .frame(width: 110, height: 110)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                             VStack(alignment: .leading, spacing: 4) {
                                 detailRow("Artist", artist.name)
                                 detailRow("Listeners", formatCount(artist.listeners))
@@ -88,7 +110,17 @@ struct ExploreView: View {
                             HStack(spacing: 12) {
                                 ForEach(artist.similarArtists.prefix(4)) { similar in
                                     VStack(alignment: .leading, spacing: 3) {
-                                        trackArt(similar.imageURL, size: 54)
+                                        ResolvedArtworkImage(
+                                            artist: similar.name,
+                                            target: .artist,
+                                            sourceResolution: similar.artworkResolution
+                                        ) { image in
+                                            image.resizable().scaledToFill()
+                                        } placeholder: {
+                                            artworkPlaceholder(size: 54)
+                                        }
+                                        .frame(width: 54, height: 54)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                                         Text(similar.name)
                                             .font(.custom("Avenir Next Regular", size: 11))
                                             .lineLimit(1)
@@ -123,20 +155,9 @@ struct ExploreView: View {
         return AppLocalization.integer(value)
     }
 
-    @ViewBuilder
-    private func trackArt(_ urlString: String?, size: CGFloat = 110) -> some View {
-        if let urlString, let url = URL(string: urlString) {
-            CachedAsyncImage(url: url) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                Color.white.opacity(0.06)
-            }
+    private func artworkPlaceholder(size: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .fill(Color.white.opacity(0.06))
             .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        } else {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.white.opacity(0.06))
-                .frame(width: size, height: size)
-        }
     }
 }

@@ -37,7 +37,13 @@ struct Track: Identifiable, Hashable, Codable {
     let startedAt: Date
     let sourceApp: String?
     let sourceMetadata: TrackSourceMetadata?
-    let artworkURL: String?
+    let artworkResolution: ArtworkResolution?
+
+    /// Compatibility accessor for older call sites. New consumers should use
+    /// `artworkResolution` so the URL cannot lose its level or provenance.
+    var artworkURL: String? {
+        artworkResolution?.automaticArtworkResolution?.url
+    }
 
     init(
         id: UUID = UUID(),
@@ -48,7 +54,8 @@ struct Track: Identifiable, Hashable, Codable {
         startedAt: Date,
         sourceApp: String? = nil,
         sourceMetadata: TrackSourceMetadata? = nil,
-        artworkURL: String? = nil
+        artworkURL: String? = nil,
+        artworkResolution: ArtworkResolution? = nil
     ) {
         self.id = id
         self.title = title
@@ -58,7 +65,8 @@ struct Track: Identifiable, Hashable, Codable {
         self.startedAt = startedAt
         self.sourceApp = sourceApp
         self.sourceMetadata = sourceMetadata
-        self.artworkURL = artworkURL
+        self.artworkResolution = artworkResolution
+            ?? .legacy(url: artworkURL, level: .track, provider: .player)
     }
 
     var fingerprint: String {
@@ -73,4 +81,44 @@ struct Track: Identifiable, Hashable, Codable {
         startedAt: .now,
         sourceApp: "Preview"
     )
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, artist, album, duration, startedAt, sourceApp, sourceMetadata
+        case artworkURL
+        case artworkResolution
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        artist = try container.decode(String.self, forKey: .artist)
+        album = try container.decodeIfPresent(String.self, forKey: .album)
+        duration = try container.decode(TimeInterval.self, forKey: .duration)
+        startedAt = try container.decode(Date.self, forKey: .startedAt)
+        sourceApp = try container.decodeIfPresent(String.self, forKey: .sourceApp)
+        sourceMetadata = try container.decodeIfPresent(TrackSourceMetadata.self, forKey: .sourceMetadata)
+        artworkResolution = try container.decodeIfPresent(ArtworkResolution.self, forKey: .artworkResolution)
+            ?? .legacy(
+                url: try container.decodeIfPresent(String.self, forKey: .artworkURL),
+                level: .track,
+                provider: .player
+            )
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encode(artist, forKey: .artist)
+        try container.encodeIfPresent(album, forKey: .album)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(startedAt, forKey: .startedAt)
+        try container.encodeIfPresent(sourceApp, forKey: .sourceApp)
+        try container.encodeIfPresent(sourceMetadata, forKey: .sourceMetadata)
+        try container.encodeIfPresent(artworkResolution, forKey: .artworkResolution)
+        // Keep the old key for queue files and integrations that have not yet
+        // migrated to the typed result.
+        try container.encodeIfPresent(artworkURL, forKey: .artworkURL)
+    }
 }
