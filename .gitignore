@@ -17,3 +17,6 @@ xcuserdata/
 .build/
 .swiftpm/
 .vscode/
+
+# Codex local state.
+.codex/*
