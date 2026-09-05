@@ -88,6 +88,47 @@ final class ScrobbleQueueStoreTests: XCTestCase {
         XCTAssertFalse(String(decoding: persistedData, as: UTF8.self).contains("private-cover.jpg"))
     }
 
+    func testMigrationSkipsDamagedQueueAndRecoversNextValidQueue() throws {
+        let damagedURL = try makeLegacyQueueURL("OpenScrobbler")
+        let damagedData = Data("[{\"backend\":\"listenBrainz\"".utf8)
+        try damagedData.write(to: damagedURL)
+        let validURL = try makeLegacyQueueURL("LegacyOpenScrobbler")
+        let job = ScrobbleSubmissionJob(backend: .listenBrainz, track: makeTrack(), attempts: 3, lastError: "Offline")
+        try JSONEncoder().encode([job]).write(to: validURL)
+
+        let store = ScrobbleQueueStore(appSupportRoot: tempRoot)
+
+        XCTAssertEqual(store.loadJobs(), [job], "Recover the valid queue including retry state.")
+        XCTAssertEqual(try Data(contentsOf: damagedURL), damagedData, "Keep damaged data available for recovery.")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: validURL.path))
+    }
+
+    func testMigrationLeavesUnrecognizedJSONUntouched() throws {
+        let legacyURL = try makeLegacyQueueURL("OpenScrobbler")
+        let data = Data("{\"unexpected\":[]}".utf8)
+        try data.write(to: legacyURL)
+
+        let store = ScrobbleQueueStore(appSupportRoot: tempRoot)
+
+        XCTAssertTrue(store.loadJobs().isEmpty)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: store.queueFileURL.path))
+        XCTAssertEqual(try Data(contentsOf: legacyURL), data)
+    }
+
+    func testMigrationNeverOverwritesAnExistingQueue() throws {
+        let store = ScrobbleQueueStore(appSupportRoot: tempRoot)
+        let currentJob = ScrobbleSubmissionJob(backend: .listenBrainz, track: makeTrack())
+        store.saveJobs([currentJob])
+        let legacyURL = try makeLegacyQueueURL("OpenScrobbler")
+        let legacyData = try JSONEncoder().encode([makeTrack()])
+        try legacyData.write(to: legacyURL)
+
+        let reopenedStore = ScrobbleQueueStore(appSupportRoot: tempRoot)
+
+        XCTAssertEqual(reopenedStore.loadJobs(), [currentJob])
+        XCTAssertEqual(try Data(contentsOf: legacyURL), legacyData)
+    }
+
     private func makeLegacyQueueURL(_ directoryName: String) throws -> URL {
         let legacyDir = tempRoot.appendingPathComponent(directoryName, isDirectory: true)
         try FileManager.default.createDirectory(at: legacyDir, withIntermediateDirectories: true)

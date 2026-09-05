@@ -162,13 +162,17 @@ final class ScrobbleQueueStore: ScrobbleQueueStoring {
         for legacyQueueFileURL in legacyQueueFileURLs {
             guard fileManager.fileExists(atPath: legacyQueueFileURL.path) else { continue }
             guard let data = try? Data(contentsOf: legacyQueueFileURL), !data.isEmpty else { continue }
+            // A damaged older queue must not hide a valid queue in another
+            // legacy location or be deleted as though migration succeeded.
+            let decoder = JSONDecoder()
+            guard (try? decoder.decode([ScrobbleSubmissionJob].self, from: data)) != nil
+                || (try? decoder.decode([Track].self, from: data)) != nil else { continue }
             do {
                 try data.write(to: queueFileURL, options: .atomic)
                 try? fileManager.removeItem(at: legacyQueueFileURL)
                 return
             } catch {
-                // Leave the legacy queue untouched if migration fails; loadJobs()
-                // can still decode the old format from the migrated copy path later.
+                // Keep the original so a later launch can retry migration.
             }
         }
     }
