@@ -13,16 +13,16 @@ published set contains eleven non-English locales: `de`, `es`, `fr`, `it`,
 - Format arguments, `${...}` shortcut parameters, product names, meaningful
   edge whitespace, stale-entry policy, and known machine-translation terms
   are covered by `Tests/LocalizationTests.swift`.
-- The per-locale audit proposals are kept in `.codex-l10n/*.json`; they are
-  keyed by source string and locale so a reviewer can trace every change.
+- The reviewed mappings are stored directly in the string catalogs so the
+  shipped resources remain the single source of truth.
 - The glossary, voice, context comments, and release rules live in
   `docs/LOCALIZATION.md`.
 
 ## Review sequence
 
 1. **Native linguistic pass** — review every changed mapping in the locale's
-   audit file, then scan the complete catalog for grammar, register, gender,
-   punctuation, terminology, and natural UI phrasing.
+   string catalog, then scan the complete catalog for grammar, register,
+   gender, punctuation, terminology, and natural UI phrasing.
 2. **Context pass** — exercise the key in its screen (navigation, settings,
    history, social, queue, errors, onboarding, widgets, and permissions).
    Confirm that nouns and commands use the intended meaning from the glossary.
