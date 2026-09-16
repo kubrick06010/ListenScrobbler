@@ -1,0 +1,854 @@
+{
+  "  album: %@": {
+    "zh-Hans": "  专辑：%@"
+  },
+  "%@": {
+    "ja": "%@"
+  },
+  "%@ listens": {
+    "zh-Hans": "%@ 条收听记录"
+  },
+  "%lld": {
+    "ja": "%lld"
+  },
+  "%lld Albums": {
+    "zh-Hans": "%lld 张专辑"
+  },
+  "%lld track shares ready for open playlist export": {
+    "ja": "オープンプレイリストへ書き出せる曲の共有：%lld件",
+    "zh-Hans": "%lld 条曲目分享可导出为开放播放列表"
+  },
+  "%lld tracks": {
+    "zh-Hans": "%lld 首曲目"
+  },
+  "- %lld additional pending item(s) omitted": {
+    "ja": "- 保留中の追加項目%lld件を省略",
+    "zh-Hans": "- 已省略 %lld 个其他待处理项目"
+  },
+  "1 connection": {
+    "ja": "1 接続",
+    "zh-Hans": "1个连接"
+  },
+  "A familiar listening timeline": {
+    "zh-Hans": "熟悉的收听时间线"
+  },
+  "Account": {
+    "ja": "アカウント",
+    "zh-Hans": "账户"
+  },
+  "Account And Session": {
+    "ja": "アカウントとセッション",
+    "zh-Hans": "账户和会话"
+  },
+  "Add Listen": {
+    "ja": "再生履歴を追加",
+    "zh-Hans": "添加收听记录"
+  },
+  "Add a listen with ${applicationName}": {
+    "ja": "${applicationName}で再生履歴を追加",
+    "zh-Hans": "使用 ${applicationName} 添加收听记录"
+  },
+  "Add a scrobble with ${applicationName}": {
+    "ja": "${applicationName}でスクロブルを追加",
+    "zh-Hans": "使用 ${applicationName} 添加收听记录"
+  },
+  "Artist": {
+    "ja": "アーティスト",
+    "zh-Hans": "艺术家"
+  },
+  "Artist constellation": {
+    "ja": "アーティスト・コンステレーション",
+    "zh-Hans": "艺术家星座"
+  },
+  "Auth": {
+    "ja": "認証",
+    "zh-Hans": "身份验证"
+  },
+  "Auth State": {
+    "ja": "認証状態",
+    "zh-Hans": "身份验证状态"
+  },
+  "Auth State: %@": {
+    "ja": "認証状態：%@",
+    "zh-Hans": "身份验证状态：%@"
+  },
+  "Auto Detect": {
+    "ja": "自動検出",
+    "zh-Hans": "自动检测"
+  },
+  "Best effort": {
+    "ja": "最高の努力",
+    "zh-Hans": "尽最大的努力"
+  },
+  "Back": {
+    "ja": "戻る",
+    "zh-Hans": "返回"
+  },
+  "Build Playlist": {
+    "ja": "プレイリストの構築",
+    "zh-Hans": "构建播放列表"
+  },
+  "Capture Obsession": {
+    "ja": "こだわりを記録",
+    "zh-Hans": "记录珍藏"
+  },
+  "Capture obsession": {
+    "ja": "こだわりを記録",
+    "zh-Hans": "记录珍藏"
+  },
+  "Capabilities": {
+    "ja": "機能",
+    "zh-Hans": "功能"
+  },
+  "Choir": {
+    "ja": "合唱団",
+    "zh-Hans": "合唱团"
+  },
+  "Choose at least one recommendation": {
+    "ja": "少なくとも1つの推奨事項を選択してください",
+    "zh-Hans": "至少选择一个建议"
+  },
+  "Clear": {
+    "ja": "クリア",
+    "zh-Hans": "清除"
+  },
+  "Collaboration": {
+    "ja": "コラボレーション",
+    "zh-Hans": "协作"
+  },
+  "Comparison": {
+    "ja": "比較",
+    "zh-Hans": "比较"
+  },
+  "Compatibility Adapter": {
+    "ja": "互換性アダプタ",
+    "zh-Hans": "兼容性适应器"
+  },
+  "Compatibility Session": {
+    "ja": "互換性セッション",
+    "zh-Hans": "兼容性会话"
+  },
+  "Compatibility adapter": {
+    "ja": "互換性アダプタ",
+    "zh-Hans": "兼容性适配器"
+  },
+  "Connect": {
+    "ja": "コネクト",
+    "zh-Hans": "连接"
+  },
+  "Connected": {
+    "ja": "接続済み",
+    "zh-Hans": "已连接"
+  },
+  "Connect ListenBrainz before submitting listens.": {
+    "zh-Hans": "提交收听记录前请连接 ListenBrainz。"
+  },
+  "Connection": {
+    "ja": "コネクション",
+    "zh-Hans": "连接"
+  },
+  "Copy ListenBrainz Token": {
+    "ja": "ListenBrainzトークンをコピー",
+    "zh-Hans": "复制 ListenBrainz 令牌"
+  },
+  "Copy your user token": {
+    "ja": "ユーザートークンをコピー",
+    "zh-Hans": "复制你的用户令牌"
+  },
+  "Could not create playlist": {
+    "ja": "プレイリストを作成できません",
+    "zh-Hans": "无法创建播放列表"
+  },
+  "Could not remove current pin": {
+    "ja": "現在のピンを取除くことができません"
+  },
+  "Could not send recommendation": {
+    "ja": "おすすめを送信できませんでした",
+    "zh-Hans": "无法发送推荐"
+  },
+  "Create Account": {
+    "ja": "アカウントの作成",
+    "zh-Hans": "创建账户"
+  },
+  "Create MusicBrainz Account": {
+    "ja": "MusicBrainzアカウントの作成",
+    "zh-Hans": "创建 MusicBrainz 账户"
+  },
+  "Current": {
+    "zh-Hans": "当前"
+  },
+  "Current Pin": {
+    "ja": "現在のピン",
+    "zh-Hans": "当前置顶"
+  },
+  "Current artist": {
+    "ja": "現在のアーティスト",
+    "zh-Hans": "当前艺术家"
+  },
+  "Delete Listen": {
+    "ja": "再生履歴を削除",
+    "zh-Hans": "删除收听记录"
+  },
+  "Delete ListenBrainz Pin": {
+    "ja": "ListenBrainzピンを削除",
+    "zh-Hans": "删除 ListenBrainz 置顶"
+  },
+  "Destination": {
+    "ja": "送信先",
+    "zh-Hans": "目标"
+  },
+  "Disabled": {
+    "ja": "無効",
+    "zh-Hans": "已禁用"
+  },
+  "Done": {
+    "ja": "完了",
+    "zh-Hans": "完成"
+  },
+  "Direction": {
+    "ja": "方向",
+    "zh-Hans": "方向"
+  },
+  "Disambiguation": {
+    "ja": "曖昧さ回避",
+    "zh-Hans": "消歧"
+  },
+  "Disconnect": {
+    "ja": "接続解除",
+    "zh-Hans": "断开连接"
+  },
+  "Discover": {
+    "ja": "探索",
+    "zh-Hans": "发现"
+  },
+  "Enable listening submissions": {
+    "zh-Hans": "启用收听记录提交"
+  },
+  "Enabled": {
+    "ja": "有効",
+    "zh-Hans": "已启用"
+  },
+  "Export": {
+    "ja": "エクスポート",
+    "zh-Hans": "导出"
+  },
+  "Export Listening Data": {
+    "zh-Hans": "导出收听数据"
+  },
+  "Exported %lld obsession entries.": {
+    "ja": "こだわりの記録を%lld件書き出しました。",
+    "zh-Hans": "已导出 %lld 条珍藏记录。"
+  },
+  "File import": {
+    "ja": "ファイルインポート",
+    "zh-Hans": "文件导入"
+  },
+  "Filter listens": {
+    "zh-Hans": "筛选收听记录"
+  },
+  "Following": {
+    "ja": "フォロー中",
+    "zh-Hans": "正在关注"
+  },
+  "Format": {
+    "ja": "フォーマット",
+    "zh-Hans": "格式"
+  },
+  "General": {
+    "ja": "一般",
+    "zh-Hans": "常规"
+  },
+  "Home": {
+    "ja": "ホーム",
+    "zh-Hans": "首页"
+  },
+  "Host": {
+    "ja": "ホスト",
+    "zh-Hans": "主机"
+  },
+  "Import": {
+    "ja": "インポート",
+    "zh-Hans": "导入"
+  },
+  "Inspect": {
+    "ja": "インスペクト",
+    "zh-Hans": "检查"
+  },
+  "Kind": {
+    "ja": "種類",
+    "zh-Hans": "类别"
+  },
+  "Library": {
+    "ja": "ライブラリ",
+    "zh-Hans": "音乐资料库"
+  },
+  "Instrumental support": {
+    "ja": "機器サポート",
+    "zh-Hans": "工具支助"
+  },
+  "Keep ListenBrainz enabled, choose whether to send now playing and completed listens, then save the settings.": {
+    "zh-Hans": "保持 ListenBrainz 启用，选择是否提交正在播放和已完成的收听记录，然后保存设置。"
+  },
+  "Last API Error": {
+    "ja": "最後の API エラー",
+    "zh-Hans": "上次 API 错误"
+  },
+  "Last Scan": {
+    "ja": "最後のスキャン",
+    "zh-Hans": "上次扫描"
+  },
+  "Last Submit": {
+    "ja": "最終投稿",
+    "zh-Hans": "上次提交"
+  },
+  "Last.year": {
+    "ja": "最終年度",
+    "zh-Hans": "最后一个年份"
+  },
+  "Later": {
+    "ja": "あとで",
+    "zh-Hans": "稍后"
+  },
+  "Launch at login": {
+    "ja": "ログイン時に起動",
+    "zh-Hans": "登录时启动"
+  },
+  "Legacy import": {
+    "ja": "レガシー輸入",
+    "zh-Hans": "继承导入"
+  },
+  "Listen": {
+    "ja": "聴く",
+    "zh-Hans": "收听"
+  },
+  "ListenBrainz": {
+    "ja": "ListenBrainz",
+    "zh-Hans": "ListenBrainz"
+  },
+  "ListenBrainz + compatibility adapter": {
+    "ja": "ListenBrainz + 互換性アダプタ",
+    "zh-Hans": "ListenBrainz + 兼容适配器"
+  },
+  "ListenBrainz Artist Context": {
+    "ja": "ListenBrainzアーティストのコンテキスト",
+    "zh-Hans": "ListenBrainz 艺人背景"
+  },
+  "ListenBrainz Context": {
+    "ja": "ListenBrainz コンテキスト",
+    "zh-Hans": "ListenBrainz 上下文"
+  },
+  "ListenBrainz pin": {
+    "ja": "ListenBrainzピン",
+    "zh-Hans": "ListenBrainz 置顶"
+  },
+  "ListenScrobbler": {
+    "ja": "ListenScrobbler",
+    "zh-Hans": "ListenScrobbler"
+  },
+  "ListenScrobbler widgets are refreshing.": {
+    "zh-Hans": "ListenScrobbler 小组件正在刷新。"
+  },
+  "Listened At": {
+    "ja": "再生日時",
+    "zh-Hans": "收听时间"
+  },
+  "Listener": {
+    "ja": "リスナー",
+    "zh-Hans": "听声音"
+  },
+  "Listening": {
+    "ja": "再生履歴",
+    "zh-Hans": "收听记录"
+  },
+  "Listening Dashboard": {
+    "ja": "再生ダッシュボード",
+    "zh-Hans": "收听仪表盘"
+  },
+  "Listening submissions enabled": {
+    "zh-Hans": "已启用收听记录提交"
+  },
+  "Loaded %lld obsessions.": {
+    "ja": "こだわりの記録を%lld件読み込みました。",
+    "zh-Hans": "已加载 %lld 条珍藏记录。"
+  },
+  "Loaded %lld followers, %lld following, %lld similar users, and %lld neighbor listens": {
+    "ja": "フォロワー%lld人、フォロー中%lld人、類似ユーザー%lld人、近隣ユーザーの再生履歴%lld件を読み込みました",
+    "zh-Hans": "已加载 %lld 位关注者、%lld 位正在关注的用户、%lld 位相似用户和 %lld 条邻近用户的收听记录"
+  },
+  "Loaded %lld people (%lld listening now)": {
+    "zh-Hans": "已加载 %lld 人（%lld 人正在收听）"
+  },
+  "Loaded ListenBrainz listens": {
+    "zh-Hans": "已加载 ListenBrainz 收听记录"
+  },
+  "Loading open track metadata...": {
+    "zh-Hans": "正在加载开放曲目元数据…"
+  },
+  "Local-first": {
+    "ja": "ローカルファースト",
+    "zh-Hans": "当地第一"
+  },
+  "Manual Scrobble": {
+    "ja": "手動スクロブル",
+    "zh-Hans": "手动提交收听记录"
+  },
+  "Manual scrobble with ${applicationName}": {
+    "ja": "${applicationName}で手動スクロブル",
+    "zh-Hans": "使用 ${applicationName} 手动提交收听记录"
+  },
+  "Member": {
+    "ja": "メンバー",
+    "zh-Hans": "成员"
+  },
+  "Missing recording MBID for pin": {
+    "ja": "ピンの録画MBIDを見逃す",
+    "zh-Hans": "缺少 Pin 的 MBID 记录"
+  },
+  "Missing recording MSID for pin": {
+    "ja": "ピンの録音 MSID の欠如",
+    "zh-Hans": "缺少 Pin 的 MSID 记录"
+  },
+  "Missing recording identity for pin": {
+    "ja": "ピン用の録音IDがありません",
+    "zh-Hans": "缺少用于置顶的录音标识"
+  },
+  "Missing recording identity for feedback": {
+    "ja": "フィードバック用の録音IDがありません",
+    "zh-Hans": "缺少用于反馈的录音标识"
+  },
+  "Monitor": {
+    "ja": "モニター",
+    "zh-Hans": "监视器"
+  },
+  "Music Library Scanner": {
+    "ja": "音楽ライブラリスキャナ",
+    "zh-Hans": "音乐库扫描器"
+  },
+  "Music Library Scrobbling": {
+    "ja": "音楽ライブラリのスクロブル",
+    "zh-Hans": "音乐资料库收听记录提交"
+  },
+  "Obsessions": {
+    "ja": "こだわりの記録",
+    "zh-Hans": "珍藏记录"
+  },
+  "Obsessions are recovered from this app's local per-account store and optional `.listenscrobbler-obsessions.json` imports. They remain portable, private, and independent from any single platform.": {
+    "ja": "こだわりの記録は、このアプリのアカウント別ローカルストレージと、任意の `.listenscrobbler-obsessions.json` インポートから復元されます。特定のプラットフォームに依存せず、持ち運び可能で非公開のまま保持されます。",
+    "zh-Hans": "珍藏记录会从此 App 的本地账户存储和可选的 `.listenscrobbler-obsessions.json` 导入中恢复。这些记录可移植、保持私密，并且不依赖任何单一平台。"
+  },
+  "MusicBrainz sign-in and ListenBrainz tokens avoid password storage while keeping your listening identity open.": {
+    "zh-Hans": "MusicBrainz 登录和 ListenBrainz 令牌无需存储密码，同时保持你的收听身份公开。"
+  },
+  "No artist affinity edges available yet": {
+    "zh-Hans": "还没有艺术家亲和边缘可用"
+  },
+  "No discovery yet": {
+    "ja": "発見はまだありません",
+    "zh-Hans": "还没有发现"
+  },
+  "No listening peak yet": {
+    "ja": "聞きないピークはまだ",
+    "zh-Hans": "还没有收听高峰"
+  },
+  "No public listening activity available.": {
+    "zh-Hans": "没有可用的公开收听活动。"
+  },
+  "No recent listen": {
+    "ja": "最近のリスニング",
+    "zh-Hans": "最近没有听"
+  },
+  "No shared history yet": {
+    "ja": "共有履歴はまだありません",
+    "zh-Hans": "尚无共享历史"
+  },
+  "Now Playing": {
+    "ja": "再生中"
+  },
+  "Open": {
+    "ja": "開く",
+    "zh-Hans": "打开"
+  },
+  "Open ${applicationName}": {
+    "ja": "${applicationName}を開く",
+    "zh-Hans": "打开 ${applicationName}"
+  },
+  "Open ${destination} in ${applicationName}": {
+    "ja": "${applicationName}で${destination}を開く",
+    "zh-Hans": "在 ${applicationName} 中打开 ${destination}"
+  },
+  "Open Discovery": {
+    "ja": "探索を開く",
+    "zh-Hans": "打开发现"
+  },
+  "Open ListenBrainz import options for older listening history.": {
+    "zh-Hans": "打开 ListenBrainz 导入选项，以导入较早的收听历史。"
+  },
+  "Open ListenScrobbler": {
+    "ja": "ListenScrobblerを開く"
+  },
+  "Open Manual Scrobble": {
+    "ja": "手動スクロブルを開く",
+    "zh-Hans": "打开手动提交"
+  },
+  "Open Token": {
+    "ja": "トークンを開く",
+    "zh-Hans": "打开令牌页面"
+  },
+  "Open User Token": {
+    "ja": "ユーザートークンを開く",
+    "zh-Hans": "打开用户令牌"
+  },
+  "Pick someone you follow, someone who follows you, or a similar user to compare your open listening history.": {
+    "ja": "フォロー中のユーザー、あなたをフォローしているユーザー、または類似ユーザーを選び、公開されている再生履歴を比較します。",
+    "zh-Hans": "选择你关注的人、关注你的人或相似用户，比较彼此的公开收听历史"
+  },
+  "Pending": {
+    "ja": "保留中",
+    "zh-Hans": "待处理"
+  },
+  "Pin": {
+    "ja": "ピン",
+    "zh-Hans": "置顶"
+  },
+  "Pin History": {
+    "ja": "ピン履歴",
+    "zh-Hans": "置顶记录"
+  },
+  "Pinch to zoom, drag to pan": {
+    "ja": "ピンチをズーム、パンにドラッグ",
+    "zh-Hans": "缩放、拖动到平板"
+  },
+  "Play music in a supported player. ListenScrobbler will show the current track here and submit it when it reaches the listening threshold.": {
+    "zh-Hans": "在受支持的播放器中播放音乐。ListenScrobbler 会在此显示当前曲目，并在达到收听阈值后提交。"
+  },
+  "Playcount": {
+    "ja": "プレイカウント",
+    "zh-Hans": "播放次数"
+  },
+  "Port": {
+    "ja": "ポート",
+    "zh-Hans": "端口"
+  },
+  "Preferences": {
+    "ja": "環境設定",
+    "zh-Hans": "偏好设置"
+  },
+  "Profile": {
+    "ja": "プロフィール",
+    "zh-Hans": "个人资料"
+  },
+  "Quit": {
+    "ja": "終了",
+    "zh-Hans": "退出"
+  },
+  "Radio on": {
+    "ja": "ラジオオン",
+    "zh-Hans": "无线电"
+  },
+  "Ready for your next listen": {
+    "ja": "あなたの次のリスニングのための準備",
+    "zh-Hans": "准备听下一个"
+  },
+  "Recent Listen": {
+    "ja": "最近の再生履歴",
+    "zh-Hans": "最近的收听记录"
+  },
+  "Recommended For You": {
+    "ja": "あなたへのおすすめ",
+    "zh-Hans": "为你推荐"
+  },
+  "Refresh ${applicationName}": {
+    "ja": "${applicationName}を更新",
+    "zh-Hans": "刷新 ${applicationName}"
+  },
+  "Refresh Discover": {
+    "ja": "リフレッシュ 発見",
+    "zh-Hans": "刷新发现"
+  },
+  "Refresh ListenBrainz with ${applicationName}": {
+    "ja": "${applicationName}でListenBrainzを更新",
+    "zh-Hans": "使用 ${applicationName} 刷新 ListenBrainz"
+  },
+  "Refresh ListenScrobbler Widgets": {
+    "zh-Hans": "刷新 ListenScrobbler 小组件"
+  },
+  "Refresh ListenScrobbler widgets with ${applicationName}": {
+    "ja": "${applicationName}でListenScrobblerのウィジェットを更新",
+    "zh-Hans": "使用 ${applicationName} 刷新 ListenScrobbler 小组件"
+  },
+  "Refresh Widgets": {
+    "zh-Hans": "刷新小组件"
+  },
+  "Reload ListenScrobbler widgets with the latest saved ListenBrainz snapshot.": {
+    "zh-Hans": "使用最近保存的 ListenBrainz 快照重新加载 ListenScrobbler 小组件。"
+  },
+  "Removing current pin": {
+    "ja": "現在のピンを取り除く"
+  },
+  "Repeat Listen": {
+    "ja": "再生履歴を再送信",
+    "zh-Hans": "重新提交收听记录"
+  },
+  "Repeat Recent Listen": {
+    "ja": "最近の再生履歴を再送信",
+    "zh-Hans": "重新提交最近的收听记录"
+  },
+  "Repeat recent listen with ${applicationName}": {
+    "ja": "${applicationName}で最近の再生履歴を再送信",
+    "zh-Hans": "使用 ${applicationName} 重新提交最近的收听记录"
+  },
+  "Reset": {
+    "ja": "リセット",
+    "zh-Hans": "重设"
+  },
+  "Resize inspector": {
+    "ja": "検査員のサイズ変更",
+    "zh-Hans": "调整检查员规模"
+  },
+  "Scrobble": {
+    "ja": "スクロブル",
+    "zh-Hans": "提交收听记录"
+  },
+  "Scrobble Export": {
+    "ja": "スクロブルを書き出す",
+    "zh-Hans": "导出收听记录"
+  },
+  "Scrobble the last listen with ${applicationName}": {
+    "ja": "${applicationName}で最後の再生履歴をスクロブル",
+    "zh-Hans": "使用 ${applicationName} 提交上一条收听记录"
+  },
+  "Select a listen to inspect": {
+    "ja": "リスニングを選択",
+    "zh-Hans": "选择要查看的收听记录"
+  },
+  "Select at least one follower": {
+    "ja": "少なくとも1つのフォロワーを選択",
+    "zh-Hans": "选择至少一个跟随者"
+  },
+  "Send Recommendation": {
+    "ja": "おすすめを送信",
+    "zh-Hans": "发送推荐"
+  },
+  "Send now playing": {
+    "ja": "今すぐ再生"
+  },
+  "Sender": {
+    "ja": "送信者",
+    "zh-Hans": "发送者"
+  },
+  "Settings": {
+    "ja": "設定",
+    "zh-Hans": "设置"
+  },
+  "Share": {
+    "ja": "共有",
+    "zh-Hans": "分享"
+  },
+  "Sent": {
+    "ja": "送信済み",
+    "zh-Hans": "已发送"
+  },
+  "Sent to 1 follower": {
+    "ja": "1つのフォロワーに送られる",
+    "zh-Hans": "发送到一个跟随者"
+  },
+  "Session": {
+    "ja": "セッション",
+    "zh-Hans": "会话"
+  },
+  "Setup checklist": {
+    "ja": "セットアップチェックリスト",
+    "zh-Hans": "设置清单"
+  },
+  "Share to Vault": {
+    "ja": "Vault の共有",
+    "zh-Hans": "共享到默认值"
+  },
+  "Show Dock Icon": {
+    "ja": "ドックアイコンを表示する",
+    "zh-Hans": "显示停靠图标"
+  },
+  "Sign In": {
+    "ja": "サインイン",
+    "zh-Hans": "登录"
+  },
+  "Sign Out": {
+    "ja": "サインアウト",
+    "zh-Hans": "退出登录"
+  },
+  "Sign in to calculate separation": {
+    "ja": "分離を計算するためにサインイン",
+    "zh-Hans": "签名计算分离"
+  },
+  "Similar": {
+    "ja": "類似",
+    "zh-Hans": "相似"
+  },
+  "Search": {
+    "ja": "検索",
+    "zh-Hans": "搜索"
+  },
+  "Similar artist": {
+    "ja": "類似アーティスト",
+    "zh-Hans": "类似艺术家"
+  },
+  "Single account": {
+    "ja": "シングル口座",
+    "zh-Hans": "单一账户"
+  },
+  "Social Section": {
+    "ja": "社会セクション",
+    "zh-Hans": "社会科"
+  },
+  "Song": {
+    "ja": "曲",
+    "zh-Hans": "歌曲"
+  },
+  "Startup and app behaviour": {
+    "ja": "スタートアップとアプリの動作",
+    "zh-Hans": "启动和应用程序行为"
+  },
+  "Stub monitor": {
+    "ja": "スタブモニター",
+    "zh-Hans": "固定显示器"
+  },
+  "Submissions on": {
+    "ja": "投稿について",
+    "zh-Hans": "提交资料"
+  },
+  "Submit": {
+    "ja": "送信する",
+    "zh-Hans": "提交"
+  },
+  "Type": {
+    "ja": "種類",
+    "zh-Hans": "类型"
+  },
+  "Submit Listen": {
+    "ja": "再生履歴を送信",
+    "zh-Hans": "提交收听记录"
+  },
+  "Submit a listen with ${applicationName}": {
+    "ja": "${applicationName}で再生履歴を送信",
+    "zh-Hans": "使用 ${applicationName} 提交收听记录"
+  },
+  "Submit a manual listen directly to ListenBrainz.": {
+    "zh-Hans": "直接向 ListenBrainz 手动提交收听记录。"
+  },
+  "Submit completed listens": {
+    "zh-Hans": "提交已完成的收听记录"
+  },
+  "Submit the latest ListenBrainz listen again with ListenScrobbler source metadata.": {
+    "zh-Hans": "使用 ListenScrobbler 来源元数据重新提交最新的 ListenBrainz 收听记录。"
+  },
+  "Submitted listen": {
+    "ja": "送信済みの再生履歴",
+    "zh-Hans": "已提交收听记录"
+  },
+  "Supporter": {
+    "ja": "サポーター",
+    "zh-Hans": "支持者"
+  },
+  "Supporting musician": {
+    "ja": "協力ミュージシャン",
+    "zh-Hans": "支持音乐家"
+  },
+  "Top Origin": {
+    "ja": "トップの起源",
+    "zh-Hans": "顶端来源"
+  },
+  "Top Tracks By This Artist": {
+    "ja": "このアーティストによるトップトラック",
+    "zh-Hans": "由这位艺人制作的顶级音轨"
+  },
+  "Try Again": {
+    "ja": "再試行",
+    "zh-Hans": "重试"
+  },
+  "Unknown": {
+    "ja": "不明",
+    "zh-Hans": "未知"
+  },
+  "Unknown Album": {
+    "zh-Hans": "未知专辑"
+  },
+  "Unknown Artist": {
+    "ja": "未知のアーティスト",
+    "zh-Hans": "未知的艺人"
+  },
+  "Unknown artist": {
+    "ja": "未知のアーティスト",
+    "zh-Hans": "未知艺术家"
+  },
+  "Unknown location": {
+    "ja": "未知の場所",
+    "zh-Hans": "未知位置"
+  },
+  "Unpin": {
+    "ja": "ピン留めを解除",
+    "zh-Hans": "取消置顶"
+  },
+  "Update ListenScrobbler widgets with ${applicationName}": {
+    "ja": "${applicationName}でListenScrobblerのウィジェットを最新の状態にする",
+    "zh-Hans": "使用 ${applicationName} 更新 ListenScrobbler 小组件"
+  },
+  "User": {
+    "ja": "ユーザー",
+    "zh-Hans": "用户"
+  },
+  "User token": {
+    "ja": "ユーザートークン",
+    "zh-Hans": "用户令牌"
+  },
+  "Validation": {
+    "ja": "検証",
+    "zh-Hans": "验证"
+  },
+  "Verify with one listen": {
+    "ja": "1つのリスニングで検証",
+    "zh-Hans": "用一个声音校验"
+  },
+  "Vocal support": {
+    "ja": "ボーカルサポート",
+    "zh-Hans": "语音支持"
+  },
+  "Web import": {
+    "ja": "Webインポート",
+    "zh-Hans": "网络导入"
+  },
+  "Wikipedia": {
+    "ja": "Wikipedia"
+  },
+  "Year": {
+    "ja": "年",
+    "zh-Hans": "年"
+  },
+  "You %lld · Them %lld": {
+    "ja": "あなた %lld・相手 %lld",
+    "zh-Hans": "你 %lld · 对方 %lld"
+  },
+  "current pin": {
+    "ja": "現在のピン",
+    "zh-Hans": "当前指针"
+  },
+  "last year": {
+    "ja": "昨年",
+    "zh-Hans": "去年"
+  },
+  "never": {
+    "ja": "なし",
+    "zh-Hans": "从不"
+  },
+  "this artist": {
+    "ja": "このアーティスト",
+    "zh-Hans": "这位艺术家"
+  },
+  "unknown": {
+    "ja": "不明",
+    "zh-Hans": "未知"
+  },
+  "year": {
+    "ja": "年",
+    "zh-Hans": "年"
+  }
+}

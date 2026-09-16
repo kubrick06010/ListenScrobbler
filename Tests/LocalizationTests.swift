@@ -378,6 +378,134 @@ final class LocalizationTests: XCTestCase {
         }
     }
 
+    func testEveryPublishedLanguagePreservesSourceEdgeWhitespace() throws {
+        let strings = try stringCatalogEntries()
+
+        for language in publishedTranslationIdentifiers {
+            let mismatches = strings.flatMap { key, value -> [String] in
+                localizedValues(in: value, language: language).compactMap { localized in
+                    let sourceWhitespace = edgeWhitespace(in: key)
+                    let localizedWhitespace = edgeWhitespace(in: localized)
+                    guard sourceWhitespace.leading != localizedWhitespace.leading
+                            || sourceWhitespace.trailing != localizedWhitespace.trailing else {
+                        return nil
+                    }
+                    return "\(key.debugDescription) → \(localized.debugDescription)"
+                }
+            }
+            XCTAssertTrue(
+                mismatches.isEmpty,
+                "\(language) translations must preserve meaningful edge whitespace. Mismatches: \(mismatches.sorted().joined(separator: ", "))"
+            )
+        }
+    }
+
+    func testCatalogsDoNotContainKnownMachineTranslationTerms() throws {
+        let forbiddenTerms: [String: [String]] = [
+            "ja": ["スクルーブル", "リスニング アット", "ダッシュボードを聴く", "今すぐプレイ", "ピンの歴史"],
+            "zh-Hans": ["监听", "相册", "轨道", "杂碎", "拼接", "拼图", "拼写", "拼音", "听盘", "部件"]
+        ]
+        let strings = try stringCatalogEntries()
+        var hits: [String] = []
+
+        for (language, terms) in forbiddenTerms {
+            for (key, value) in strings {
+                for localized in localizedValues(in: value, language: language) {
+                    if let term = terms.first(where: localized.contains) {
+                        hits.append("Localizable [\(language)] \(key) → \(localized) [\(term)]")
+                    }
+                }
+            }
+        }
+
+        let shortcutCatalog = try appShortcutsCatalogEntries()
+        for (key, rawEntry) in shortcutCatalog {
+            guard let entry = rawEntry as? [String: Any],
+                  let localizations = entry["localizations"] as? [String: Any] else { continue }
+            for (language, terms) in forbiddenTerms {
+                guard let localization = localizations[language] as? [String: Any],
+                      let stringSet = localization["stringSet"] as? [String: Any],
+                      let values = stringSet["values"] as? [String] else { continue }
+                for value in values {
+                    if let term = terms.first(where: value.contains) {
+                        hits.append("AppShortcuts [\(language)] \(key) → \(value) [\(term)]")
+                    }
+                }
+            }
+        }
+
+        XCTAssertTrue(hits.isEmpty, "Known machine-translation terms found: \(hits.sorted().joined(separator: ", "))")
+    }
+
+    func testTranslationsDoNotContainRepeatedWordCorruption() throws {
+        let expression = try NSRegularExpression(
+            pattern: #"(?iu)\b([\p{L}]+)(?:\s+\1){2,}\b"#
+        )
+        let strings = try stringCatalogEntries()
+
+        for language in publishedTranslationIdentifiers {
+            let hits = strings.flatMap { key, value -> [String] in
+                localizedValues(in: value, language: language).compactMap { localized in
+                    let range = NSRange(localized.startIndex..<localized.endIndex, in: localized)
+                    return expression.firstMatch(in: localized, range: range) == nil
+                        ? nil
+                        : "\(key) → \(localized)"
+                }
+            }
+            XCTAssertTrue(
+                hits.isEmpty,
+                "\(language) contains repeated-word translation corruption: \(hits.sorted().joined(separator: ", "))"
+            )
+        }
+    }
+
+    func testCatalogHasNoUnexpectedStaleEntries() throws {
+        // These keys are still referenced explicitly even though Xcode's
+        // extractor cannot associate every runtime lookup with the catalog.
+        let explicitlyUsedStaleKeys: Set<String> = [
+            "%@",
+            "Discovery",
+            "No discovery yet",
+            "No recent listen",
+            "Refresh ListenScrobbler to update ListenBrainz.",
+            "Refresh recommendations in ListenScrobbler.",
+            "Scrobble"
+        ]
+        let strings = try stringCatalogEntries()
+        let stale = Set(strings.compactMap { key, rawEntry -> String? in
+            guard let entry = rawEntry as? [String: Any],
+                  entry["extractionState"] as? String == "stale" else {
+                return nil
+            }
+            return key
+        })
+
+        XCTAssertEqual(
+            stale,
+            explicitlyUsedStaleKeys,
+            "Remove dead stale keys or document runtime-referenced exceptions."
+        )
+    }
+
+    func testJapaneseAndSimplifiedChineseHaveNoUnreviewedSourceEquivalentText() throws {
+        let reviewedEquivalents: [String: Set<String>] = [
+            "ja": ["%@", "%lld", "ListenBrainz", "ListenScrobbler", "Wikipedia"],
+            "zh-Hans": ["ListenBrainz", "ListenScrobbler"]
+        ]
+        let strings = try stringCatalogEntries()
+
+        for (language, allowed) in reviewedEquivalents {
+            let sourceEquivalentKeys = Set(strings.compactMap { key, value -> String? in
+                localizedValues(in: value, language: language).contains(key) ? key : nil
+            })
+            XCTAssertEqual(
+                sourceEquivalentKeys,
+                allowed,
+                "\(language) contains unreviewed source-equivalent text; translate it or review it explicitly."
+            )
+        }
+    }
+
     func testSpanishLocalizationPreservesProductNames() throws {
         let strings = try stringCatalogEntries()
         XCTAssertEqual(localizedValue(in: strings["ListenBrainz"], language: "es"), "ListenBrainz")
@@ -414,9 +542,11 @@ final class LocalizationTests: XCTestCase {
                 return key
             }
 
-            let englishTokens = Set(englishValues.flatMap(shortcutTokens))
-            let spanishTokens = Set(spanishValues.flatMap(shortcutTokens))
-            return englishTokens == spanishTokens ? nil : key
+            guard englishValues.count == spanishValues.count else { return key }
+            let preservesTokensByVariant = zip(englishValues, spanishValues).allSatisfy { source, translation in
+                shortcutTokens(in: source).sorted() == shortcutTokens(in: translation).sorted()
+            }
+            return preservesTokensByVariant ? nil : key
         }
 
         XCTAssertTrue(
@@ -444,12 +574,16 @@ final class LocalizationTests: XCTestCase {
                       let translatedSet = translation["stringSet"] as? [String: Any],
                       let englishValues = englishSet["values"] as? [String],
                       let translatedValues = translatedSet["values"] as? [String],
+                      translatedSet["state"] as? String == "translated",
+                      translatedValues.count == englishValues.count,
                       !translatedValues.isEmpty else {
                     return key
                 }
 
-                return Set(englishValues.flatMap(shortcutTokens))
-                    == Set(translatedValues.flatMap(shortcutTokens)) ? nil : key
+                let preservesTokensByVariant = zip(englishValues, translatedValues).allSatisfy { source, translation in
+                    shortcutTokens(in: source).sorted() == shortcutTokens(in: translation).sorted()
+                }
+                return preservesTokensByVariant ? nil : key
             }
             XCTAssertTrue(
                 invalidEntries.isEmpty,
@@ -479,6 +613,16 @@ final class LocalizationTests: XCTestCase {
             .deletingLastPathComponent()
             .deletingLastPathComponent()
         let catalogURL = repositoryRoot.appendingPathComponent("Resources/Localizable.xcstrings")
+        let data = try Data(contentsOf: catalogURL)
+        let catalog = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        return try XCTUnwrap(catalog["strings"] as? [String: Any])
+    }
+
+    private func appShortcutsCatalogEntries() throws -> [String: Any] {
+        let repositoryRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let catalogURL = repositoryRoot.appendingPathComponent("Resources/AppShortcuts.xcstrings")
         let data = try Data(contentsOf: catalogURL)
         let catalog = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
         return try XCTUnwrap(catalog["strings"] as? [String: Any])
@@ -534,6 +678,12 @@ final class LocalizationTests: XCTestCase {
             }
             return "\(value[indexRange])$\(type)"
         }
+    }
+
+    private func edgeWhitespace(in value: String) -> (leading: String, trailing: String) {
+        let leading = String(value.prefix { $0.isWhitespace })
+        let trailing = String(value.reversed().prefix { $0.isWhitespace }.reversed())
+        return (leading, trailing)
     }
 
     private func formatArgumentsMatch(source: String, translated: String) -> Bool {

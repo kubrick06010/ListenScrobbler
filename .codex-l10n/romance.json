@@ -1,0 +1,490 @@
+{
+  "  album: %@": {
+    "fr": "  album : %@",
+    "it": "  album: %@",
+    "pt": "  álbum: %@"
+  },
+  "  attempts: %lld": {
+    "fr": "  tentatives: %lld",
+    "it": "  tentativi: %lld",
+    "pt": "  tentativas: %lld"
+  },
+  "  duration played: %@": {
+    "fr": "  durée de lecture : %@",
+    "it": "  durata di riproduzione: %@",
+    "pt": "  duração reproduzida: %@"
+  },
+  "  duration: %llds": {
+    "fr": "  durée : %lld s",
+    "it": "  durata: %lld s",
+    "pt": "  duração: %lld s"
+  },
+  "  last error: %@": {
+    "fr": "  dernière erreur : %@",
+    "it": "  ultimo errore: %@",
+    "pt": "  último erro: %@"
+  },
+  "  library item: %@": {
+    "fr": "  élément de bibliothèque : %@",
+    "it": "  elemento della libreria: %@",
+    "pt": "  elemento da biblioteca: %@"
+  },
+  "  listened: %@": {
+    "fr": "  écouté : %@",
+    "it": "  ascoltato: %@",
+    "pt": "  ouvido: %@"
+  },
+  "  media player: %@": {
+    "fr": "  lecteur multimédia : %@",
+    "it": "  lettore multimediale: %@",
+    "pt": "  leitor multimédia: %@"
+  },
+  "  music service name: %@": {
+    "fr": "  nom du service musical : %@",
+    "it": "  nome del servizio musicale: %@",
+    "pt": "  nome do serviço de música: %@"
+  },
+  "  music service: %@": {
+    "fr": "  service musical : %@",
+    "it": "  servizio musicale: %@",
+    "pt": "  serviço de música: %@"
+  },
+  "  origin url: %@": {
+    "fr": "  URL d’origine : %@",
+    "it": "  URL di origine: %@",
+    "pt": "  URL de origem: %@"
+  },
+  "  original client: %@": {
+    "fr": "  client d’origine : %@",
+    "it": "  client originale: %@",
+    "pt": "  cliente original: %@"
+  },
+  "  source: %@": {
+    "fr": "  source : %@",
+    "it": "  fonte: %@",
+    "pt": "  fonte: %@"
+  },
+  "  spotify id: %@": {
+    "fr": "  identifiant Spotify : %@",
+    "it": "  ID Spotify: %@",
+    "pt": "  ID do Spotify: %@"
+  },
+  "  updated: %@": {
+    "fr": "  mis à jour : %@",
+    "it": "  aggiornato: %@",
+    "pt": "  atualizado: %@"
+  },
+  " as %@": {
+    "es": " como %@",
+    "fr": " comme %@",
+    "it": " come %@",
+    "pt": " como %@"
+  },
+  " formed in %lld": {
+    "es": " formado en %lld",
+    "fr": " formé en %lld",
+    "it": " formato nel %lld",
+    "pt": " formado em %lld"
+  },
+  "%@ listens": {
+    "pt": "%@ audições"
+  },
+  "%@ listens in your library": {
+    "pt": "%@ audições na sua biblioteca"
+  },
+  "%@ trend: %@": {
+    "it": "%@ tendenza: %@"
+  },
+  "%d ListenBrainz Artists": {
+    "it": "%d artisti ListenBrainz"
+  },
+  "%d ListenBrainz Releases": {
+    "it": "%d pubblicazioni ListenBrainz"
+  },
+  "%d ListenBrainz Tracks": {
+    "fr": "%d titres ListenBrainz",
+    "it": "%d brani ListenBrainz"
+  },
+  "%llds": {
+    "es": "%lld s"
+  },
+  "- Message: %@": {
+    "fr": "- Message : %@"
+  },
+  "- Pending retry count: %lld": {
+    "it": "- Tentativi in attesa: %lld"
+  },
+  "- Summary retry failed: %lld": {
+    "fr": "- Échecs de nouvelle tentative du résumé : %lld"
+  },
+  "- Summary retry submitted: %lld": {
+    "es": "- Reintentos de resumen enviados: %lld",
+    "fr": "- Nouvelles tentatives du résumé envoyées : %lld"
+  },
+  "- Summary submitted: %lld": {
+    "es": "- Resúmenes enviados: %lld"
+  },
+  "1 listen in your library": {
+    "fr": "1 écoute dans votre bibliothèque",
+    "pt": "1 audição na sua biblioteca"
+  },
+  "API base URL": {
+    "fr": "URL de base de l’API",
+    "it": "URL di base dell’API",
+    "pt": "URL de base da API"
+  },
+  "ARTIST PROFILE": {
+    "it": "PROFILO DELL’ARTISTA"
+  },
+  "Active pins from people you follow.": {
+    "fr": "Épingles actives des personnes que vous suivez.",
+    "it": "Elementi fissati dalle persone che segui."
+  },
+  "Add a track title before submitting.": {
+    "es": "Añade un título de pista antes de enviarla."
+  },
+  "Alias": {
+    "es": "Alias"
+  },
+  "Aliases (%lld)": {
+    "fr": "Alias (%lld)"
+  },
+  "Artist details are unavailable in stub mode.": {
+    "pt": "Os detalhes do artista não estão disponíveis no modo de simulação."
+  },
+  "Auth": {
+    "es": "Autenticación",
+    "fr": "Authentification",
+    "it": "Autenticazione",
+    "pt": "Autenticação"
+  },
+  "Auth State": {
+    "es": "Estado de autenticación",
+    "fr": "État de l’authentification",
+    "it": "Stato di autenticazione"
+  },
+  "Auth State: %@": {
+    "es": "Estado de autenticación: %@",
+    "fr": "État de l’authentification : %@",
+    "it": "Stato di autenticazione: %@"
+  },
+  "Avg. listens per day": {
+    "fr": "Moyenne d’écoutes par jour"
+  },
+  "Backend: %@": {
+    "it": "Backend: %@"
+  },
+  "Baseline created. Future scans will submit new plays.": {
+    "fr": "Référence créée. Les prochaines analyses enverront les nouvelles lectures.",
+    "it": "Riferimento creato. Le scansioni future invieranno le nuove riproduzioni.",
+    "pt": "Referência criada. As próximas análises enviarão as novas reproduções."
+  },
+  "Capture": {
+    "fr": "Capturer",
+    "it": "Cattura"
+  },
+  "Check network connectivity. Queued listens will retry automatically.": {
+    "es": "Comprueba la conexión de red. Las escuchas en cola se volverán a enviar automáticamente.",
+    "it": "Controlla la connessione di rete. L’invio degli ascolti in coda verrà ritentato automaticamente."
+  },
+  "Connect ListenBrainz to compare archives": {
+    "es": "Conecta ListenBrainz para comparar historiales"
+  },
+  "Connect ListenBrainz to load pins": {
+    "fr": "Connectez ListenBrainz pour charger les épingles",
+    "it": "Collega ListenBrainz per caricare gli elementi fissati",
+    "pt": "Ligue o ListenBrainz para carregar os elementos afixados"
+  },
+  "Connect ListenBrainz to love tracks": {
+    "fr": "Connectez ListenBrainz pour ajouter des titres aux favoris",
+    "it": "Collega ListenBrainz per aggiungere brani ai preferiti",
+    "pt": "Ligue o ListenBrainz para adicionar faixas aos favoritos"
+  },
+  "Connect ListenBrainz to pin recordings": {
+    "pt": "Ligue o ListenBrainz para afixar gravações"
+  },
+  "Connect ListenBrainz to use feedback": {
+    "es": "Conecta ListenBrainz para usar los comentarios"
+  },
+  "Could not pin recording": {
+    "fr": "Impossible d’épingler l’enregistrement",
+    "it": "Impossibile fissare la registrazione",
+    "pt": "Não foi possível afixar a gravação"
+  },
+  "Could not remove current pin": {
+    "it": "Impossibile rimuovere l’elemento fissato",
+    "pt": "Não foi possível remover o elemento afixado"
+  },
+  "Create a ListenBrainz playlist from the first eight recommendations currently loaded.": {
+    "es": "Crea una lista de reproducción de ListenBrainz con las primeras ocho recomendaciones cargadas."
+  },
+  "Current Pin": {
+    "it": "Elemento fissato",
+    "pt": "Elemento afixado"
+  },
+  "Current pin removed": {
+    "it": "Elemento fissato rimosso",
+    "pt": "Elemento afixado removido"
+  },
+  "Delete ListenBrainz Pin": {
+    "fr": "Supprimer l’épingle ListenBrainz",
+    "it": "Rimuovi elemento fissato da ListenBrainz"
+  },
+  "Delete this ListenBrainz listen?": {
+    "fr": "Supprimer cette écoute de ListenBrainz ?"
+  },
+  "Detailed track metadata is temporarily unavailable.": {
+    "it": "I metadati dettagliati del brano non sono temporaneamente disponibili."
+  },
+  "Discovery": {
+    "it": "Scopri"
+  },
+  "Fetched": {
+    "es": "Obtenido",
+    "fr": "Récupéré",
+    "it": "Ottenuto",
+    "pt": "Obtido"
+  },
+  "Following": {
+    "es": "Siguiendo"
+  },
+  "Last.week": {
+    "fr": "La semaine dernière",
+    "it": "La settimana scorsa",
+    "pt": "Semana passada"
+  },
+  "Last.year": {
+    "fr": "L’année dernière",
+    "it": "L’anno scorso",
+    "pt": "Ano passado"
+  },
+  "ListenBrainz Artist Context": {
+    "it": "Contesto artista di ListenBrainz"
+  },
+  "ListenBrainz Setup": {
+    "it": "Configurazione di ListenBrainz"
+  },
+  "ListenBrainz Social": {
+    "fr": "Réseau social ListenBrainz",
+    "it": "Rete sociale ListenBrainz",
+    "pt": "Rede social do ListenBrainz"
+  },
+  "ListenBrainz pin": {
+    "it": "Elemento fissato su ListenBrainz",
+    "pt": "Elemento afixado no ListenBrainz"
+  },
+  "ListenBrainz rate limited the request. Retry after %lld seconds.": {
+    "es": "ListenBrainz ha limitado la solicitud. Reinténtalo después de %lld segundos.",
+    "fr": "ListenBrainz a limité la requête. Réessayez après %lld secondes.",
+    "it": "ListenBrainz ha limitato la richiesta. Riprova dopo %lld secondi.",
+    "pt": "O ListenBrainz limitou o pedido. Tente novamente após %lld segundos."
+  },
+  "ListenBrainz tags": {
+    "fr": "Tags ListenBrainz",
+    "it": "Tag ListenBrainz"
+  },
+  "ListenScrobbler Status": {
+    "it": "Stato di ListenScrobbler"
+  },
+  "Listened At": {
+    "es": "escuchado en",
+    "fr": "Écouté le",
+    "it": "Ascoltato a",
+    "pt": "Ouvido"
+  },
+  "Local": {
+    "it": "Locale"
+  },
+  "Loved %@": {
+    "fr": "%@ dans les favoris"
+  },
+  "Mobile Scope": {
+    "it": "Ambito mobile"
+  },
+  "Monitor": {
+    "es": "Monitor"
+  },
+  "MusicBrainz tags": {
+    "fr": "Tags MusicBrainz",
+    "it": "Tag MusicBrainz"
+  },
+  "No": {
+    "fr": "Non",
+    "it": "No"
+  },
+  "No Proxy": {
+    "it": "Nessun proxy"
+  },
+  "No detailed metadata available for this track.": {
+    "fr": "Aucune métadonnée détaillée disponible pour cette piste.",
+    "pt": "Não há metadados detalhados disponíveis para esta faixa."
+  },
+  "No playlists loaded.": {
+    "es": "No hay listas de reproducción cargadas."
+  },
+  "No recommendations returned": {
+    "fr": "Aucune recommandation renvoyée"
+  },
+  "No target user selected": {
+    "pt": "Nenhum utilizador de destino selecionado"
+  },
+  "Nothing pinned right now.": {
+    "fr": "Rien n’est épinglé pour le moment.",
+    "it": "Al momento non c’è nulla di fissato.",
+    "pt": "Nada fixado neste momento."
+  },
+  "OS: %@": {
+    "it": "Sistema operativo: %@"
+  },
+  "Obsession Timeline": {
+    "it": "Cronologia delle ossessioni"
+  },
+  "Obsessions": {
+    "fr": "Obsessions"
+  },
+  "Offline": {
+    "it": "Offline"
+  },
+  "Online": {
+    "it": "Online"
+  },
+  "Open Discovery": {
+    "es": "Abrir descubrimiento",
+    "fr": "Ouvrir la découverte",
+    "it": "Apri Scopri",
+    "pt": "Abrir a Descoberta"
+  },
+  "Loading followers, following, and similar users...": {
+    "es": "Cargando seguidores, seguidos y usuarios similares…",
+    "fr": "Chargement des abonnés, des abonnements et des utilisateurs similaires…",
+    "it": "Caricamento di follower, seguiti e utenti simili…",
+    "pt": "Carregando seguidores, seguidos e usuários semelhantes…"
+  },
+  "Loaded %lld followers, %lld following, %lld similar users, and %lld neighbor listens": {
+    "es": "%lld seguidores, %lld seguidos, %lld usuarios similares y %lld escuchas de vecinos cargados",
+    "fr": "%lld abonnés, %lld abonnements, %lld utilisateurs similaires et %lld écoutes de voisins chargés",
+    "it": "%lld follower, %lld seguiti, %lld utenti simili e %lld ascolti di vicini caricati",
+    "pt": "%lld seguidores, %lld seguidos, %lld usuários semelhantes e %lld audições de vizinhos carregados"
+  },
+  "Loaded %lld people (%lld listening now)": {
+    "es": "%lld personas cargadas (%lld escuchando ahora)",
+    "fr": "%lld personnes chargées (dont %lld à l’écoute)",
+    "it": "%lld persone caricate (%lld in ascolto ora)",
+    "pt": "%lld pessoas carregadas (%lld ouvindo agora)"
+  },
+  "Open Source Link": {
+    "it": "Apri il link al codice sorgente"
+  },
+  "Open Token": {
+    "es": "Abrir token",
+    "fr": "Ouvrir le jeton",
+    "it": "Apri il token"
+  },
+  "Open Token Page": {
+    "fr": "Ouvrir la page du jeton",
+    "it": "Apri la pagina del token"
+  },
+  "Open User Token": {
+    "fr": "Ouvrir le jeton utilisateur",
+    "it": "Apri il token utente"
+  },
+  "Paused": {
+    "it": "In pausa"
+  },
+  "Pin": {
+    "es": "Fijar",
+    "fr": "Épingler",
+    "it": "Fissa",
+    "pt": "Fixar"
+  },
+  "Pinning %@...": {
+    "it": "Fissaggio di %@…"
+  },
+  "Pinning recording...": {
+    "fr": "Épinglage de l’enregistrement…"
+  },
+  "Rate limited by the compatibility service. Retry in about %lld seconds.": {
+    "es": "El servicio de compatibilidad ha limitado la solicitud. Reinténtalo en unos %lld segundos.",
+    "fr": "Le service de compatibilité a limité la requête. Réessayez dans environ %lld secondes.",
+    "it": "Il servizio di compatibilità ha limitato la richiesta. Riprova tra circa %lld secondi.",
+    "pt": "O serviço de compatibilidade limitou o pedido. Tente novamente em cerca de %lld segundos."
+  },
+  "Recs": {
+    "it": "Consigli",
+    "pt": "Recomendações"
+  },
+  "Refresh Widgets": {
+    "pt": "Atualizar widgets"
+  },
+  "Reset Scan Baseline": {
+    "it": "Reimposta il riferimento della scansione"
+  },
+  "Retry later. If this persists, inspect compatibility API status and credentials.": {
+    "es": "Reinténtalo más tarde. Si el problema persiste, revisa el estado de la API de compatibilidad y las credenciales.",
+    "fr": "Réessayez plus tard. Si le problème persiste, vérifiez l’état de l’API de compatibilité et les identifiants.",
+    "it": "Riprova più tardi. Se il problema persiste, controlla lo stato dell’API di compatibilità e le credenziali.",
+    "pt": "Tente novamente mais tarde. Se o problema persistir, verifique o estado da API de compatibilidade e as credenciais."
+  },
+  "Retry later. If this persists, verify API credentials and connectivity.": {
+    "es": "Reinténtalo más tarde. Si el problema persiste, verifica las credenciales de la API y la conectividad.",
+    "fr": "Réessayez plus tard. Si le problème persiste, vérifiez les identifiants de l’API et la connectivité.",
+    "it": "Riprova più tardi. Se il problema persiste, verifica le credenziali dell’API e la connettività.",
+    "pt": "Tente novamente mais tarde. Se o problema persistir, verifique as credenciais da API e a conectividade."
+  },
+  "Scrobble": {
+    "es": "Scrobble"
+  },
+  "Scrobble Export": {
+    "it": "Esportazione degli scrobble"
+  },
+  "Settings": {
+    "it": "Impostazioni"
+  },
+  "Sender": {
+    "es": "Remitente",
+    "fr": "Expéditeur",
+    "it": "Mittente",
+    "pt": "Remetente"
+  },
+  "Show Dock": {
+    "it": "Mostra nel Dock"
+  },
+  "Stub": {
+    "es": "Simulación",
+    "fr": "Simulation",
+    "it": "Simulazione",
+    "pt": "Simulação"
+  },
+  "Stub monitor": {
+    "es": "Monitor simulado",
+    "fr": "Moniteur simulé",
+    "it": "Monitor simulato",
+    "pt": "Monitor simulado"
+  },
+  "Top Tracks": {
+    "it": "Brani più ascoltati"
+  },
+  "Top tags": {
+    "it": "Tag principali",
+    "pt": "Etiquetas principais"
+  },
+  "Unlove on ListenBrainz": {
+    "it": "Rimuovi dai preferiti su ListenBrainz"
+  },
+  "Unpin": {
+    "es": "Desfijar",
+    "fr": "Désépingler",
+    "it": "Rimuovi fissaggio",
+    "pt": "Desafixar"
+  },
+  "no": {
+    "fr": "non",
+    "it": "no"
+  },
+  "vs %@": {
+    "fr": "vs %@"
+  },
+  "vs. %@ %@": {
+    "fr": "vs. %@ %@"
+  }
+}

@@ -1,0 +1,1009 @@
+{
+  "  album: %@": {
+    "de": "  Album: %@",
+    "sv": "  album: %@"
+  },
+  "  attempts: %lld": {
+    "de": "  Versuche: %lld",
+    "sv": "  försök: %lld"
+  },
+  "  duration played: %@": {
+    "de": "  Wiedergabedauer: %@",
+    "sv": "  uppspelad tid: %@"
+  },
+  "  duration: %llds": {
+    "de": "  Dauer: %lld s",
+    "sv": "  längd: %lld s"
+  },
+  "  last error: %@": {
+    "de": "  Letzter Fehler: %@",
+    "sv": "  senaste fel: %@"
+  },
+  "  library item: %@": {
+    "de": "  Mediathekseintrag: %@",
+    "sv": "  biblioteksobjekt: %@"
+  },
+  "  listened: %@": {
+    "de": "  Gehört: %@",
+    "sv": "  lyssnad: %@"
+  },
+  "  media player: %@": {
+    "de": "  Musikplayer: %@",
+    "sv": "  musikspelare: %@"
+  },
+  "  music service name: %@": {
+    "de": "  Name des Musikdienstes: %@",
+    "sv": "  musiktjänstens namn: %@"
+  },
+  "  music service: %@": {
+    "de": "  Musikdienst: %@",
+    "sv": "  musiktjänst: %@"
+  },
+  "  origin url: %@": {
+    "de": "  Ursprungs-URL: %@",
+    "sv": "  ursprungs-URL: %@"
+  },
+  "  original client: %@": {
+    "de": "  Ursprünglicher Client: %@",
+    "sv": "  ursprunglig klient: %@"
+  },
+  "  source: %@": {
+    "de": "  Quelle: %@",
+    "sv": "  källa: %@"
+  },
+  "  spotify id: %@": {
+    "de": "  Spotify-ID: %@",
+    "sv": "  Spotify-ID: %@"
+  },
+  "  updated: %@": {
+    "de": "  Aktualisiert: %@",
+    "sv": "  uppdaterad: %@"
+  },
+  " as %@": {
+    "de": " als %@",
+    "sv": " som %@"
+  },
+  " formed in %lld": {
+    "de": " gegründet im Jahr %lld",
+    "sv": " bildades %lld"
+  },
+  "%@ · %@": {
+    "sv": "%@ · %@"
+  },
+  "%@ Listens": {
+    "de": "%@ Hörvorgänge",
+    "sv": "%@ lyssningar"
+  },
+  "%llds": {
+    "sv": "%lld s"
+  },
+  "Add Listen": {
+    "de": "Hörvorgang hinzufügen"
+  },
+  "Affinity Network": {
+    "sv": "Affinitetsnätverk"
+  },
+  "Archive Share": {
+    "de": "Archivfreigabe",
+    "sv": "Arkivdelning"
+  },
+  "Artist Origins": {
+    "sv": "Artisternas ursprung"
+  },
+  "Artist Seeds": {
+    "sv": "Startartister"
+  },
+  "Auth State: %@": {
+    "de": "Authentifizierungsstatus: %@"
+  },
+  "Auto Detect": {
+    "sv": "Identifiera automatiskt"
+  },
+  "Beta Diagnostics": {
+    "sv": "Betadiagnostik"
+  },
+  "Blurb": {
+    "de": "Kurztext",
+    "sv": "Presentationstext"
+  },
+  "Build Playlist": {
+    "de": "Playlist erstellen"
+  },
+  "Capture Obsession": {
+    "de": "Obsession erfassen"
+  },
+  "Delete Listen": {
+    "de": "Hörvorgang löschen",
+    "sv": "Ta bort lyssning"
+  },
+  "Disambiguation": {
+    "sv": "Särskiljning"
+  },
+  "Edges": {
+    "sv": "Kanter"
+  },
+  "Export Listening Data": {
+    "sv": "Exportera lyssningsdata"
+  },
+  "Global track plays": {
+    "sv": "Globala spåruppspelningar"
+  },
+  "Guided Setup": {
+    "sv": "Guidad konfigurering"
+  },
+  "Last.week": {
+    "sv": "Förra veckan"
+  },
+  "Last.year": {
+    "sv": "Förra året"
+  },
+  "Legacy import": {
+    "sv": "Import från äldre version"
+  },
+  "ListenBrainz Archive": {
+    "sv": "ListenBrainz-arkiv"
+  },
+  "ListenBrainz Setup": {
+    "de": "ListenBrainz-Einrichtung",
+    "sv": "ListenBrainz-konfiguration"
+  },
+  "ListenScrobbler Status": {
+    "de": "ListenScrobbler-Status",
+    "sv": "ListenScrobbler-status"
+  },
+  "Listened At": {
+    "de": "Gehört am",
+    "sv": "Lyssnades på"
+  },
+  "Listening Dashboard": {
+    "de": "Hörübersicht",
+    "sv": "Lyssningsöversikt"
+  },
+  "Listening Submissions": {
+    "de": "Übermittlungen von Hörvorgängen",
+    "sv": "Överförda lyssningar"
+  },
+  "Listens": {
+    "de": "Hörvorgänge",
+    "sv": "Lyssningar"
+  },
+  "Loaded": {
+    "sv": "Inläst"
+  },
+  "Loaded Listens": {
+    "de": "Hörvorgänge geladen",
+    "sv": "Inlästa lyssningar"
+  },
+  "Loaded open metadata": {
+    "sv": "Öppna metadata har lästs in"
+  },
+  "Loading %@ radio": {
+    "sv": "Läser in %@-radio"
+  },
+  "Loading ListenBrainz": {
+    "de": "ListenBrainz wird geladen",
+    "sv": "Läser in ListenBrainz"
+  },
+  "Loading artist affinity...": {
+    "sv": "Läser in artistaffinitet ..."
+  },
+  "Loading artist origins...": {
+    "sv": "Läser in artisternas ursprung ..."
+  },
+  "Loading open track metadata...": {
+    "sv": "Läser in öppna spårmetadata ..."
+  },
+  "Loading people...": {
+    "sv": "Läser in personer ..."
+  },
+  "Loading pins...": {
+    "sv": "Läser in fästa objekt ..."
+  },
+  "Local-first": {
+    "sv": "Lokalt först"
+  },
+  "Login Item": {
+    "de": "Anmeldeobjekt",
+    "sv": "Inloggningsobjekt"
+  },
+  "Loved": {
+    "sv": "Gillad"
+  },
+  "Mobile Scope": {
+    "sv": "Mobil omfattning"
+  },
+  "Music Access": {
+    "sv": "Musikåtkomst"
+  },
+  "Nodes": {
+    "sv": "Noder"
+  },
+  "Obsession Card": {
+    "sv": "Besatthetskort"
+  },
+  "Obsession Timeline": {
+    "de": "Obsessionsverlauf"
+  },
+  "Open App": {
+    "de": "App öffnen",
+    "sv": "Öppna appen"
+  },
+  "Open Discovery": {
+    "de": "Entdecken öffnen",
+    "sv": "Öppna Upptäck"
+  },
+  "Open Manual Scrobble": {
+    "de": "Manuellen Scrobble öffnen",
+    "sv": "Öppna manuell skrobbling"
+  },
+  "Open Music Setup": {
+    "de": "Musikeinrichtung öffnen",
+    "sv": "Öppna musikkonfigurationen"
+  },
+  "Open Onboarding": {
+    "de": "Einführung öffnen",
+    "sv": "Öppna introduktionen"
+  },
+  "Open User Token": {
+    "de": "Benutzertoken öffnen",
+    "sv": "Öppna användartoken"
+  },
+  "Paused": {
+    "sv": "Pausad"
+  },
+  "Pin": {
+    "sv": "Fäst"
+  },
+  "Pin History": {
+    "de": "Pin-Verlauf",
+    "sv": "Historik över fästa objekt"
+  },
+  "Pinned": {
+    "de": "Angeheftet",
+    "sv": "Fäst"
+  },
+  "Pinned %@": {
+    "sv": "Fäste %@"
+  },
+  "Pinning %@": {
+    "sv": "Fäster %@"
+  },
+  "Pinning %@...": {
+    "de": "%@ wird angeheftet ...",
+    "sv": "Fäster %@ ..."
+  },
+  "Playback": {
+    "sv": "Uppspelning"
+  },
+  "Playcount": {
+    "de": "Wiedergabeanzahl",
+    "sv": "Antal uppspelningar"
+  },
+  "Proxy Mode": {
+    "sv": "Proxyläge"
+  },
+  "Queue": {
+    "sv": "Kö"
+  },
+  "Queue File": {
+    "sv": "Köfil"
+  },
+  "Queued Jobs": {
+    "de": "Aufträge in der Warteschlange",
+    "sv": "Köade jobb"
+  },
+  "Quit": {
+    "de": "Beenden",
+    "sv": "Avsluta"
+  },
+  "Radio off": {
+    "sv": "Radio av"
+  },
+  "Recs": {
+    "de": "Empfehlungen",
+    "sv": "Rekommendationer"
+  },
+  "Refresh": {
+    "de": "Aktualisieren",
+    "sv": "Uppdatera"
+  },
+  "Refresh Discover": {
+    "de": "Entdecken aktualisieren",
+    "sv": "Uppdatera Upptäck"
+  },
+  "Refresh Listens": {
+    "de": "Hörvorgänge aktualisieren",
+    "sv": "Uppdatera lyssningar"
+  },
+  "Refresh Match": {
+    "de": "Treffer aktualisieren",
+    "sv": "Uppdatera matchning"
+  },
+  "Refresh Social": {
+    "de": "Aktivitätsfeed aktualisieren",
+    "sv": "Uppdatera aktivitetsflödet"
+  },
+  "Refresh Widgets": {
+    "de": "Widgets aktualisieren",
+    "sv": "Uppdatera widgetar"
+  },
+  "Releases": {
+    "de": "Veröffentlichungen",
+    "sv": "Utgåvor"
+  },
+  "Resume Submissions": {
+    "sv": "Återuppta överföringar"
+  },
+  "Retry Delay": {
+    "de": "Wiederholungsverzögerung",
+    "sv": "Fördröjning före nytt försök"
+  },
+  "Retry Scheduled": {
+    "sv": "Nytt försök schemalagt"
+  },
+  "Scan Music Library": {
+    "sv": "Skanna musikbiblioteket"
+  },
+  "Scanning": {
+    "sv": "Skannar"
+  },
+  "Scrobble": {
+    "de": "Scrobble",
+    "sv": "Skrobbling"
+  },
+  "Scrobble Export": {
+    "de": "Scrobble-Export",
+    "sv": "Exportera skrobblingar"
+  },
+  "Seed Artists": {
+    "de": "Ausgangskünstler",
+    "sv": "Startartister"
+  },
+  "Separation Graph: %@": {
+    "de": "Trennungsdiagramm: %@"
+  },
+  "Shared Card": {
+    "sv": "Delat kort"
+  },
+  "Shared Music Timeline": {
+    "sv": "Delad musiktidslinje"
+  },
+  "Show Dock Icon": {
+    "de": "Dock-Symbol anzeigen"
+  },
+  "Show Submission Queue": {
+    "de": "Übermittlungswarteschlange anzeigen",
+    "sv": "Visa överföringskön"
+  },
+  "Skip": {
+    "de": "Überspringen",
+    "sv": "Hoppa över"
+  },
+  "Social Feed": {
+    "de": "Aktivitätsfeed",
+    "sv": "Aktivitetsflöde"
+  },
+  "Startup": {
+    "de": "Systemstart",
+    "sv": "Systemstart"
+  },
+  "Stats": {
+    "de": "Statistiken"
+  },
+  "Stub": {
+    "sv": "Stubb"
+  },
+  "Stub monitor": {
+    "sv": "Stubbövervakare"
+  },
+  "Submission Queue": {
+    "sv": "Överföringskö"
+  },
+  "Submit Listen": {
+    "de": "Hörvorgang übermitteln",
+    "sv": "Skicka lyssning"
+  },
+  "Submitted %d pending plays.": {
+    "sv": "Skickade %d väntande uppspelningar."
+  },
+  "Top Artists": {
+    "sv": "Toppartister"
+  },
+  "Top Origin": {
+    "sv": "Vanligaste ursprung"
+  },
+  "Top Releases": {
+    "de": "Top-Veröffentlichungen"
+  },
+  "Top Tracks": {
+    "de": "Top-Titel",
+    "sv": "Toppspår"
+  },
+  "Track": {
+    "sv": "Spår"
+  },
+  "Track Title": {
+    "de": "Titelname",
+    "sv": "Spårtitel"
+  },
+  "Trends vs. %@": {
+    "de": "Trends ggü. %@"
+  },
+  "Tribute": {
+    "sv": "Hyllning"
+  },
+  "Unlove": {
+    "sv": "Sluta gilla"
+  },
+  "Unpin": {
+    "sv": "Lossa"
+  },
+  "View Queue": {
+    "de": "Warteschlange anzeigen"
+  },
+  "Web import": {
+    "sv": "Webbimport"
+  },
+  "vs. %@ %@": {
+    "de": "ggü. %@ %@"
+  },
+  "Account": {
+    "de": "Konto",
+    "sv": "Konto"
+  },
+  "Account And Session": {
+    "de": "Konto und Sitzung"
+  },
+  "Activity": {
+    "de": "Aktivität"
+  },
+  "Advanced": {
+    "de": "Erweitert"
+  },
+  "Albums": {
+    "de": "Alben"
+  },
+  "Artist": {
+    "de": "Künstler"
+  },
+  "Artist overview": {
+    "de": "Künstlerübersicht"
+  },
+  "Artists": {
+    "de": "Künstler"
+  },
+  "Auth": {
+    "de": "Authentifizierung",
+    "sv": "Autentisering"
+  },
+  "Auth State": {
+    "de": "Authentifizierungsstatus",
+    "sv": "Autentiseringsstatus"
+  },
+  "Back": {
+    "de": "Zurück"
+  },
+  "Cancel": {
+    "de": "Abbrechen"
+  },
+  "Clear queue": {
+    "de": "Warteschlange leeren"
+  },
+  "Close": {
+    "de": "Schließen"
+  },
+  "Compare": {
+    "de": "Vergleichen"
+  },
+  "Compare Archives": {
+    "de": "Archive vergleichen"
+  },
+  "Comparison": {
+    "de": "Vergleich"
+  },
+  "Compatibility": {
+    "de": "Kompatibilität"
+  },
+  "Connect": {
+    "de": "Verbinden"
+  },
+  "Connected": {
+    "de": "Verbunden"
+  },
+  "Connected to ListenBrainz": {
+    "de": "Mit ListenBrainz verbunden"
+  },
+  "Continue": {
+    "de": "Weiter"
+  },
+  "Countries": {
+    "de": "Länder"
+  },
+  "Create Account": {
+    "de": "Konto erstellen"
+  },
+  "Current": {
+    "de": "Aktuell"
+  },
+  "Detected": {
+    "de": "Erkannt"
+  },
+  "Direction": {
+    "de": "Richtung"
+  },
+  "Disabled": {
+    "de": "Deaktiviert"
+  },
+  "Done": {
+    "de": "Fertig",
+    "sv": "Klar"
+  },
+  "Failed": {
+    "de": "Fehlgeschlagen"
+  },
+  "Follow": {
+    "de": "Folgen"
+  },
+  "Followers": {
+    "de": "Follower"
+  },
+  "Following": {
+    "de": "Gefolgt"
+  },
+  "General": {
+    "de": "Allgemein",
+    "sv": "Allmänt"
+  },
+  "Group": {
+    "sv": "Grupp"
+  },
+  "Host": {
+    "de": "Host",
+    "sv": "Värd"
+  },
+  "Import": {
+    "de": "Importieren",
+    "sv": "Importera"
+  },
+  "Imported": {
+    "de": "Importiert"
+  },
+  "Inspect": {
+    "de": "Prüfen",
+    "sv": "Granska"
+  },
+  "Last.month": {
+    "de": "Letzter Monat",
+    "sv": "Förra månaden"
+  },
+  "Later": {
+    "sv": "Senare"
+  },
+  "Listen": {
+    "sv": "Lyssning"
+  },
+  "Listeners": {
+    "sv": "Lyssnare"
+  },
+  "Live": {
+    "sv": "Live"
+  },
+  "Loading Radio": {
+    "de": "Radio wird geladen",
+    "sv": "Radion läses in"
+  },
+  "Love": {
+    "sv": "Gilla"
+  },
+  "Member": {
+    "de": "Mitglied"
+  },
+  "Minutes": {
+    "sv": "Minuter"
+  },
+  "Month": {
+    "de": "Monat"
+  },
+  "No": {
+    "de": "Nein",
+    "sv": "Nej"
+  },
+  "Now": {
+    "de": "Jetzt",
+    "sv": "Nu"
+  },
+  "Open Settings": {
+    "de": "Einstellungen öffnen",
+    "sv": "Öppna inställningarna"
+  },
+  "Open Source Link": {
+    "de": "Quelllink öffnen",
+    "sv": "Öppna källänken"
+  },
+  "Open Token Page": {
+    "de": "Token-Seite öffnen",
+    "sv": "Öppna tokensidan"
+  },
+  "Orchestra": {
+    "de": "Orchester",
+    "sv": "Orkester"
+  },
+  "Overall": {
+    "de": "Insgesamt"
+  },
+  "Password": {
+    "de": "Passwort"
+  },
+  "People": {
+    "de": "Personen",
+    "sv": "Personer"
+  },
+  "Port": {
+    "de": "Port",
+    "sv": "Port"
+  },
+  "Preferences": {
+    "de": "Einstellungen",
+    "sv": "Inställningar"
+  },
+  "Queued Tracks": {
+    "de": "Titel in der Warteschlange",
+    "sv": "Köade spår"
+  },
+  "Recommend": {
+    "sv": "Rekommendera"
+  },
+  "Recommendations": {
+    "de": "Empfehlungen",
+    "sv": "Rekommendationer"
+  },
+  "Recommended": {
+    "de": "Empfohlen"
+  },
+  "Results": {
+    "de": "Ergebnisse"
+  },
+  "Search": {
+    "sv": "Sök"
+  },
+  "Seconds": {
+    "sv": "Sekunder"
+  },
+  "Settings": {
+    "sv": "Inställningar"
+  },
+  "Show Dock": {
+    "de": "Dock anzeigen"
+  },
+  "Social": {
+    "sv": "Socialt"
+  },
+  "Songs": {
+    "de": "Songs",
+    "sv": "Låtar"
+  },
+  "State": {
+    "de": "Status",
+    "sv": "Status"
+  },
+  "Submit": {
+    "sv": "Skicka"
+  },
+  "Tags": {
+    "sv": "Taggar"
+  },
+  "Tracks": {
+    "de": "Titel",
+    "sv": "Spår"
+  },
+  "Unfollow": {
+    "de": "Nicht mehr folgen"
+  },
+  "Unknown": {
+    "de": "Unbekannt",
+    "sv": "Okänd"
+  },
+  "User": {
+    "de": "Benutzer",
+    "sv": "Användare"
+  },
+  "Username": {
+    "de": "Benutzername",
+    "sv": "Användarnamn"
+  },
+  "Validation": {
+    "de": "Validierung",
+    "sv": "Validering"
+  },
+  "Warnings": {
+    "de": "Warnungen",
+    "sv": "Varningar"
+  },
+  "Weekly": {
+    "sv": "Varje vecka"
+  },
+  "Yearly": {
+    "de": "Jährlich"
+  },
+  "Yes": {
+    "de": "Ja",
+    "sv": "Ja"
+  },
+  "never": {
+    "sv": "aldrig"
+  },
+  "no": {
+    "sv": "nej"
+  },
+  "none": {
+    "sv": "ingen"
+  },
+  "Alias": {
+    "de": "Alias"
+  },
+  "All": {
+    "sv": "Alla"
+  },
+  "Followers + Following": {
+    "de": "Follower und Gefolgte"
+  },
+  "ListenBrainz Social": {
+    "sv": "Socialt på ListenBrainz"
+  },
+  "Loaded %lld followers, %lld following, %lld similar users, and %lld neighbor listens": {
+    "sv": "%lld följare, %lld följda, %lld liknande användare och %lld grannlyssningar inlästa"
+  },
+  "Loading followers, following, and similar users...": {
+    "de": "Follower, Gefolgte und ähnliche Benutzer werden geladen ..."
+  },
+  "Music": {
+    "sv": "Musik"
+  },
+  "Online": {
+    "sv": "Online"
+  },
+  "Radio": {
+    "sv": "Radio"
+  },
+  "Similar": {
+    "de": "Ähnlich"
+  },
+  "month": {
+    "sv": "Månad"
+  },
+  "Discover": {
+    "sv": "Upptäck"
+  },
+  "Discovery": {
+    "sv": "Upptäck"
+  },
+  "Discovery without a locked graph": {
+    "sv": "Upptäck utan låst graf"
+  },
+  "Open": {
+    "de": "Öffnen",
+    "sv": "Öppna"
+  },
+  "Share": {
+    "de": "Teilen",
+    "sv": "Dela"
+  },
+  "Capture": {
+    "de": "Erfassen",
+    "sv": "Fånga"
+  },
+  "Clear": {
+    "de": "Leeren",
+    "sv": "Rensa"
+  },
+  "Delete": {
+    "de": "Löschen",
+    "sv": "Ta bort"
+  },
+  "Disconnect": {
+    "de": "Verbindung trennen",
+    "sv": "Koppla från"
+  },
+  "Elapsed": {
+    "de": "Verstrichen",
+    "sv": "Förfluten tid"
+  },
+  "Enabled": {
+    "de": "Aktiviert",
+    "sv": "Aktiverad"
+  },
+  "Export": {
+    "de": "Exportieren",
+    "sv": "Exportera"
+  },
+  "Fetched": {
+    "de": "Abgerufen",
+    "sv": "Hämtad"
+  },
+  "Formed": {
+    "de": "Gegründet",
+    "sv": "Bildad"
+  },
+  "Kind": {
+    "de": "Art",
+    "sv": "Typ"
+  },
+  "Range": {
+    "de": "Bereich",
+    "sv": "Intervall"
+  },
+  "Scope": {
+    "de": "Umfang",
+    "sv": "Omfattning"
+  },
+  "Sent": {
+    "de": "Gesendet",
+    "sv": "Skickad"
+  },
+  "%lld Albums": {
+    "de": "%lld Alben"
+  },
+  "%lld Artists": {
+    "de": "%lld Künstler"
+  },
+  "%lld Tracks": {
+    "de": "%lld Titel"
+  },
+  "%lld tracks": {
+    "de": "%lld Titel"
+  },
+  "Failed to load compatibility": {
+    "de": "Kompatibilität konnte nicht geladen werden",
+    "sv": "Det gick inte att läsa in kompatibilitet"
+  },
+  "Failed to load detail": {
+    "de": "Details konnten nicht geladen werden",
+    "sv": "Det gick inte att läsa in information"
+  },
+  "Failed to load details": {
+    "de": "Details konnten nicht geladen werden",
+    "sv": "Det gick inte att läsa in information"
+  },
+  "Failed to load listens": {
+    "de": "Hörvorgänge konnten nicht geladen werden",
+    "sv": "Det gick inte att läsa in lyssningar"
+  },
+  "Failed to load people": {
+    "de": "Personen konnten nicht geladen werden",
+    "sv": "Det gick inte att läsa in personer"
+  },
+  "Failed to load profile": {
+    "de": "Profil konnte nicht geladen werden",
+    "sv": "Det gick inte att läsa in profilen"
+  },
+  "Failed to load recommendations": {
+    "de": "Empfehlungen konnten nicht geladen werden",
+    "sv": "Det gick inte att läsa in rekommendationer"
+  },
+  "Loading detail...": {
+    "de": "Details werden geladen ...",
+    "sv": "Läser in information ..."
+  },
+  "Loading listens...": {
+    "de": "Hörvorgänge werden geladen ...",
+    "sv": "Läser in lyssningar ..."
+  },
+  "Loading playlists...": {
+    "de": "Playlists werden geladen ...",
+    "sv": "Läser in spellistor ..."
+  },
+  "Loading profile...": {
+    "de": "Profil wird geladen ...",
+    "sv": "Läser in profilen ..."
+  },
+  "Loading recommendations": {
+    "de": "Empfehlungen werden geladen",
+    "sv": "Läser in rekommendationer"
+  },
+  "Loading recommendations...": {
+    "de": "Empfehlungen werden geladen ...",
+    "sv": "Läser in rekommendationer ..."
+  },
+  "Loading social activity": {
+    "de": "Soziale Aktivitäten werden geladen",
+    "sv": "Läser in social aktivitet"
+  },
+  "No current track": {
+    "de": "Kein aktueller Titel",
+    "sv": "Inget aktuellt spår"
+  },
+  "No track detected": {
+    "de": "Kein Titel erkannt",
+    "sv": "Inget spår identifierat"
+  },
+  "No track playing": {
+    "de": "Kein Titel wird wiedergegeben",
+    "sv": "Inget spår spelas"
+  },
+  "Not configured": {
+    "de": "Nicht konfiguriert"
+  },
+  "Not loaded": {
+    "de": "Nicht geladen"
+  },
+  "Open Add Data": {
+    "de": "Daten hinzufügen öffnen",
+    "sv": "Öppna Lägg till data"
+  },
+  "Open ListenScrobbler": {
+    "de": "ListenScrobbler öffnen"
+  },
+  "Open artist profile": {
+    "de": "Künstlerprofil öffnen",
+    "sv": "Öppna artistprofilen"
+  },
+  "Open submission queue": {
+    "de": "Übermittlungswarteschlange öffnen",
+    "sv": "Öppna överföringskön"
+  },
+  "Refresh ListenBrainz": {
+    "de": "ListenBrainz aktualisieren",
+    "sv": "Uppdatera ListenBrainz"
+  },
+  "Refresh Recommendations": {
+    "de": "Empfehlungen aktualisieren",
+    "sv": "Uppdatera rekommendationer"
+  },
+  "Refresh ListenScrobbler Widgets": {
+    "sv": "Uppdatera ListenScrobbler-widgetar"
+  },
+  "Session valid": {
+    "sv": "Sessionen är giltig"
+  },
+  "Submitted listen": {
+    "sv": "Lyssningen skickades"
+  },
+  "Manual scrobble with ${applicationName}": {
+    "de": "Manuell mit ${applicationName} scrobbeln",
+    "sv": "Skrobbla manuellt med ${applicationName}"
+  },
+  "Add a listen with ${applicationName}": {
+    "de": "Einen Hörvorgang mit ${applicationName} hinzufügen",
+    "sv": "Lägg till en lyssning med ${applicationName}"
+  },
+  "Open ${applicationName}": {
+    "de": "${applicationName} öffnen",
+    "sv": "Öppna ${applicationName}"
+  },
+  "Open ${destination} in ${applicationName}": {
+    "de": "${destination} in ${applicationName} öffnen",
+    "sv": "Öppna ${destination} i ${applicationName}"
+  },
+  "Refresh ${applicationName}": {
+    "de": "${applicationName} aktualisieren",
+    "sv": "Uppdatera ${applicationName}"
+  },
+  "Refresh ListenBrainz with ${applicationName}": {
+    "de": "ListenBrainz mit ${applicationName} aktualisieren",
+    "sv": "Uppdatera ListenBrainz med ${applicationName}"
+  },
+  "Refresh ListenScrobbler widgets with ${applicationName}": {
+    "de": "ListenScrobbler-Widgets mit ${applicationName} aktualisieren",
+    "sv": "Uppdatera ListenScrobbler-widgetar med ${applicationName}"
+  },
+  "Update ListenScrobbler widgets with ${applicationName}": {
+    "de": "ListenScrobbler-Widgets mit ${applicationName} neu laden",
+    "sv": "Läs in ListenScrobbler-widgetar på nytt med ${applicationName}"
+  },
+  "Repeat recent listen with ${applicationName}": {
+    "de": "Den letzten Hörvorgang mit ${applicationName} wiederholen",
+    "sv": "Upprepa den senaste lyssningen med ${applicationName}"
+  },
+  "Scrobble the last listen with ${applicationName}": {
+    "de": "Den letzten Hörvorgang mit ${applicationName} scrobbeln",
+    "sv": "Skrobbla den senaste lyssningen med ${applicationName}"
+  },
+  "Submit a listen with ${applicationName}": {
+    "de": "Einen Hörvorgang mit ${applicationName} übermitteln",
+    "sv": "Skicka en lyssning med ${applicationName}"
+  },
+  "Add a scrobble with ${applicationName}": {
+    "de": "Einen Scrobble mit ${applicationName} hinzufügen",
+    "sv": "Lägg till en skrobbling med ${applicationName}"
+  }
+}

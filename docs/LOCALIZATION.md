@@ -118,3 +118,44 @@ language matches the selected language.
 Never expose a partially translated language in a release. Brand names,
 protocol identifiers, URLs, and user content should remain unchanged unless a
 specific localized product term is documented.
+
+## Translation Glossary and Voice
+
+Translate the meaning of a term in its music-product context rather than its
+most common dictionary meaning. In particular, `play` means a playback,
+`track` means a musical track, `release` means a musical release, and `pin`
+means the ListenBrainz pin feature. `Scrobble` may remain a recognizable
+product term where that is natural in the target language; otherwise describe
+the action as submitting or recording a listen.
+
+Use these concepts consistently throughout one localization:
+
+| Concept | Meaning in ListenScrobbler |
+| --- | --- |
+| listen | One listening-history event, not a listener or an imperative |
+| play | Playback or play count, never a game or theatre performance |
+| track | A song or recording, never a railway track or physical trace |
+| release | A published album, EP, or single |
+| pin | A pinned ListenBrainz recording |
+| love | Mark a track as loved or a favorite |
+| queue | Pending submissions or background work |
+| refresh | Reload current data |
+| baseline | The library-scan reference point |
+| widget | The platform's native home-screen or desktop widget term |
+
+Keep commands short and use one grammatical voice per language. The current
+choices are neutral Spanish with informal second person, standard French with
+infinitives in menus and `vous` in instructions, Italian with infinitives in
+actions and informal help text, and European Portuguese (`pt-PT`). German and
+Swedish actions use concise infinitives or imperatives without formal address.
+
+String-catalog comments must explain ambiguous nouns and verbs, especially
+`listen`, `play`, `pin`, `love`, `release`, `open`, and `track`. When the same
+English text has different meanings in different screens, use separate keys or
+provide enough developer context to translate each occurrence correctly.
+
+Preserve format arguments, App Shortcut `${...}` parameters, meaningful edge
+whitespace, separators, and units. Do not reorder unnumbered printf arguments;
+use positional arguments if the translated grammar requires a different order.
+Quantified UI text must use String Catalog plural variations rather than an
+English `(s)` suffix or a fixed singular form.

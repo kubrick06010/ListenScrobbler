@@ -26,8 +26,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Manuelles Scrobble mit ${applicationName}",
-              "Hören Sie mit ${applicationName}"
+              "Manuell mit ${applicationName} scrobbeln",
+              "Einen Hörvorgang mit ${applicationName} hinzufügen"
             ]
           }
         },
@@ -53,8 +53,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "マニュアルスクルーブル${applicationName}",
-              "${applicationName}でリスニングを追加する"
+              "${applicationName}で手動スクロブル",
+              "${applicationName}で再生履歴を追加"
             ]
           }
         },
@@ -62,8 +62,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Ręczne przewijanie z ${applicationName}",
-              "Dodaj słuchanie z ${applicationName}"
+              "Ręcznie zarejestruj odsłuch w ${applicationName}",
+              "Dodaj odsłuch w ${applicationName}"
             ]
           }
         },
@@ -80,8 +80,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Ручной скроббл с ${applicationName}",
-              "Добавить прослушивание с ${applicationName}"
+              "Вручную заскробблить в ${applicationName}",
+              "Добавить прослушивание в ${applicationName}"
             ]
           }
         },
@@ -89,8 +89,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Manuell skruv med ${applicationName}",
-              "Lägg till ett lyssnande med ${applicationName}"
+              "Skrobbla manuellt med ${applicationName}",
+              "Lägg till en lyssning med ${applicationName}"
             ]
           }
         },
@@ -98,8 +98,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Kılavuz ${applicationName} ile scrobble",
-              "${applicationName} ile bir dinleme ekleyin"
+              "${applicationName} ile elle skropla",
+              "${applicationName} ile bir dinleme ekle"
             ]
           }
         },
@@ -107,8 +107,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "手动用 ${applicationName} 拼写",
-              "用 ${applicationName} 添加监听"
+              "使用 ${applicationName} 手动提交收听记录",
+              "使用 ${applicationName} 添加收听记录"
             ]
           }
         }
@@ -139,8 +139,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Offenes ${applicationName}",
-              "${destination} öffnen in ${applicationName}"
+              "${applicationName} öffnen",
+              "${destination} in ${applicationName} öffnen"
             ]
           }
         },
@@ -193,8 +193,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Открытый ${applicationName}",
-              "Открытый ${destination} в ${applicationName}"
+              "Открыть ${applicationName}",
+              "Открыть ${destination} в ${applicationName}"
             ]
           }
         },
@@ -203,7 +203,7 @@
             "state": "translated",
             "values": [
               "Öppna ${applicationName}",
-              "Open ${destination} i ${applicationName}"
+              "Öppna ${destination} i ${applicationName}"
             ]
           }
         },
@@ -211,8 +211,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Açık ${applicationName}",
-              "${applicationName}'da Açık ${destination}"
+              "${applicationName} uygulamasını aç",
+              "${destination} hedefini ${applicationName} uygulamasında aç"
             ]
           }
         },
@@ -252,8 +252,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Erfrischendes ${applicationName}",
-              "ListenBrainz mit ${applicationName} auffrischen"
+              "${applicationName} aktualisieren",
+              "ListenBrainz mit ${applicationName} aktualisieren"
             ]
           }
         },
@@ -279,8 +279,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "リフレッシュ${applicationName}",
-              "${applicationName}でListenBrainzをリフレッシュ"
+              "${applicationName}を更新",
+              "${applicationName}でListenBrainzを更新"
             ]
           }
         },
@@ -289,7 +289,7 @@
             "state": "translated",
             "values": [
               "Odśwież ${applicationName}",
-              "Odśwież ListenBrainz z ${applicationName}"
+              "Odśwież ListenBrainz w ${applicationName}"
             ]
           }
         },
@@ -307,7 +307,7 @@
             "state": "translated",
             "values": [
               "Обновить ${applicationName}",
-              "Обновить ListenBrainz с помощью ${applicationName}"
+              "Обновить данные ListenBrainz в ${applicationName}"
             ]
           }
         },
@@ -315,8 +315,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Redigera ${applicationName}",
-              "Hämta ListenBrainz med ${applicationName}"
+              "Uppdatera ${applicationName}",
+              "Uppdatera ListenBrainz med ${applicationName}"
             ]
           }
         },
@@ -324,8 +324,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Yenileme${applicationName}",
-              "${applicationName} ile ListenBrainz"
+              "${applicationName} uygulamasını yenile",
+              "ListenBrainz verilerini ${applicationName} ile yenile"
             ]
           }
         },
@@ -334,7 +334,7 @@
             "state": "translated",
             "values": [
               "刷新 ${applicationName}",
-              "用 ${applicationName} 刷新 ListenBrainz"
+              "使用 ${applicationName} 刷新 ListenBrainz"
             ]
           }
         }
@@ -366,7 +366,7 @@
             "state": "translated",
             "values": [
               "ListenScrobbler-Widgets mit ${applicationName} aktualisieren",
-              "Aktualisieren Sie ListenScrobbler Widgets mit ${applicationName}"
+              "ListenScrobbler-Widgets mit ${applicationName} neu laden"
             ]
           }
         },
@@ -392,8 +392,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "${applicationName}でListenScrobblerウィジェットを更新",
-              "${applicationName}でListenScrobblerウィジェットを更新"
+              "${applicationName}でListenScrobblerのウィジェットを更新",
+              "${applicationName}でListenScrobblerのウィジェットを最新の状態にする"
             ]
           }
         },
@@ -401,8 +401,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Odśwież widżety ListenScrobbler z ${applicationName}",
-              "Aktualizuj widżety ListenScrobbler za pomocą ${applicationName}"
+              "Odśwież widżety ListenScrobbler w ${applicationName}",
+              "Zaktualizuj widżety ListenScrobbler w ${applicationName}"
             ]
           }
         },
@@ -419,8 +419,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Обновление ListenScrobbler виджетов с помощью ${applicationName}",
-              "Обновление ListenScrobbler виджетов с помощью ${applicationName}"
+              "Обновить виджеты ListenScrobbler в ${applicationName}",
+              "Актуализировать виджеты ListenScrobbler в ${applicationName}"
             ]
           }
         },
@@ -429,7 +429,7 @@
             "state": "translated",
             "values": [
               "Uppdatera ListenScrobbler-widgetar med ${applicationName}",
-              "Uppdatera ListenScrobbler-widgetar med ${applicationName}"
+              "Läs in ListenScrobbler-widgetar på nytt med ${applicationName}"
             ]
           }
         },
@@ -437,8 +437,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "${applicationName} ile yeni ListenScrobbler pencereleri",
-              "Update ListenScrobbler widgets with ${applicationName}"
+              "ListenScrobbler araç takımlarını ${applicationName} ile yenile",
+              "ListenScrobbler araç takımlarını ${applicationName} ile güncelle"
             ]
           }
         },
@@ -446,8 +446,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "用 ${applicationName} 刷新 ListenScrobbler 部件",
-              "用 ${applicationName} 更新 ListenScrobbler 部件"
+              "使用 ${applicationName} 刷新 ListenScrobbler 小组件",
+              "使用 ${applicationName} 更新 ListenScrobbler 小组件"
             ]
           }
         }
@@ -478,8 +478,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Wiederholen Sie das aktuelle Hören mit ${applicationName}",
-              "Scrobble das letzte Hören mit ${applicationName}"
+              "Den letzten Hörvorgang mit ${applicationName} wiederholen",
+              "Den letzten Hörvorgang mit ${applicationName} scrobbeln"
             ]
           }
         },
@@ -505,8 +505,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "最近の${applicationName}を再生する",
-              "最後の${applicationName}で聴く"
+              "${applicationName}で最近の再生履歴を再送信",
+              "${applicationName}で最後の再生履歴をスクロブル"
             ]
           }
         },
@@ -514,8 +514,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Powtórzyć ostatnio słuchać z ${applicationName}",
-              "Przewiń ostatni dźwięk z ${applicationName}"
+              "Powtórz ostatni odsłuch w ${applicationName}",
+              "Zarejestruj ponownie ostatni odsłuch w ${applicationName}"
             ]
           }
         },
@@ -532,8 +532,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Повторите недавний прослушивание с помощью ${applicationName}",
-              "Скроббл последний прослушивание с ${applicationName}"
+              "Повторить недавнее прослушивание в ${applicationName}",
+              "Заскробблить последнее прослушивание в ${applicationName}"
             ]
           }
         },
@@ -541,8 +541,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Upprepa nyligen lyssna med ${applicationName}",
-              "Skräp den sista lyssna med ${applicationName}"
+              "Upprepa den senaste lyssningen med ${applicationName}",
+              "Skrobbla den senaste lyssningen med ${applicationName}"
             ]
           }
         },
@@ -550,8 +550,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Son zamanlarda ${applicationName} ile dinlemek",
-              "${applicationName} ile son dinlemek"
+              "Son dinlemeyi ${applicationName} ile yinele",
+              "Son dinlemeyi ${applicationName} ile skropla"
             ]
           }
         },
@@ -559,8 +559,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "最近用 ${applicationName} 重播",
-              "用 ${applicationName} 拼接最后的声音"
+              "使用 ${applicationName} 重新提交最近的收听记录",
+              "使用 ${applicationName} 提交上一条收听记录"
             ]
           }
         }
@@ -591,8 +591,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Hören Sie mit ${applicationName}",
-              "Hinzufügen eines Scrobbles mit ${applicationName}"
+              "Einen Hörvorgang mit ${applicationName} übermitteln",
+              "Einen Scrobble mit ${applicationName} hinzufügen"
             ]
           }
         },
@@ -618,8 +618,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "${applicationName}で聴く",
-              "${applicationName}でスクルーブルを追加"
+              "${applicationName}で再生履歴を送信",
+              "${applicationName}でスクロブルを追加"
             ]
           }
         },
@@ -627,8 +627,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Wyślij słuchanie z ${applicationName}",
-              "Dodaj scrobble z ${applicationName}"
+              "Prześlij odsłuch w ${applicationName}",
+              "Dodaj scrobble w ${applicationName}"
             ]
           }
         },
@@ -645,8 +645,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Отправьте прослушивание с помощью ${applicationName}",
-              "Добавить scrobble с ${applicationName}"
+              "Отправить прослушивание через ${applicationName}",
+              "Добавить скроббл через ${applicationName}"
             ]
           }
         },
@@ -654,8 +654,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "Skicka ett lyssnande med ${applicationName}",
-              "Lägg till en scrobble med ${applicationName}"
+              "Skicka en lyssning med ${applicationName}",
+              "Lägg till en skrobbling med ${applicationName}"
             ]
           }
         },
@@ -663,8 +663,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "${applicationName} ile bir dinleme gönderin",
-              "${applicationName} ile bir scrobble ekleyin"
+              "${applicationName} ile bir dinleme gönder",
+              "${applicationName} ile bir skroplama ekle"
             ]
           }
         },
@@ -672,8 +672,8 @@
           "stringSet": {
             "state": "translated",
             "values": [
-              "以 ${applicationName} 提交监听",
-              "添加带有 ${applicationName} 的拼音"
+              "使用 ${applicationName} 提交收听记录",
+              "使用 ${applicationName} 添加收听记录"
             ]
           }
         }

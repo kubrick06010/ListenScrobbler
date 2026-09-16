@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 1.1.6 - 2026-09-16
+
+### Fixed
+
+- Corrected the published translations and App Shortcut phrases across all
+  supported macOS languages, including terminology, placeholders, whitespace,
+  and machine-translation artifacts.
+
+### Changed
+
+- Added automated localization coverage and a native-speaker QA handoff plan.
+- Advanced macOS to version `1.1.6` build `12`.
+
 ## 1.1.5 - 2026-08-13
 
 ### Added
