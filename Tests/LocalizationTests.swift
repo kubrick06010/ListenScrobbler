@@ -344,6 +344,54 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(spanishBundle.localizedString(forKey: "Manual Scrobble", value: nil, table: nil), "Scrobble manual")
     }
 
+    func testMusicMetadataLabelsKeepEntityContextAcrossLanguages() throws {
+        let strings = try stringCatalogEntries()
+        let expected: [String: [String: String]] = [
+            "Artist MBID": [
+                "es": "MBID del artista", "de": "MBID des Künstlers", "fr": "MBID de l’artiste",
+                "it": "MBID dell’artista", "ja": "アーティストのMBID", "pl": "MBID artysty",
+                "pt": "MBID do artista", "ru": "MBID исполнителя", "sv": "MBID för artisten",
+                "tr": "Sanatçı MBID’si", "zh-Hans": "艺术家 MBID"
+            ],
+            "Recording MBID": [
+                "es": "MBID de la grabación", "de": "MBID der Aufnahme", "fr": "MBID de l’enregistrement",
+                "it": "MBID della registrazione", "ja": "録音のMBID", "pl": "MBID nagrania",
+                "pt": "MBID da gravação", "ru": "MBID записи", "sv": "MBID för inspelningen",
+                "tr": "Kayıt MBID’si", "zh-Hans": "录音 MBID"
+            ],
+            "Release MBID": [
+                "es": "MBID del lanzamiento", "de": "MBID der Veröffentlichung", "fr": "MBID de la sortie",
+                "it": "MBID della pubblicazione", "ja": "リリースのMBID", "pl": "MBID wydania",
+                "pt": "MBID do lançamento", "ru": "MBID релиза", "sv": "MBID för utgåvan",
+                "tr": "Yayın MBID’si", "zh-Hans": "发行 MBID"
+            ],
+            "Release": [
+                "es": "Lanzamiento", "de": "Veröffentlichung", "fr": "Sortie", "it": "Pubblicazione",
+                "ja": "リリース", "pl": "Wydanie", "pt": "Lançamento", "ru": "Релиз",
+                "sv": "Utgåva", "tr": "Yayın", "zh-Hans": "发行"
+            ],
+            "Releases": [
+                "es": "Lanzamientos", "de": "Veröffentlichungen", "fr": "Sorties", "it": "Pubblicazioni",
+                "ja": "リリース", "pl": "Wydania", "pt": "Lançamentos", "ru": "Релизы",
+                "sv": "Utgåvor", "tr": "Yayınlar", "zh-Hans": "发行"
+            ]
+        ]
+
+        for (key, values) in expected {
+            let entry = try XCTUnwrap(strings[key], "Missing metadata label (key)")
+            for (language, expectedValue) in values {
+                XCTAssertEqual(
+                    localizedValue(in: entry, language: language),
+                    expectedValue,
+                    "(key) has lost its music-entity context for (language)."
+                )
+            }
+        }
+
+        XCTAssertEqual(localizedValue(in: strings["Open Metadata"], language: "es"), "Metadatos abiertos")
+        XCTAssertEqual(localizedValue(in: strings["Best effort"], language: "es"), "Aproximado")
+    }
+
     func testSpanishLocalizationPreservesFormatArguments() throws {
         let strings = try stringCatalogEntries()
         let mismatches = strings.compactMap { key, value -> String? in

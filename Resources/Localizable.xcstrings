@@ -2499,37 +2499,37 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "%d ListenBrainz Freisetzungen"
+            "value": "%d ListenBrainz-Veröffentlichungen"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%d ListenBrainz Sorties"
+            "value": "%d sorties ListenBrainz"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "%d pubblicazioni ListenBrainz"
+            "value": "%d pubblicazioni di ListenBrainz"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%d ListenBrainzリリース"
+            "value": "ListenBrainzのリリース%d件"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "%d wydań w ListenBrainz"
+            "value": "%d wydań ListenBrainz"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "%d ListenBrainz Lançamentos"
+            "value": "%d lançamentos do ListenBrainz"
           }
         },
         "ru": {
@@ -2541,19 +2541,19 @@
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "%dListenBrainzReleases"
+            "value": "%d ListenBrainz-utgåvor"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%d ListenBrainz yayımı"
+            "value": "%d ListenBrainz yayını"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%d ListenBrainz 发布"
+            "value": "%d 个 ListenBrainz 发行"
           }
         }
       }
@@ -8747,35 +8747,36 @@
       }
     },
     "Artist MBID": {
+      "comment": "MusicBrainz identifier for the artist entity, shown as a metadata field label.",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Artista MBID"
+            "value": "MBID del artista"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Künstler MBID"
+            "value": "MBID des Künstlers"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Artiste MBID"
+            "value": "MBID de l’artiste"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Artista MBID"
+            "value": "MBID dell’artista"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "アーティスト MBID"
+            "value": "アーティストのMBID"
           }
         },
         "pl": {
@@ -8787,31 +8788,31 @@
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Artista MBID"
+            "value": "MBID do artista"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Исполнитель: MBID"
+            "value": "MBID исполнителя"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "KonstnärMBID"
+            "value": "MBID för artisten"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sanatçı MBID"
+            "value": "Sanatçı MBID’si"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "艺人 MBID"
+            "value": "艺术家 MBID"
           }
         }
       }
@@ -10568,71 +10569,72 @@
       }
     },
     "Best effort": {
+      "comment": "Badge for metadata resolved through a fallback or approximate match, not an action.",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mejor esfuerzo"
+            "value": "Aproximado"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bester Aufwand"
+            "value": "Bestmögliche Zuordnung"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Meilleur effort"
+            "value": "Correspondance approximative"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Il miglior sforzo"
+            "value": "Corrispondenza approssimativa"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "最高の努力"
+            "value": "推定"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Najlepszy wysiłek"
+            "value": "Przybliżone"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Melhor esforço"
+            "value": "Aproximado"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Лучшее усилие"
+            "value": "Приблизительно"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bästa ansträngning"
+            "value": "Ungefärligt"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "En İyi Çaba"
+            "value": "Yaklaşık"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "尽最大的努力"
+            "value": "近似结果"
           }
         }
       }
@@ -17118,7 +17120,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "カントリー"
+            "value": "国"
           }
         },
         "pl": {
@@ -17142,7 +17144,7 @@
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Landet"
+            "value": "Land"
           }
         },
         "tr": {
@@ -19340,19 +19342,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zweideutigkeit"
+            "value": "Disambiguierung"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Désambigation"
+            "value": "Désambiguïsation"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Disambigua"
+            "value": "Disambiguazione"
           }
         },
         "ja": {
@@ -19364,7 +19366,7 @@
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dyskryminacja"
+            "value": "Rozróżnienie"
           }
         },
         "pt": {
@@ -19376,7 +19378,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Недвусмысленность"
+            "value": "Уточнение"
           }
         },
         "sv": {
@@ -26640,25 +26642,25 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "ListenBrainz Kontext"
+            "value": "ListenBrainz-Kontext"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "ListenBrainz Contexte"
+            "value": "Contexte ListenBrainz"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Contesto ListenBrainz"
+            "value": "Contesto di ListenBrainz"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ListenBrainz コンテキスト"
+            "value": "ListenBrainzのコンテキスト"
           }
         },
         "pl": {
@@ -26670,7 +26672,7 @@
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Contexto ListenBrainz"
+            "value": "Contexto do ListenBrainz"
           }
         },
         "ru": {
@@ -26682,13 +26684,13 @@
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "ListenBrainz Kontext"
+            "value": "ListenBrainz-kontext"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "ListenBrainz Bağlamı"
+            "value": "ListenBrainz bağlamı"
           }
         },
         "zh-Hans": {
@@ -31023,7 +31025,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Geladene offene Metadaten"
+            "value": "Offene Metadaten geladen"
           }
         },
         "fr": {
@@ -31035,19 +31037,19 @@
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "metadati aperti carichi"
+            "value": "Metadati aperti caricati"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "オープンメタデータをロード"
+            "value": "オープンメタデータを読み込み済み"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Załadowane metadane otwarte"
+            "value": "Załadowano otwarte metadane"
           }
         },
         "pt": {
@@ -31059,7 +31061,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Загруженные открытые метаданные"
+            "value": "Открытые метаданные загружены"
           }
         },
         "sv": {
@@ -31071,13 +31073,13 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Açık metadata"
+            "value": "Açık meta veriler yüklendi"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已装入打开的元数据"
+            "value": "已加载开放元数据"
           }
         }
       }
@@ -31093,7 +31095,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Geladene offene Metadaten (begrenzt)"
+            "value": "Offene Metadaten geladen (eingeschränkt)"
           }
         },
         "fr": {
@@ -31105,19 +31107,19 @@
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Metadati aperti carichi (limitati)"
+            "value": "Metadati aperti caricati (limitati)"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "オープンメタデータ(限定)"
+            "value": "オープンメタデータを読み込み済み（限定）"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Załadowane metadane otwarte (ograniczone)"
+            "value": "Załadowano otwarte metadane (ograniczone)"
           }
         },
         "pt": {
@@ -31129,25 +31131,25 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Загруженные открытые метаданные (ограниченные)"
+            "value": "Открытые метаданные загружены (ограниченно)"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Loaded open metadata (begränsad)"
+            "value": "Öppna metadata har lästs in (begränsade)"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Açık metadata (limited)"
+            "value": "Açık meta veriler yüklendi (sınırlı)"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已装入打开的元数据( 有限)"
+            "value": "已加载开放元数据（有限）"
           }
         }
       }
@@ -35428,7 +35430,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "MúsicaBrainz etiquetas"
+            "value": "Etiquetas de MusicBrainz"
           }
         },
         "de": {
@@ -35446,37 +35448,37 @@
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tag MusicBrainz"
+            "value": "Tag di MusicBrainz"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "MusicBrainzタグ"
+            "value": "MusicBrainzのタグ"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Znaczniki MusicBrainz"
+            "value": "Tagi MusicBrainz"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Marcas MusicBrainz"
+            "value": "Etiquetas do MusicBrainz"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "MusicBrainz теги"
+            "value": "Теги MusicBrainz"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "MusicBrainz taggar"
+            "value": "MusicBrainz-taggar"
           }
         },
         "tr": {
@@ -41663,11 +41665,12 @@
       }
     },
     "Open Metadata": {
+      "comment": "Heading for metadata retrieved from open music databases, not an imperative to open metadata.",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir metadatos"
+            "value": "Metadatos abiertos"
           }
         },
         "de": {
@@ -41679,7 +41682,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrir les métadonnées"
+            "value": "Métadonnées ouvertes"
           }
         },
         "it": {
@@ -41691,7 +41694,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "メタデータを開く"
+            "value": "オープンメタデータ"
           }
         },
         "pl": {
@@ -41703,7 +41706,7 @@
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir metadados"
+            "value": "Metadados abertos"
           }
         },
         "ru": {
@@ -41721,13 +41724,13 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Meta Verileri Aç"
+            "value": "Açık meta veriler"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "打开元数据"
+            "value": "开放元数据"
           }
         }
       }
@@ -42519,7 +42522,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrir les données"
+            "value": "Données ouvertes"
           }
         },
         "it": {
@@ -42531,7 +42534,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "データを開く"
+            "value": "オープンデータ"
           }
         },
         "pl": {
@@ -42543,7 +42546,7 @@
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir dados"
+            "value": "Dados abertos"
           }
         },
         "ru": {
@@ -42567,7 +42570,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "打开数据"
+            "value": "开放数据"
           }
         }
       }
@@ -48524,71 +48527,72 @@
       }
     },
     "Recording MBID": {
+      "comment": "MusicBrainz identifier for the recording entity, shown as a metadata field label.",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Grabación de MBID"
+            "value": "MBID de la grabación"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aufzeichnung MBID"
+            "value": "MBID der Aufnahme"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enregistrement MBID"
+            "value": "MBID de l’enregistrement"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Registrazione MBID"
+            "value": "MBID della registrazione"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "MBIDの記録"
+            "value": "録音のMBID"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rejestrowanie MBID"
+            "value": "MBID nagrania"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gravando MBID"
+            "value": "MBID da gravação"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Запись MBID"
+            "value": "MBID записи"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inspelning av MBID"
+            "value": "MBID för inspelningen"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kayıt MBID"
+            "value": "Kayıt MBID’si"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在录制 MBID"
+            "value": "录音 MBID"
           }
         }
       }
@@ -48598,7 +48602,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aufnahme-MSID"
+            "value": "MSID der Aufnahme"
           }
         },
         "es": {
@@ -48622,7 +48626,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "レコーディングMSID"
+            "value": "録音のMSID"
           }
         },
         "pl": {
@@ -48646,7 +48650,7 @@
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inspelnings-MSID"
+            "value": "MSID för inspelningen"
           }
         },
         "tr": {
@@ -50072,25 +50076,25 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Publicación"
+            "value": "Lanzamiento"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Freigabe"
+            "value": "Veröffentlichung"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Libération"
+            "value": "Sortie"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comunicato"
+            "value": "Pubblicazione"
           }
         },
         "ja": {
@@ -50102,71 +50106,72 @@
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zwolnienie"
+            "value": "Wydanie"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lançar"
+            "value": "Lançamento"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Выпуск"
+            "value": "Релиз"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Släpp"
+            "value": "Utgåva"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salı"
+            "value": "Yayın"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "发布"
+            "value": "发行"
           }
         }
       }
     },
     "Release MBID": {
+      "comment": "MusicBrainz identifier for the release entity; release means a published album, EP, or single.",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Liberar MBID"
+            "value": "MBID del lanzamiento"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Freigabe MBID"
+            "value": "MBID der Veröffentlichung"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Libérer MBID"
+            "value": "MBID de la sortie"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rilasciare MBID"
+            "value": "MBID della pubblicazione"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "MBIDリリース"
+            "value": "リリースのMBID"
           }
         },
         "pl": {
@@ -50178,31 +50183,31 @@
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lançar MBID"
+            "value": "MBID do lançamento"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Скачать MBID"
+            "value": "MBID релиза"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Släpp MBID"
+            "value": "MBID för utgåvan"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Açıklama MBID"
+            "value": "Yayın MBID’si"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "释放 MBID"
+            "value": "发行 MBID"
           }
         }
       }
@@ -50212,7 +50217,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Publicaciones"
+            "value": "Lanzamientos"
           }
         },
         "de": {
@@ -50230,7 +50235,7 @@
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Comunicati"
+            "value": "Pubblicazioni"
           }
         },
         "ja": {
@@ -50242,7 +50247,7 @@
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zwolnienia"
+            "value": "Wydania"
           }
         },
         "pt": {
@@ -50254,7 +50259,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "выпуски"
+            "value": "Релизы"
           }
         },
         "sv": {
@@ -50266,13 +50271,13 @@
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Salı günleri"
+            "value": "Yayınlar"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "释放"
+            "value": "发行"
           }
         }
       }
@@ -62131,43 +62136,43 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Releases principales"
+            "value": "Lanzamientos destacados"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Top-Veröffentlichungen"
+            "value": "Beste Veröffentlichungen"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nouveautés"
+            "value": "Meilleures sorties"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "I migliori comunicati"
+            "value": "Pubblicazioni principali"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "トップリリース"
+            "value": "人気のリリース"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Najlepsze zwolnienia"
+            "value": "Najlepsze wydania"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lançamentos de Topo"
+            "value": "Principais lançamentos"
           }
         },
         "ru": {
@@ -62179,19 +62184,19 @@
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toppmeddelanden"
+            "value": "Populära utgåvor"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "En İyi Yayımlar"
+            "value": "En iyi yayınlar"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "顶级版本"
+            "value": "热门发行"
           }
         }
       }
@@ -63352,7 +63357,7 @@
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rodzaj"
+            "value": "Typ"
           }
         },
         "pt": {
